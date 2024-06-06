@@ -27,7 +27,7 @@ public class ConfigStoreH {
     /**
      * If this is true, then the unsharp mask will be skipped
      */
-    public boolean unsharp_skip = false;
+    public boolean unsharp_skip = true;
     /**
      * If this is false, then the unsharp masked image will overwrite the original. If true, a new file will be generated.
      */
@@ -35,19 +35,19 @@ public class ConfigStoreH {
     /**
      * scan area x coordinate of upper left corner of scan area in inches
      */
-    public double scan_x1 = 1.05;
+    public double scan_x1 = 2.79;
     /**
      * scan area y coordinate of upper left corner of scan area in inches
      */
-    public double scan_y1 = 8.98;
+    public double scan_y1 = 1.45;
     /**
      * scan area x coordinate of lower right corner of scan area in inches
      */
-    public double scan_x2 = 3.05;
+    public double scan_x2 = 4.96;
     /**
      * scan area y coordinate of lower right corner of scan area in inches
      */
-    public double scan_y2 = 9.98;
+    public double scan_y2 = 10;
     public ConfigStoreH() {}
     public ConfigStoreH(int proc_threshold, double area_threshold_lower, double area_threshold_upper) {
         this.proc_threshold = proc_threshold;

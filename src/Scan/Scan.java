@@ -76,8 +76,7 @@ public class Scan {
             // for (int i = 0; i < supported_res.length; i++) {
             //     if (max_supported < supported_res[i]) {max_supported = supported_res[i];}
             // }
-            // closest supported resolution to 1200
-            scanSource.setResolution(1184);
+            scanSource.setResolution(600);
             // try and print resolution
             double x_res = scanSource.getXResolution();
             double y_res = scanSource.getYResolution();
