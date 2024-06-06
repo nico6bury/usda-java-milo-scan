@@ -1,0 +1,1 @@
+"jre/bin/java.exe" -jar usda-java-milo-scan.jar

@@ -1,0 +1,21 @@
+# Output path
+/bin
+/output-folder
+/scanned-images
+
+# Output jar
+usda-java-milo-scan.jar
+
+### NetBeans ###
+**/nbproject/private/
+**/nbproject/Makefile-*.mk
+**/nbproject/Package-*.bash
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# program config
+.config
+milo-scan.config
