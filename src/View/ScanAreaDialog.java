@@ -51,13 +51,13 @@ public class ScanAreaDialog extends javax.swing.JDialog {
         setTitle("Set Scan Area");
 
         jLabel1.setFont(jLabel1.getFont().deriveFont(jLabel1.getFont().getSize()+2f));
-        jLabel1.setText("Coordinates of upper left corner of scan area in inches: (def 2.79,1.45)");
+        jLabel1.setText("Coordinates of upper left corner of scan area in inches: (def 2.89,1.38)");
 
         jLabel2.setFont(jLabel2.getFont().deriveFont(jLabel2.getFont().getSize()+2f));
-        jLabel2.setText("Coordinates of lower right corner of scan area in inches: (def 4.96,10)");
+        jLabel2.setText("Coordinates of lower right corner of scan area in inches: (def 4.99,9.89)");
 
         uxX1Spnr.setFont(uxX1Spnr.getFont().deriveFont(uxX1Spnr.getFont().getSize()+2f));
-        uxX1Spnr.setModel(new javax.swing.SpinnerNumberModel(2.79d, 0.01d, 100.0d, 0.01d));
+        uxX1Spnr.setModel(new javax.swing.SpinnerNumberModel(2.89d, 0.01d, 100.0d, 0.01d));
 
         jLabel3.setFont(jLabel3.getFont().deriveFont(jLabel3.getFont().getSize()+2f));
         jLabel3.setLabelFor(uxX1Spnr);
@@ -68,21 +68,21 @@ public class ScanAreaDialog extends javax.swing.JDialog {
         jLabel4.setText("Y:");
 
         uxY1Spnr.setFont(uxY1Spnr.getFont().deriveFont(uxY1Spnr.getFont().getSize()+2f));
-        uxY1Spnr.setModel(new javax.swing.SpinnerNumberModel(1.45d, 0.01d, 100.0d, 0.01d));
+        uxY1Spnr.setModel(new javax.swing.SpinnerNumberModel(1.38d, 0.01d, 100.0d, 0.01d));
 
         jLabel5.setFont(jLabel5.getFont().deriveFont(jLabel5.getFont().getSize()+2f));
         jLabel5.setLabelFor(uxX2Spnr);
         jLabel5.setText("X:");
 
         uxX2Spnr.setFont(uxX2Spnr.getFont().deriveFont(uxX2Spnr.getFont().getSize()+2f));
-        uxX2Spnr.setModel(new javax.swing.SpinnerNumberModel(4.96d, 0.01d, 100.0d, 0.01d));
+        uxX2Spnr.setModel(new javax.swing.SpinnerNumberModel(4.99d, 0.01d, 100.0d, 0.01d));
 
         jLabel6.setFont(jLabel6.getFont().deriveFont(jLabel6.getFont().getSize()+2f));
         jLabel6.setLabelFor(uxY2Spnr);
         jLabel6.setText("Y:");
 
         uxY2Spnr.setFont(uxY2Spnr.getFont().deriveFont(uxY2Spnr.getFont().getSize()+2f));
-        uxY2Spnr.setModel(new javax.swing.SpinnerNumberModel(10.0d, 0.01d, 100.0d, 0.01d));
+        uxY2Spnr.setModel(new javax.swing.SpinnerNumberModel(9.89d, 0.01d, 100.0d, 0.01d));
 
         uxCancelBtn.setFont(uxCancelBtn.getFont().deriveFont(uxCancelBtn.getFont().getSize()+2f));
         uxCancelBtn.setText("Cancel");
@@ -129,9 +129,9 @@ public class ScanAreaDialog extends javax.swing.JDialog {
                 .addComponent(uxY2Spnr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addComponent(uxCancelBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                .addComponent(uxCancelBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addComponent(uxConfirmBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE)
+                .addComponent(uxConfirmBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
                 .addGap(31, 31, 31))
         );
         layout.setVerticalGroup(

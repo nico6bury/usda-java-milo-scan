@@ -53,9 +53,9 @@
           </Group>
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
-              <Component id="uxCancelBtn" pref="226" max="32767" attributes="0"/>
+              <Component id="uxCancelBtn" pref="254" max="32767" attributes="0"/>
               <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-              <Component id="uxConfirmBtn" pref="216" max="32767" attributes="0"/>
+              <Component id="uxConfirmBtn" pref="245" max="32767" attributes="0"/>
               <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -99,7 +99,7 @@
             <Font component="jLabel1" property="font" relativeSize="true" size="2"/>
           </FontInfo>
         </Property>
-        <Property name="text" type="java.lang.String" value="Coordinates of upper left corner of scan area in inches: (def 2.79,1.45)"/>
+        <Property name="text" type="java.lang.String" value="Coordinates of upper left corner of scan area in inches: (def 2.89,1.38)"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
@@ -109,7 +109,7 @@
             <Font component="jLabel2" property="font" relativeSize="true" size="2"/>
           </FontInfo>
         </Property>
-        <Property name="text" type="java.lang.String" value="Coordinates of lower right corner of scan area in inches: (def 4.96,10)"/>
+        <Property name="text" type="java.lang.String" value="Coordinates of lower right corner of scan area in inches: (def 4.99,9.89)"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JSpinner" name="uxX1Spnr">
@@ -120,7 +120,7 @@
           </FontInfo>
         </Property>
         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="2.79" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
+          <SpinnerModel initial="2.89" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
         </Property>
       </Properties>
     </Component>
@@ -158,7 +158,7 @@
           </FontInfo>
         </Property>
         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="1.45" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
+          <SpinnerModel initial="1.38" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
         </Property>
       </Properties>
     </Component>
@@ -183,7 +183,7 @@
           </FontInfo>
         </Property>
         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="4.96" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
+          <SpinnerModel initial="4.99" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
         </Property>
       </Properties>
     </Component>
@@ -208,7 +208,7 @@
           </FontInfo>
         </Property>
         <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="10.0" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
+          <SpinnerModel initial="9.89" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
         </Property>
       </Properties>
     </Component>

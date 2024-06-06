@@ -35,19 +35,19 @@ public class ConfigStoreH {
     /**
      * scan area x coordinate of upper left corner of scan area in inches
      */
-    public double scan_x1 = 2.79;
+    public double scan_x1 = 2.89;
     /**
      * scan area y coordinate of upper left corner of scan area in inches
      */
-    public double scan_y1 = 1.45;
+    public double scan_y1 = 1.38;
     /**
      * scan area x coordinate of lower right corner of scan area in inches
      */
-    public double scan_x2 = 4.96;
+    public double scan_x2 = 4.99;
     /**
      * scan area y coordinate of lower right corner of scan area in inches
      */
-    public double scan_y2 = 10;
+    public double scan_y2 = 9.89;
     public ConfigStoreH() {}
     public ConfigStoreH(int proc_threshold, double area_threshold_lower, double area_threshold_upper) {
         this.proc_threshold = proc_threshold;
