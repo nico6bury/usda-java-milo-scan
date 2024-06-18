@@ -28,7 +28,6 @@ import com.formdev.flatlaf.FlatLightLaf;
 
 import IJM.IJProcess;
 import IJM.SumResult;
-import IJM.SumResult.LeftOrRight;
 import Scan.Scan;
 import Utils.ConfigScribe;
 import Utils.ConfigScribe.PairedConfigStores;
@@ -570,6 +569,7 @@ public class MainWindow extends javax.swing.JFrame {
                 "FileID", "GridIdx", "EndospermArea", "Endosperm%Area", "KernelArea"
             }
         ) {
+            @SuppressWarnings("rawtypes")
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class
             };
@@ -577,6 +577,7 @@ public class MainWindow extends javax.swing.JFrame {
                 false, false, false, false, false
             };
 
+            @SuppressWarnings({ "rawtypes", "unchecked" })
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
@@ -1013,34 +1014,18 @@ public class MainWindow extends javax.swing.JFrame {
     private void updateOutputTable(List<List<SumResult>> groupedResults) {
         DefaultTableModel this_table_model = (DefaultTableModel)uxOutputTable.getModel();
         for (List<SumResult> resultGroup : groupedResults) {
-            // check that we have valid left and right results
-            SumResult left = null;
-            SumResult right = null;
-            for (SumResult tempResult : resultGroup) {
-                if (tempResult.leftOrRight == LeftOrRight.Left) {left = tempResult;}
-                else if (tempResult.leftOrRight == LeftOrRight.Right) {right = tempResult;}
-            }//end categorizing all of result group
-            if (left != null && right != null) {
-                double this_avg_l = (left.l_mean + right.l_mean) / 2.0;
-                double this_avg_area = (left.percent_area + right.percent_area) / 2.0;
-                Object[] this_row = new Object[11];
-                this_row[0] = left.file.getName();
-                this_row[1] = left.threshold;
-                this_row[2] = left.count;
-                this_row[3] = right.count;
-                this_row[4] = String.format("%3.1f", left.l_mean);
-                this_row[5] = String.format("%3.1f", right.l_mean);
-                this_row[6] = String.format("%3.1f", this_avg_l);
-                this_row[7] = String.format("%4.3f", left.percent_area);
-                this_row[8] = String.format("%4.3f", right.percent_area);
-                this_row[9] = String.format("%4.3f", this_avg_area);
-                if (this_avg_area > areaFlagDialog.firstFlag) {this_row[10] = "x";}
-                if (this_avg_area > areaFlagDialog.secondFlag) {this_row[10] = "xx";}
+            for (SumResult res : resultGroup) {
+                double total_area = res.getResValSentinel("Area");
+                double endosperm_area = res.getResValSentinel("EndospermArea");
+                double endo_percent = (endosperm_area * 100) / total_area;
+                Object[] this_row = new Object[5];
+                this_row[0] = res.file.getName();
+                this_row[1] = res.rrr.gridCellIdx + 1;
+                this_row[2] = endosperm_area;
+                this_row[3] = endo_percent;
+                this_row[4] = total_area;
                 this_table_model.addRow(this_row);
-            }//end if we have proper left and right result
-            else {
-                // TODO: Handle exception case
-            }//end else we need to figure out what to do
+            }//end looping over each results
         }//end looping over each result group
     }//end updateOutputTable(groupedResults)
 

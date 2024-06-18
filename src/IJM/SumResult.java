@@ -6,49 +6,38 @@ import java.util.List;
 
 public class SumResult {
     public File file;
-    public String slice;
-    public int count;
-    public int total_area;
-    public double percent_area;
-    public double l_mean;
-    public double l_stdv;
-    public LeftOrRight leftOrRight = LeftOrRight.Unknown;
-    /**
-     * The upper threshold used in image processing
-     */
-    public int threshold;
+    public RRR rrr;
 
     public SumResult() {}
+    public SumResult(File file, RRR rrr) {this.file = file; this.rrr = rrr;}
 
-    public SumResult(String slice, int count, int total_area, double percent_area) {
-        this.slice = slice;
-        this.count = count;
-        this.total_area = total_area;
-        this.percent_area = percent_area;
-    }//end constructor
+    /**
+     * Creates a SumResult for each RRR in a RoiGrid.
+     * @param file The file these rois came from.
+     * @param rg The RoiGrid to pull RRRs from.
+     * @return Returns a List of all SumResults created.
+     */
+    public static List<SumResult> fromRoiGrid(File file, RoiGrid rg) {
+        List<SumResult> srl = new ArrayList<SumResult>();
+        for (int i = 0; i < rg.rrrs.length; i++) {
+            for (int ii = 0; ii < rg.rrrs[i].length; ii++) { 
+                srl.add(new SumResult(file,rg.rrrs[i][ii]));
+            }//end looping over kernels
+        }//end looping over groups of kernels
+        return srl;
+    }//end fromRoiGrid(file,rg)
 
-    public SumResult(File file, String slice, int count, int total_area, double percent_area) {
-        this.file = file;
-        this.slice = slice;
-        this.count = count;
-        this.total_area = total_area;
-        this.percent_area = percent_area;
-    }//end constructor
-
-    public SumResult(String slice, int count, int total_area, double percent_area, double l_mean, double l_stdv) {
-        this.slice = slice;
-        this.count = count;
-        this.total_area = total_area;
-        this.percent_area = percent_area;
-        this.l_mean = l_mean;
-        this.l_stdv = l_stdv;
-    }//end constructor
-    
-    public enum LeftOrRight {
-        Left,
-        Right,
-        Unknown,
-    }//end enum LeftOrRight
+    /**
+     * Gets the results value in rrr under thes specified header.
+     * If the header isn't found, returns -1 as a sentinel value.
+     * @param header The results header to search for in rrr.resultsHeaders.
+     * @return Returns either the value from rrr.resultsValues or -1.
+     */
+    public double getResValSentinel(String header) {
+        int idx = rrr.resultsHeaders.indexOf(header);
+        if (idx == -1) {return -1;}
+        else {return rrr.resultsValues.get(idx);}
+    }//end getResValSentinel(header)
 
     /**
      * This method was written as a helper method for uxQueueListValueChanged(), but it could also be helpful for other processes.

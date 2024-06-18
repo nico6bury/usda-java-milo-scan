@@ -9,17 +9,22 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
-
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-
-import IJM.SumResult.LeftOrRight;
+import java.util.Set;
 import Utils.Constants;
 import Utils.Result;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.gui.Roi;
+import ij.measure.Measurements;
 import ij.measure.ResultsTable;
+import ij.plugin.filter.ParticleAnalyzer;
+import ij.plugin.frame.RoiManager;
+import ij.process.ColorProcessor;
+import ij.process.ImageConverter;
+import ij.process.ImageProcessor;
 
 /**
  * This class keeps track of everything related to running files through the imagej milo macros.
@@ -128,41 +133,25 @@ public class IJProcess {
                 dateFormat.format(cal.getTime()));
 
         // print third line of header
-        pw.printf("flag lower threshold: %f     flag upper threshold: %f\n", lower_flag_thresh, upper_flag_thresh);
+        // pw.printf("flag lower threshold: %f     flag upper threshold: %f\n", lower_flag_thresh, upper_flag_thresh);
 
         // print headers for the columns we're about to print
-        pw.print("FileID,TH,DateTime,left CT,rght CT,left L*,rght L*,Avg L*,left %A,rgt %A,Avg %A,Flag\n");
+        pw.print("FileID,GridIdx,KernelArea,EndospermArea,Endosperm%Area\n");
         
         StringBuilder data_output = new StringBuilder();
         // build timestamp for output file
-        LocalDateTime curDateTime = LocalDateTime.now();
-        DateTimeFormatter timestamp = DateTimeFormatter.ofPattern("yyyy-MM-d H:m:s");
+        // LocalDateTime curDateTime = LocalDateTime.now();
+        // DateTimeFormatter timestamp = DateTimeFormatter.ofPattern("yyyy-MM-d H:m:s");
         // group sumresults into our grouped lists
-        List<List<SumResult>> groupedResults = SumResult.groupResultsByFile(inputList);
+        // List<List<SumResult>> groupedResults = SumResult.groupResultsByFile(inputList);
         // build output for all the images processed
-        for (int i = 0; i < groupedResults.size(); i++) {
-            List<SumResult> group = groupedResults.get(i);
-            if (group.size() == 2) {
-                SumResult left = null;
-                SumResult rght = null;
-                // figure out which is left or right
-                for (SumResult sr : group) {
-                    if (sr.leftOrRight == LeftOrRight.Left) {left = sr;}
-                    else if (sr.leftOrRight == LeftOrRight.Right) {rght = sr;}
-                }//end categorizing each sum result in the group
-                if (left == null || rght == null) {continue;}
-                // print out the columns
-                double avg_percent_area = (left.percent_area + rght.percent_area) / 2.0;
-                double avg_l = (left.l_mean + rght.l_mean) / 2.0;
-                String flag = "";
-                if (avg_percent_area > lower_flag_thresh) {flag = "x";}
-                if (avg_percent_area > upper_flag_thresh) {flag = "xx";}
-                data_output.append(String.format("%s,%d,%s,%d,%d,%3.1f,%3.1f,%3.1f,%4.3f,%4.3f,%4.3f,%s\n", left.file.getName(), left.threshold, curDateTime.format(timestamp), left.count, rght.count, left.l_mean, rght.l_mean, avg_l, left.percent_area, rght.percent_area, avg_percent_area, flag));
-            }//end if we have the expected group size
-            else {
-                // else we need to deal with this somehow
-            }//end else we have an unexpected group size
-        }//end looping over all the stuff to print out
+        for(int i = 0; i < inputList.size(); i++) {
+            SumResult res = inputList.get(i);
+            double total_area = res.getResValSentinel("Area");
+            double endosperm_area = res.getResValSentinel("EndospermArea");
+            double endo_percent = (endosperm_area * 100) / total_area;
+            data_output.append(String.format("%s,%d,%3.1f,%3.1f,%3.1f\n",res.file.getName(),res.rrr.gridCellIdx + 1,total_area,endosperm_area,endo_percent));
+        }//end making the output string
         
         // print output for all images
         pw.print(data_output.toString());
@@ -224,70 +213,33 @@ public class IJProcess {
      * @return Returns a result that will contain the full string written to an output file, or an error if something prevented completion.
      */
     public Result<String> MainMacro(List<File> files_to_process) {
-        // int baseThreshold = 160;
         List<SumResult> runningSum = new ArrayList<SumResult>();
-        // maximum supported resolution of twain, less than max of actual epson capabilities
-        // int splitWidth = 2368;
-        // int splitHeight = 1184;
-        // list of images that have already been split
-        List<File> split_files = new ArrayList<File>();
-        // String baseMacroDir = base_macro_dir.getAbsolutePath() + File.separator;
-        // List<ImagePlus> imagesProcessed = new ArrayList<ImagePlus>();
         for (int i = 0; i < files_to_process.size(); i++) {
             File file = files_to_process.get(i);
-            String sliceBase = file.getName().substring(0, file.getName().length() - 4);
+            // String sliceBase = file.getName().substring(0, file.getName().length() - 4);
 
             // actually start processing
             ImagePlus this_image = IJ.openImage(file.getAbsolutePath());
+            this_image.getProcessor().flipHorizontal();
 
-            // split the current image in two and process both halves
-            List<ImagePlus> imagesToSplit = new ArrayList<>();
-            imagesToSplit.add(this_image);
-            List<ImagePlus> splitImages = PicSplitter(imagesToSplit);
+            // get location of grid cells
+            ArrayList<Roi[]> gridCells = getGridCells(this_image);
 
-            // left image
-            // analyze particles info
-            SumResult leftResult = ijmProcessFile(splitImages.get(0), file);
-            leftResult.leftOrRight = LeftOrRight.Left;
-            leftResult.slice = sliceBase + "-L";
-            // Lab info
-            double[] leftL = LabProcesser(splitImages.get(0));
-            leftResult.l_mean = leftL[0];
-            leftResult.l_stdv = leftL[1];
-            runningSum.add(leftResult);
-            // imagesProcessed.add(splitImages.get(0));
+            // remove grid and background, get whole kernels
+            RoiGrid kernGrid = getRoiGrid(this_image);
 
-            // right image
-            // analyze particles info
-            SumResult rightResult = ijmProcessFile(splitImages.get(1), file);
-            rightResult.leftOrRight = LeftOrRight.Right;
-            rightResult.slice = sliceBase + "-R";
-            // Lab info
-            double[] rightL = LabProcesser(splitImages.get(1));
-            rightResult.l_mean = rightL[0];
-            rightResult.l_stdv = rightL[1];
-            runningSum.add(rightResult);
-            // imagesProcessed.add(splitImages.get(1));
+            // Update kernelGrid with gridCells information
+            kernGrid.updateGridLocs(gridCells);
+
+            // Get procs from endosperm(white) area
+            procEndosperm(kernGrid, this_image);
+
+            this_image.close();
+
+            // add all the results and stuff we got
+            runningSum.addAll(SumResult.fromRoiGrid(file, kernGrid));
         }//end looping over each file we want to split
 
-        for (int i = 0; i < split_files.size(); i++) {
-            File file = files_to_process.get(i);
-            String sliceBase = file.getName().substring(0, file.getName().length() - 4);
-
-            // actually start processing
-            ImagePlus this_image = IJ.openImage(file.getAbsolutePath());
-            
-            // process the current image with analyze particles and Lab
-            SumResult this_result = ijmProcessFile(this_image, file);
-            this_result.slice = sliceBase;
-            double[] l_info = LabProcesser(this_image);
-            this_result.l_mean = l_info[0];
-            this_result.l_stdv = l_info[1];
-            runningSum.add(this_result);
-        }//end loping over each file we want to process
-
-        // close all the images, or at least the stack
-        IJ.run("Close All");
         // output the output file
         Result<String> outputFileResult = makeOutputFile(runningSum);
         lastProcResult = runningSum;
@@ -296,153 +248,181 @@ public class IJProcess {
     }//end Main Macro converted from ijm
 
     /**
-     * Runs the commands that perform the actual imagej processing calls on the image.
-     * @param img The image to process, loaded into imagej as an ImagePlus.
-     * @param file The file from which img was loaded.
-     * @return Returns a single SumResult, holding processed data from img.
+     * Adds endosperm(white) area from each kernel to each kernel.
+     * @param rg The roigrid holding all the kernel location information.
+     * @param image The image to process.
      */
-    public SumResult ijmProcessFile(ImagePlus img, File file) {
-        // duplicate the image so we don't contaminate it
-        ImagePlus img_dup = img.duplicate();
-        // contents of processFile() from the macro:
-        IJ.run(img_dup, "Sharpen", "");
-        IJ.run(img_dup, "Smooth", "");
-        IJ.run(img_dup, "8-bit", "");
-        IJ.setThreshold(img_dup, 0, th01);
-        IJ.run(img_dup, "Convert to Mask", "");
-
-        // set the scale so it doesn't measure in mm or something
-        IJ.run(img_dup, "Set Scale...", "distance=0 known=0 unit=pixel global");
-
-        // reset results table
-        ResultsTable curTable = ResultsTable.getResultsTable("Summary");
-        if (curTable != null) {curTable.reset();}
-
-        // specify the measure data to recieve from analyze particles
-        IJ.run(img_dup, "Set Measurements...", "area perimeter bounding redirect=None decimal=1");
-
-        // convert particle size controls based on dpi of image, assuming it's 2 x 1 inches
-        double pixels_adjusted_min = ((double)szMin * 1200.0) / (double)img_dup.getHeight();
-        double pixels_adjusted_max = ((double)defSizeLimit * 1200) / (double)img_dup.getHeight();
-
-        // analyze particles to get summary of specks
-        IJ.run(img_dup, "Analyze Particles...", "size=" + pixels_adjusted_min + "-" + pixels_adjusted_max + " show=[Overlay Masks] clear summarize");
-
-        // collect recent analyze particles run from summary table
-        ResultsTable sumTable = ResultsTable.getResultsTable("Summary");
-        // this should contain "Slice", "Count", "Total Area", "Average Size", "%Area", "Perim."
-        // String[] headings = sumTable.getColumnHeadings().split("\t");
-        String slice = sumTable.getStringValue("Slice", 0);
-        int count = (int)sumTable.getValue("Count", 0);
-        int total_area = (int)sumTable.getValue("Total Area", 0);
-        double prcnt_area = sumTable.getValue("%Area", 0);
-        IJ.runMacro("selectWindow(\"Summary\");run(\"Close\");");
-        SumResult this_result = new SumResult(file, slice, count, total_area, prcnt_area);
-        this_result.threshold = th01;
-
-        return this_result;
-    }//end ijmProcessFile()
+    public static void procEndosperm(RoiGrid rg, ImagePlus image) {
+        int options = ParticleAnalyzer.SHOW_NONE;
+        int measurements = Measurements.AREA;
+        ParticleAnalyzer pa = new ParticleAnalyzer(options,measurements,null,100,Double.MAX_VALUE);
+        // prepare image to be processed
+        ImagePlus img = image.duplicate();
+        colorThHSB(img, new int[] {0,0,138}, new int[] {255,32,255}, new String[] {"pass","pass","pass"});
+        ImageConverter ic = new ImageConverter(img);
+        ic.convertToGray8();
+        HashMap<String,double[]>[][] resMap = rg.analyzeParticles(pa, img);
+        // update rg.rrrs with appropriate result info from resMap
+        for(int i = 0; i < rg.rrrs.length; i++) {
+            for(int ii = 0; ii < rg.rrrs[i].length; ii++) {
+                Set<String> these_headers = resMap[i][ii].keySet();
+                for (String header : these_headers) {
+                    double[] res = resMap[i][ii].get(header);
+                    if (res.length == 0) {System.out.println("Couldn't get results for roi at grid 0-index " + rg.rrrs[i][ii].gridCellIdx);}
+                    else if (header == "Area") {
+                        rg.rrrs[i][ii].resultsHeaders.add("EndospermArea");
+                        rg.rrrs[i][ii].resultsValues.add(res[0]);
+                    } else {System.out.println("Didn't include header " + header);}
+                }//end looping over each header in headers
+            }//end looping over kernels
+        }//end looping over groups of kernels
+    }//end procEndosperm
 
     /**
-     * This method is named after an imagej macro file.
-     * When given a list of images, it will split each one in half, 
-     * creating a left and right version of each image.
-     * @param images_to_process The list of images to split in half.
-     * @return Returns a list of images split in half. The size should be double that of images_to_process.
+     * Gets a RoiGrid, holding Rois for all kernels.
+     * Does not determine grid cell locations.
+     * @param image Image to pull kernels from.
+     * @return Returns RoiGrid with sorted, grouped Rois for all kernels.
      */
-    public List<ImagePlus> PicSplitter(List<ImagePlus> images_to_process) {
-        List<ImagePlus> splitImages = new ArrayList<ImagePlus>();
+    public static RoiGrid getRoiGrid(ImagePlus image) {
+        ImagePlus img = image.duplicate();
 
-        for (int i = 0; i < images_to_process.size(); i++) {
-            ImagePlus this_image1 = images_to_process.get(i);
-            ImagePlus this_image2 = this_image1.duplicate();
-            // get dimensions so we know where to split
-            int imgWidth = this_image1.getWidth();
-            int imgHeight = this_image1.getHeight();
-            
-            Roi[] leftRois = new Roi[1];
-            // define the left split
-            leftRois[0] = new Roi(0, 0, imgWidth / 2, imgHeight);
-            
-            Roi[] rightRois = new Roi[1];
-            // define the right split
-            rightRois[0] = new Roi(imgWidth / 2, 0, imgWidth / 2, imgHeight);
-
-            // get the left and right splits
-            ImagePlus[] results1 = this_image1.crop(leftRois);
-            ImagePlus[] results2 = this_image2.crop(rightRois);
-            splitImages.add(results1[0]);
-            splitImages.add(results2[0]);
-        }//end looping over images to process
-        
-        return splitImages;
-    }//end Pic Splitter macro converted from ijm
+        // set up results, roi, particle analysis
+        ResultsTable rt = new ResultsTable();
+        RoiManager rm = new RoiManager(false);
+        int options = ParticleAnalyzer.SHOW_NONE + ParticleAnalyzer.ADD_TO_MANAGER;
+        int measurements = Measurements.AREA;
+        ParticleAnalyzer.setRoiManager(rm);
+        ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, 5000, Integer.MAX_VALUE,0.0,1.0);
+        // actually get on processing
+        removeBlue(img);
+        ImageConverter ic = new ImageConverter(img);
+        ic.convertToGray8();
+        IJ.setThreshold(img, 1, 255);
+        pa.analyze(img);
+        System.out.println("Detected " + rm.getCount() + " kernels.");
+        RRR[][] rrrs = RoiGrid.createRRRs(rm);
+        // Update rrrs with Area results from rt
+        double[] area_col = rt.getColumn("Area");
+        RoiGrid.addResultColumn(rrrs,"Area",area_col);
+        RoiGrid nrg = new RoiGrid(rrrs);
+        // img = image;
+        return nrg;
+    }//end getRoiGrid
 
     /**
-     * Named after Lab Processor macro converted from ijm.
-     * Although the original macro used stack measurements to get Lab values,
-     * there were issues integrating the same approach with java, so instead
-     * this method manually computes Lab statistics by converting each pixel to Lab from RGB
-     * and using a library to do statistical operations on the list of Lab pixel values.
-     * @param img The image to get L info from.
-     * @return Returns the image statistics for the L slice of the Lab stack. Index 0 contains mean of L* values, and Index 1 contains stdev of L* values.
+     * This method, given an image with the blue grid and blue background, isolates,
+     * groups, and sorts the grid cells.
+     * @param image The image to pull grid cell locations from
+     * @return Returns sorted array list of Rois, representing all grid cells in img
      */
-    public double[] LabProcesser(ImagePlus img) {
-        // set the right scale
-        IJ.run(img, "Set Scale...", "distance=1 known=1 unit=[] global");
-        // for each pixel, get L* value, add to list
-        // ImageConverter ic = new ImageConverter(img);
-        // ic.convertToRGB();
-        double[] L_vals = new double[img.getWidth() * img.getHeight()];
+    public static ArrayList<Roi[]> getGridCells(ImagePlus image) {
+        ImagePlus img = image.duplicate();
+        // set up roi, particle analysis
+        ResultsTable rt = new ResultsTable();
+        RoiManager rm = new RoiManager(false);
+        int options = ParticleAnalyzer.ADD_TO_MANAGER + ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES +
+        ParticleAnalyzer.SHOW_NONE + ParticleAnalyzer.INCLUDE_HOLES + ParticleAnalyzer.CLEAR_WORKSHEET;
+        int measurements = Measurements.RECT;
+        ParticleAnalyzer.setRoiManager(rm);
+        ParticleAnalyzer pa = new ParticleAnalyzer(options,measurements,rt,26000,Double.MAX_VALUE);
+
+        // actually get processing
+        colorThHSB(img, new int[] {149,0,0}, new int[] {158,255,255}, new String[] {"pass","pass","pass"});
+        ImageConverter ic = new ImageConverter(img);
+        ic.convertToGray8();
+        IJ.setThreshold(img,2,255);
+        pa.analyze(img);
+        System.out.println("Detected " + rm.getCount() + " grid cells.");
+        RoiGrid.groupRoiRows(rm);
+        ArrayList<Roi[]> sortedRois = RoiGrid.createSortedClones(rm);
+        rm.removeAll();
+        return sortedRois;
+    }//end getGridCells()
+
+    /**
+     * Removes overly blue pixels by setting color value
+     * to 0,0,0. Mutates img parameter.
+     * @param img The input img, from which to remove blue
+     */
+    public static void removeBlue(ImagePlus img) {
+        ImageProcessor proc = img.getProcessor();
         for (int x = 0; x < img.getWidth(); x++) {
-            for (int y = 0; y < img.getHeight(); y++) {
-                int[] pixel = img.getPixel(x, y);
-                // get RGB from this pixel
+            for (int y = 0; y < img.getHeight(); y++){
+                int[] pixel = img.getPixel(x,y);
                 int R = pixel[0];
                 int G = pixel[1];
                 int B = pixel[2];
-                /*
-                 * Conversion formulas taken from https://www.easyrgb.com/en/math.php
-                 */
-                // convert to XYZ for this pixel
-                double sR = ((double)R / 255);
-                double sG = ((double)G / 255);
-                double sB = ((double)B / 255);
-                if (sR > 0.04045) {sR = Math.pow((sR + 0.055) / 1.055, 2.4);}
-                else {sR = sR / 12.92;}
-                if (sG > 0.04045) {sG = Math.pow((sG + 0.055) / 1.055, 2.4);}
-                else {sG = sG / 12.92;}
-                if (sB > 0.04045) {sB = Math.pow((sB + 0.055) / 1.055, 2.4);}
-                else {sB = sB / 12.92;}
-                sR = sR * 100;
-                sG = sG * 100;
-                sB = sB * 100;
-                double X = sR * 0.4124 + sG * 0.3576 + sB * 0.1805;
-                double Y = sR * 0.2126 + sG * 0.7152 + sB * 0.0722;
-                double Z = sR * 0.0193 + sG * 0.1192 + sB * 0.9505;
-                // convert from XYZ to Lab based on equal observer
-                double varX = X / 100;
-                double varY = Y / 100;
-                double varZ = Z / 100;
-                if (varX > 0.008856) {varX = Math.pow(varX, 1.0/3.0);}
-                else {varX = (7.787 * varX) + (16.0 / 116.0);}
-                if (varY > 0.008856) {varY = Math.pow(varY, 1.0/3.0);}
-                else {varY = (7.787 * varY) + (16.0 / 116.0);}
-                if (varZ > 0.008856) {varZ = Math.pow(varZ, 1.0/3.0);}
-                else {varZ = (7.787 * varZ) + (16.0 / 116.0);}
-                double CIE_L = (116 * varY) - 16;
-                // double CIE_a = 500 * (varX - varY);
-                // double CIE_b = 200 * (varY - varZ);
-                // add L* value to the array, pretending that it's a 2d array so we don't have to keep track of a separate index
-                L_vals[x * img.getWidth() + y] = CIE_L;
-            }//end going up down
-        }//end going side to side
+                if (B > (R + G) * 3 / 5) {
+                    proc.set(x,y,0);
+                }//end if pixel appears blue
+            }//end looping over y values
+        }//end looping over x values
+        img.setProcessor(proc);
+    }//end removeBlue
 
-        DescriptiveStatistics ds = new DescriptiveStatistics(L_vals);
-        double[] mean_and_stdev = new double[2];
-        mean_and_stdev[0] = ds.getMean();
-        mean_and_stdev[1] = ds.getStandardDeviation();
+    /**
+     * Removes pixels outside a range by setting them to 0.  
+     * Uses HSB color space for constraints.
+     * Mutates the img parameter.
+     * @param img The image to process. This parameter is mutated.
+     * @param min int[3], minimum value (0-255) for H,S,B
+     * @param max int[3], maximum value (0-255) for H,S,B
+     * @param filter String[3], for H,S,B, either "pass", or inverts
+     */
+    public static void colorThHSB(ImagePlus img, int[] min, int[] max, String[] filter) {
+        ColorProcessor prc = img.getProcessor().convertToColorProcessor();
+        ImageStack hsb = prc.getHSBStack();
+        ImageProcessor h = hsb.getProcessor(1);
+        ImageProcessor s = hsb.getProcessor(2);
+        ImageProcessor b = hsb.getProcessor(3);
+        for (int x = 0; x < prc.getWidth(); x++) {
+            for (int y = 0; y < prc.getHeight(); y++) {
+                int H = h.getPixel(x,y);
+                int S = s.getPixel(x,y);
+                int B = b.getPixel(x,y);
+                boolean hin = H >= min[0] && H <= max[0];
+                boolean sin = S >= min[1] && S <= max[1];
+                boolean bin = B >= min[2] && B <= max[2];
+                if (filter[0] != "pass") {hin = !hin;}
+                if (filter[1] != "pass") {sin = !sin;}
+                if (filter[2] != "pass") {bin = !bin;}
+                if (!hin || !sin || !bin) {
+                    prc.set(x,y,0);
+                }//end if pixel is outside constraints
+            }//end looping over y coords for pixels
+        }//end looping over x coords for pixels
+        img.setProcessor(prc);
+    }//end colorThHSB
 
-        return mean_and_stdev;
-    }//end Lab Processor macro converted from ijm
+    /**
+     * Removes pixels outside a range by setting them to 0.  
+     * Uses RGB color space for constraints.
+     * Mutates the img parameter.
+     * @param img The image to process. This parameter is mutated.
+     * @param min int[3], minimum value (0-255) for R,G,B
+     * @param max int[3], maximum value (0-255) for R,G,B
+     * @param filter String[3], for R,G,B, either "pass", or inverts
+     */
+    public static void colorThRGB(ImagePlus img, int[] min, int[] max, String[] filter) {
+        ImageProcessor prc = img.getProcessor();
+        for (int x = 0; x < prc.getWidth(); x++) {
+            for (int y = 0; y < prc.getHeight(); y++) {
+                int[] rgb = prc.getPixel(x, y, null);
+                int r = rgb[0];
+                int g = rgb[0];
+                int b = rgb[0];
+                boolean rin = r >= min[0] && r <= max[0];
+                boolean gin = g >= min[1] && g <= max[1];
+                boolean bin = b >= min[2] && b <= max[2];
+                if (filter[0] != "pass") {rin = !rin;}
+                if (filter[1] != "pass") {gin = !gin;}
+                if (filter[2] != "pass") {bin = !bin;}
+                if (!rin || !gin || !bin) {
+                    prc.set(x,y,0);
+                }//end if pixel is outside constraints
+            }//end looping over y coords for pixels
+        }//end looping over x coords for pixels
+        img.setProcessor(prc);
+    }//end colorThRGB
 }//end class IJProcess
