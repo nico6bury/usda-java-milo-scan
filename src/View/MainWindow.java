@@ -37,6 +37,7 @@ import Utils.Constants;
 import Utils.Result;
 import Utils.Result.ResultType;
 import ij.IJ;
+import ij.ImagePlus;
 
 /**
  *
@@ -976,7 +977,8 @@ public class MainWindow extends javax.swing.JFrame {
      * @return Returns an ImageIcon if the file is found. Otherwise, returns null if we can't open the image.
      */
     private ImageIcon scaleImageToIcon(File imageFile) {
-        BufferedImage buf_img = IJ.openImage(imageFile.getAbsolutePath()).getBufferedImage();
+        ImagePlus img = IJ.openImage(imageFile.getAbsolutePath()); img.getProcessor().flipHorizontal();
+        BufferedImage buf_img = img.getBufferedImage();
         if (buf_img == null) {return null;}
         // It would maybe be good to improve image scaling at some point
         /*
