@@ -120,10 +120,12 @@ public class RoiGrid {
                 ImagePlus kern = image.crop(new Roi[] {rrrs[i][ii].roi})[0];
                 // IJ.save(kern, "errorwhy-" + i + "-" + ii);
                 ImageConverter ic = new ImageConverter(kern);
-                ic.convertToGray8();
+                ic.convertToGray16();
                 IJ.setThreshold(kern, 1, 255);
                 try {
+                    // analyze particles in image of kernel
                     pa.analyze(kern);
+                    // save headers and results from kernel
                     String[] headings = rt.getHeadings();
                     for(int headIdx = 0; headIdx < headings.length; headIdx++) {
                         resMap[i][ii].put(headings[headIdx],rt.getColumn(headings[headIdx]));
