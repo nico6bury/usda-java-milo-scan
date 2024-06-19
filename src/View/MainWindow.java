@@ -567,10 +567,9 @@ public class MainWindow extends javax.swing.JFrame {
 
             },
             new String [] {
-                "FileID", "GridIdx", "EndospermArea", "Endosperm%Area", "KernelArea"
+                "FileID", "GridIdx", "Area1", "Area2", "%Area2"
             }
         ) {
-            @SuppressWarnings("rawtypes")
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class
             };
@@ -578,7 +577,6 @@ public class MainWindow extends javax.swing.JFrame {
                 false, false, false, false, false
             };
 
-            @SuppressWarnings({ "rawtypes", "unchecked" })
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
@@ -1023,9 +1021,9 @@ public class MainWindow extends javax.swing.JFrame {
                 Object[] this_row = new Object[5];
                 this_row[0] = res.file.getName();
                 this_row[1] = res.rrr.gridCellIdx + 1;
-                this_row[2] = endosperm_area;
-                this_row[3] = endo_percent;
-                this_row[4] = total_area;
+                this_row[2] = total_area;
+                this_row[3] = endosperm_area;
+                this_row[4] = endo_percent;
                 this_table_model.addRow(this_row);
             }//end looping over each results
         }//end looping over each result group
