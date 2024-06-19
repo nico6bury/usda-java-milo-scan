@@ -294,7 +294,7 @@ public class IJProcess {
         int options = ParticleAnalyzer.SHOW_NONE + ParticleAnalyzer.ADD_TO_MANAGER;
         int measurements = Measurements.AREA;
         ParticleAnalyzer.setRoiManager(rm);
-        ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, 5000, 50000,0.0,1.0);
+        ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, 4000, 50000,0.0,1.0);
         // actually get on processing
         removeBlue(img);
         ImageConverter ic = new ImageConverter(img);
