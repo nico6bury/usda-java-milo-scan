@@ -1,5 +1,6 @@
 package IJM;
 
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -330,13 +331,23 @@ public class IJProcess {
         // actually get processing
         colorThHSB(img, new int[] {149,0,0}, new int[] {158,255,255}, new String[] {"pass","pass","pass"});
         ImageConverter ic = new ImageConverter(img);
+        // IJ.save(img, img.getTitle() + "-grid");
         ic.convertToGray8();
-        IJ.setThreshold(img,2,255);
+        IJ.setThreshold(img,1,255);
         pa.analyze(img);
+        // rt.save(img.getTitle() + "restults.txt");
         System.out.println("Detected " + rm.getCount() + " grid cells.");
+        for(int i = 0; i < rm.getCount(); i++) {
+            Roi thisRoi = rm.getRoi(i);
+            Rectangle thisBound = thisRoi.getBounds();
+            thisBound.grow(-25,-30);
+            Roi newRoi = new Roi(thisBound);
+            rm.setRoi(newRoi, i);
+        }//end shrinking and rectangling every roi
         RoiGrid.groupRoiRows(rm);
         ArrayList<Roi[]> sortedRois = RoiGrid.createSortedClones(rm);
-        rm.removeAll();
+        // rm.save(img.getShortTitle() + "-roi.zip");
+        rm.reset();
         return sortedRois;
     }//end getGridCells()
 
