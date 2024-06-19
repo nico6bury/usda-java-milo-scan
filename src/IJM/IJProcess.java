@@ -255,7 +255,7 @@ public class IJProcess {
     public static void procEndosperm(RoiGrid rg, ImagePlus image) {
         int options = ParticleAnalyzer.SHOW_NONE;
         int measurements = Measurements.AREA;
-        ParticleAnalyzer pa = new ParticleAnalyzer(options,measurements,null,100,Double.MAX_VALUE);
+        ParticleAnalyzer pa = new ParticleAnalyzer(options,measurements,null,500,Double.MAX_VALUE);
         // prepare image to be processed
         ImagePlus img = image.duplicate();
         colorThHSB(img, new int[] {0,0,138}, new int[] {255,32,255}, new String[] {"pass","pass","pass"});
