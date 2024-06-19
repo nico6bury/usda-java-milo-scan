@@ -136,7 +136,7 @@ public class IJProcess {
         // pw.printf("flag lower threshold: %f     flag upper threshold: %f\n", lower_flag_thresh, upper_flag_thresh);
 
         // print headers for the columns we're about to print
-        pw.print("FileID,GridIdx,KernelArea,EndospermArea,Endosperm%Area\n");
+        pw.print("FileID,GridIdx,Area1,Area2,%Area2\n");
         
         StringBuilder data_output = new StringBuilder();
         // build timestamp for output file
