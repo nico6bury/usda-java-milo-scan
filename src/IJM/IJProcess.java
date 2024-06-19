@@ -255,10 +255,10 @@ public class IJProcess {
     public static void procEndosperm(RoiGrid rg, ImagePlus image) {
         int options = ParticleAnalyzer.SHOW_NONE;
         int measurements = Measurements.AREA;
-        ParticleAnalyzer pa = new ParticleAnalyzer(options,measurements,null,500,Double.MAX_VALUE);
+        ParticleAnalyzer pa = new ParticleAnalyzer(options,measurements,null,500,10000);
         // prepare image to be processed
         ImagePlus img = image.duplicate();
-        colorThHSB(img, new int[] {0,0,138}, new int[] {255,32,255}, new String[] {"pass","pass","pass"});
+        colorThHSB(img, new int[] {146,0,166}, new int[] {170,255,255}, new String[] {"stop","pass","pass"});
         ImageConverter ic = new ImageConverter(img);
         ic.convertToGray8();
         HashMap<String,double[]>[][] resMap = rg.analyzeParticles(pa, img);
@@ -293,7 +293,7 @@ public class IJProcess {
         int options = ParticleAnalyzer.SHOW_NONE + ParticleAnalyzer.ADD_TO_MANAGER;
         int measurements = Measurements.AREA;
         ParticleAnalyzer.setRoiManager(rm);
-        ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, 5000, Integer.MAX_VALUE,0.0,1.0);
+        ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, 5000, 50000,0.0,1.0);
         // actually get on processing
         removeBlue(img);
         ImageConverter ic = new ImageConverter(img);
@@ -325,7 +325,7 @@ public class IJProcess {
         ParticleAnalyzer.SHOW_NONE + ParticleAnalyzer.INCLUDE_HOLES + ParticleAnalyzer.CLEAR_WORKSHEET;
         int measurements = Measurements.RECT;
         ParticleAnalyzer.setRoiManager(rm);
-        ParticleAnalyzer pa = new ParticleAnalyzer(options,measurements,rt,26000,Double.MAX_VALUE);
+        ParticleAnalyzer pa = new ParticleAnalyzer(options,measurements,rt,26000,50000);
 
         // actually get processing
         colorThHSB(img, new int[] {149,0,0}, new int[] {158,255,255}, new String[] {"pass","pass","pass"});
