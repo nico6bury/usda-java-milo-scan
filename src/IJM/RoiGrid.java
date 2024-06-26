@@ -8,7 +8,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.measure.ResultsTable;
-import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import ij.process.ImageConverter;
 
@@ -66,6 +65,7 @@ public class RoiGrid {
                         if (thisKernBound.intersects(thisGridBound)) {
                             // update gridIdx to proper value
                             rrrs[kernRow][kernCol].gridCellIdx = gridIdx;
+                            System.out.println("Grid 0-Idx " + gridIdx + "\t" + thisKernBound.toString());
                             // exit from 2 inner loops
                             exitInner = true;
                             break;
@@ -100,39 +100,59 @@ public class RoiGrid {
      * Uses Particle Analyzer to analyze every kernel roi in provided image.
      * The image provided should already be edited such that 8-bit threshold 1-255
      * retrieves all required information.
-     * @param pa The particle analyzer with all measurements and options already set
+     * TODO: Add make particle analysis params accessible
      * @param image The image you wish to process. It should be based on image for rrrs.
      * @return Parallel 2d array to rrrs. Each element is results-table information, column-header->column vals.
      */
     @SuppressWarnings("unchecked")
-    public HashMap<String,double[]>[][] analyzeParticles(ParticleAnalyzer pa, ImagePlus image) {
-        // set up results containers
-        ResultsTable rt = new ResultsTable();
-        ParticleAnalyzer.setResultsTable(rt);
-        // holds result for each RRR, parallel to rrrs
+    public HashMap<String,double[]>[][] analyzeParticles(ImagePlus image) {
         HashMap<String,double[]>[][] resMap = new HashMap[rrrs.length][];
         // go through and do image analysis on each roi
+        String jarDir = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+        String tmpPth = jarDir + "temp.tiff";
+
         for(int i = 0; i < rrrs.length; i++) {
             resMap[i] = new HashMap[rrrs[i].length];
             for(int ii = 0; ii < rrrs[i].length; ii++) {
                 resMap[i][ii] = new HashMap<>(1);
                 // creates duplicate image of appropriate roi from image
-                ImagePlus kern = image.crop(new Roi[] {rrrs[i][ii].roi})[0];
+                ImagePlus[] kerns = image.crop(new Roi[] {rrrs[i][ii].roi},"");
+                ImagePlus kern; if (kerns.length > 0) {kern = kerns[0];} else {break;}
                 // IJ.save(kern, "errorwhy-" + i + "-" + ii);
                 ImageConverter ic = new ImageConverter(kern);
-                ic.convertToGray16();
+                ic.convertToGray8();
                 IJ.setThreshold(kern, 1, 255);
                 try {
                     // analyze particles in image of kernel
-                    pa.analyze(kern);
+                    // pa.analyze(kern);
+                    
+                    IJ.save(kern,tmpPth);
+                    IJ.runMacro(
+                        "open(\"" + tmpPth + "\");" + 
+                        "run(\"Set Measurements...\", \"area display redirect=None decimal=2\");" +
+                        "setThreshold(1,255);" + 
+                        "run(\"Analyze Particles...\", \"size=500-10000 display\");"
+                    );
+                    // IJ.run(image, "Analyze Particles...", "size=500-10000 show=Nothing display");
+                    ResultsTable rt = ResultsTable.getResultsTable();
+                    // try and get stuff from roi manager
+                    // Roi[] rois = rm.getRoisAsArray();
+                    // for (int j = 0; j < rois.length; j++) {
+                    //     System.out.println("grid 0-idx " + rrrs[i][ii].gridCellIdx + "\t" + rois[i].getStatistics().area);
+                    // }//end looping over rois. there should be only one
                     // save headers and results from kernel
                     String[] headings = rt.getHeadings();
+                    // rt.get
                     for(int headIdx = 0; headIdx < headings.length; headIdx++) {
+                        // rt.size();
+                        if (headings[headIdx] == "Label") {continue;}
                         resMap[i][ii].put(headings[headIdx],rt.getColumn(headings[headIdx]));
                     }//end adding each column and heading to resMap
+                    rt.reset();
                 }//end trying to catch dumb ParticleAnalyzer bugs
-                catch (ArrayIndexOutOfBoundsException e) {System.out.println(rrrs[i][ii].roi.getBounds().toString() + " grididx " + rrrs[i][ii].gridCellIdx);}
-                rt.reset();
+                catch (ArrayIndexOutOfBoundsException e) {System.out.println("Out of bounds?\t" + rrrs[i][ii].roi.getBounds().toString() + " grididx " + rrrs[i][ii].gridCellIdx);}
+                // rm.reset();
+                // rt.reset();
             }//end looping over kernels
         }//end looping over kernel groups
         return resMap;

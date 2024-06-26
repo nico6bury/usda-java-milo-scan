@@ -254,15 +254,12 @@ public class IJProcess {
      * @param image The image to process.
      */
     public static void procEndosperm(RoiGrid rg, ImagePlus image) {
-        int options = ParticleAnalyzer.SHOW_NONE;
-        int measurements = Measurements.AREA;
-        ParticleAnalyzer pa = new ParticleAnalyzer(options,measurements,null,500,10000);
         // prepare image to be processed
         ImagePlus img = image.duplicate();
         colorThHSB(img, new int[] {120,0,166}, new int[] {180,255,255}, new String[] {"stop","pass","pass"});
         ImageConverter ic = new ImageConverter(img);
         ic.convertToGray8();
-        HashMap<String,double[]>[][] resMap = rg.analyzeParticles(pa, img);
+        HashMap<String,double[]>[][] resMap = rg.analyzeParticles(img);
         // update rg.rrrs with appropriate result info from resMap
         for(int i = 0; i < rg.rrrs.length; i++) {
             for(int ii = 0; ii < rg.rrrs[i].length; ii++) {
