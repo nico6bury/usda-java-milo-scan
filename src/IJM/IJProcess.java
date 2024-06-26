@@ -259,7 +259,7 @@ public class IJProcess {
         ParticleAnalyzer pa = new ParticleAnalyzer(options,measurements,null,500,10000);
         // prepare image to be processed
         ImagePlus img = image.duplicate();
-        colorThHSB(img, new int[] {146,0,166}, new int[] {170,255,255}, new String[] {"stop","pass","pass"});
+        colorThHSB(img, new int[] {120,0,166}, new int[] {180,255,255}, new String[] {"stop","pass","pass"});
         ImageConverter ic = new ImageConverter(img);
         ic.convertToGray8();
         HashMap<String,double[]>[][] resMap = rg.analyzeParticles(pa, img);
@@ -272,7 +272,8 @@ public class IJProcess {
                     if (res.length == 0) {System.out.println("Couldn't get results for roi at grid 0-index " + rg.rrrs[i][ii].gridCellIdx);}
                     else if (header == "Area") {
                         rg.rrrs[i][ii].resultsHeaders.add("EndospermArea");
-                        rg.rrrs[i][ii].resultsValues.add(res[0]);
+                        double totalArea = 0; for(int j = 0; j < res.length; j++) {totalArea += res[j];}
+                        rg.rrrs[i][ii].resultsValues.add(totalArea);
                     } else {System.out.println("Didn't include header " + header);}
                 }//end looping over each header in headers
             }//end looping over kernels
@@ -296,7 +297,7 @@ public class IJProcess {
         ParticleAnalyzer.setRoiManager(rm);
         ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, 4000, 50000,0.0,1.0);
         // actually get on processing
-        removeBlue(img);
+        colorThHSB(img, new int[] {120,0,0}, new int[] {180,255,255}, new String[] {"stop","pass","pass"});
         ImageConverter ic = new ImageConverter(img);
         ic.convertToGray8();
         IJ.setThreshold(img, 1, 255);
