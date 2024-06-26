@@ -137,7 +137,7 @@ public class IJProcess {
         // pw.printf("flag lower threshold: %f     flag upper threshold: %f\n", lower_flag_thresh, upper_flag_thresh);
 
         // print headers for the columns we're about to print
-        pw.print("FileID,GridIdx,Area1,Area2,%Area2\n");
+        pw.print("FileID,X,Y,GridIdx,Area1,Area2,%Area2\n");
         
         StringBuilder data_output = new StringBuilder();
         // build timestamp for output file
@@ -151,7 +151,9 @@ public class IJProcess {
             double total_area = res.getResValSentinel("Area");
             double endosperm_area = res.getResValSentinel("EndospermArea");
             double endo_percent = (endosperm_area * 100) / total_area;
-            data_output.append(String.format("%s,%d,%3.1f,%3.1f,%3.1f\n",res.file.getName(),res.rrr.gridCellIdx + 1,total_area,endosperm_area,endo_percent));
+            double x = res.rrr.roi.getBounds().getCenterX();
+            double y = res.rrr.roi.getBounds().getCenterY();
+            data_output.append(String.format("%s,%f,%f,%d,%3.1f,%3.1f,%3.1f\n",res.file.getName(),x,y,res.rrr.gridCellIdx + 1,total_area,endosperm_area,endo_percent));
         }//end making the output string
         
         // print output for all images
