@@ -305,7 +305,26 @@ public class IJProcess {
         RRR[][] rrrs = RoiGrid.createRRRs(rm);
         // Update rrrs with Area results from rt
         double[] area_col = rt.getColumn("Area");
-        RoiGrid.addResultColumn(rrrs,"Area",area_col);
+        int last_min_y = 0;
+        for (int j = 0; j < area_col.length; j++) {
+            int min_y_so_far = Integer.MAX_VALUE;
+            int min_y_so_far_i = 0;
+            int min_y_so_far_ii = 0;
+            for (int i = 0; i < rrrs.length; i++) {
+                for (int ii = 0; ii < rrrs[i].length; ii++) {
+                    int this_y = rrrs[i][ii].roi.getBounds().y;
+                    if (this_y < min_y_so_far && this_y > last_min_y) {
+                        min_y_so_far = this_y;
+                        min_y_so_far_i = i;
+                        min_y_so_far_ii = ii;
+                    }//end if this is j-th rrr by y-val
+                }//end looping through rrrs
+            }//end looping through rrr rows
+            rrrs[min_y_so_far_i][min_y_so_far_ii].resultsHeaders.add("Area");
+            rrrs[min_y_so_far_i][min_y_so_far_ii].resultsValues.add(area_col[j]);
+            last_min_y = min_y_so_far;
+        }//end adding area to rois in y-order
+        // RoiGrid.addResultColumn(rrrs,"Area",area_col);
         RoiGrid nrg = new RoiGrid(rrrs);
         // img = image;
         return nrg;
