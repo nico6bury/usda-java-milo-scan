@@ -118,7 +118,7 @@ public class RoiGrid {
                 // creates duplicate image of appropriate roi from image
                 ImagePlus[] kerns = image.crop(new Roi[] {rrrs[i][ii].roi},"");
                 ImagePlus kern; if (kerns.length > 0) {kern = kerns[0];} else {break;}
-                // IJ.save(kern, "errorwhy-" + i + "-" + ii);
+                // IJ.save(kern, "errorwhy-" + i + "-" + ii + "-g" + rrrs[i][ii].gridCellIdx);
                 ImageConverter ic = new ImageConverter(kern);
                 ic.convertToGray8();
                 IJ.setThreshold(kern, 1, 255);
@@ -127,6 +127,8 @@ public class RoiGrid {
                     // pa.analyze(kern);
                     
                     IJ.save(kern,tmpPth);
+                    System.out.println("Getting ready to analyze particles for kernel with gridIdx " + rrrs[i][ii].gridCellIdx +
+                    ", X:" + rrrs[i][ii].roi.getBounds().getCenterX() + ", y:" + rrrs[i][ii].roi.getBounds().getCenterY());
                     IJ.runMacro(
                         "open(\"" + tmpPth + "\");" + 
                         "run(\"Set Measurements...\", \"area display redirect=None decimal=2\");" +
