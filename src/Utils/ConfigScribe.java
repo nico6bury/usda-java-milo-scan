@@ -67,7 +67,7 @@ public class ConfigScribe {
                 config_h_lines.add("# This milo scan program was created by Nicholas Sixbury, based off the"); 
                 config_h_lines.add("# flour scan project created by the efforts of Nicholas Sixbury, Daniel Brabec,");
                 config_h_lines.add("# and Bill Rust, as part of work for the USDA-ARS in Manhattan,KS. The source");
-                config_h_lines.add("# code is available at https://github.com/nico6bury/usda-milo-flour-scan/");
+                config_h_lines.add("# code is available at https://github.com/nico6bury/usda-java-milo-scan/");
                 config_h_lines.add("# ");
                 config_h_lines.add("# In this file, lines not parsed as variable serialization are automatically ignored.");
                 config_h_lines.add("# Because of this, any line starting with \'#\' will automatically be interpretted as");

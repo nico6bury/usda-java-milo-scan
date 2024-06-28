@@ -83,7 +83,7 @@ public class IJProcess {
             DateTimeFormatter sec = DateTimeFormatter.ofPattern("ss");
             // DateTimeFormatter dir_formatter = DateTimeFormatter.ofPattern("yyyy-MM");
             // DateTimeFormatter file_formatter = DateTimeFormatter.ofPattern("MM-d_H:m");
-            File newDirectory = new File(output_folder_storage_file.getAbsolutePath() + File.separator + "flour-scan-" + currentDateTime.format(year) + "-" + currentDateTime.format(month));
+            File newDirectory = new File(output_folder_storage_file.getAbsolutePath() + File.separator + "milo-scan-" + currentDateTime.format(year) + "-" + currentDateTime.format(month));
             // create the directory if it doesn't exist
             if (ensureDirectoryExists && !newDirectory.exists()) {
                 newDirectory.mkdir();
