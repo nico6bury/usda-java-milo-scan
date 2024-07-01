@@ -183,6 +183,7 @@ public class MainWindow extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null, "While attempting the chosen command, the program encountered an exception of type " + e.getClass().getName() + ".\nThe exception message was " + e.getMessage(), "Unhandled Exception Caught.", JOptionPane.ERROR_MESSAGE);
     }//end genericExceptionMessage(e)
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
