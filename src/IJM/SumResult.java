@@ -31,7 +31,7 @@ public class SumResult {
     /**
      * Sorts the SumResults within a List by the roi's gridIdx.
      * This function doesn't mutate the parameter; it returns a new list.
-     * Sorting time is probably about O(n^2) in worst case, close to O(n) in best case.
+     * Sorting time is probably about O(n^2).
      * With the data we expect, it should be close to the best case most of the time.
      * @param sumResults The list of SumResult objects you want to sort.
      * @return Returns a sorted version of sumResults.
