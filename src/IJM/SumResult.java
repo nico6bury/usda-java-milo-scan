@@ -2,6 +2,7 @@ package IJM;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SumResult {
@@ -26,6 +27,33 @@ public class SumResult {
         }//end looping over groups of kernels
         return srl;
     }//end fromRoiGrid(file,rg)
+
+    /**
+     * Sorts the SumResults within a List by the roi's gridIdx.
+     * This function doesn't mutate the parameter; it returns a new list.
+     * Sorting time is probably about O(n^2) in worst case, close to O(n) in best case.
+     * With the data we expect, it should be close to the best case most of the time.
+     * @param sumResults The list of SumResult objects you want to sort.
+     * @return Returns a sorted version of sumResults.
+     */
+    public static List<SumResult> sortSumResultList(List<SumResult> sumResults) {
+        SumResult[] sortedResults = new SumResult[sumResults.size()];
+
+        int last_min = 0;
+        for (int i = 0; i < sortedResults.length; i++) {
+            int min_so_far = Integer.MAX_VALUE;
+            int min_so_far_idx = 0;
+            for (int j = 0; j < sumResults.size(); j++) {
+                int this_idx = sumResults.get(j).rrr.gridCellIdx;
+                if (this_idx < min_so_far && this_idx > last_min)
+                {min_so_far = this_idx; min_so_far_idx = j;}
+            }//end finding the i-th smallest grid index
+            sortedResults[i] = sumResults.get(min_so_far_idx);
+            last_min = min_so_far;
+        }//end filling elements of sortedList
+
+        return Arrays.asList(sortedResults);
+    }//end sortSumResultList(sumResults)
 
     /**
      * Gets the results value in rrr under thes specified header.
