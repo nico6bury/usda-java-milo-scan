@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import com.formdev.flatlaf.FlatDarkLaf;
@@ -104,6 +105,11 @@ public class MainWindow extends javax.swing.JFrame {
         selectFilesChooser.addActionListener(selectFilesListener);
         selectFilesChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         selectFilesChooser.setMultiSelectionEnabled(true);
+        try {
+            String jar_location = new File(IJProcess.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().toString();
+            String output_folder_storage = jar_location + File.separator + Constants.SCANNED_IMAGES_FOLDER_NAME;
+            selectFilesChooser.setCurrentDirectory(new File(output_folder_storage));
+        } catch (URISyntaxException e) {System.out.println("Couldn't figure out jar location. Weird.");}
         // ijProcFileChooser.addActionListener(ijProcFileListener);
         
                 initComponents();
