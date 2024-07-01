@@ -120,11 +120,16 @@ public class Scan {
         try {
             // determine file path where image will be outputted
             Result<File> outF_result = getBaseScanDir(filename, use_filename);
-            if (outF_result.isOk()) {
+            Result<File> tmpF_result = getBaseScanDir(filename,false);
+            if (outF_result.isOk() && tmpF_result.isOk()) {
                 File outF = outF_result.getValue();
+                File tmpF = tmpF_result.getValue();
                 System.out.println(outF.getAbsolutePath());
                 // scan and save image to filepath
-                scanSource.acquireImage(false, outF.getAbsolutePath(), TwainConstants.TWFF_TIFF);
+                scanSource.acquireImage(false, tmpF.getAbsolutePath(), TwainConstants.TWFF_TIFF);
+                if (use_filename) {
+                    tmpF.renameTo(outF);
+                }//end if we want to have the image file be named what the user wanted
                 // ImageIO.write(bimg, "bmp", outF);
                 return new Result<>(outF.getAbsolutePath());
             }//end if we successfully got a filename
