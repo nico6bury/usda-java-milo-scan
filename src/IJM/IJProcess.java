@@ -138,7 +138,7 @@ public class IJProcess {
 
         // print headers for the columns we're about to print
         pw.print(
-            "FileID,GridIdx,Area1,Area2,%Area2" + 
+            "FileID,GridIdx,Pixels1,Pixels2,%Area" + 
             "," +
             ",KX,KY" + 
             ",EX,EY" + 
