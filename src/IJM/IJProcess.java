@@ -261,7 +261,9 @@ public class IJProcess {
         colorThHSB(img, new int[] {120,0,166}, new int[] {180,255,255}, new String[] {"stop","pass","pass"});
         ImageConverter ic = new ImageConverter(img);
         ic.convertToGray8();
-        HashMap<String,double[]>[][] resMap = rg.analyzeParticles(img);
+        HashMap<String,double[]>[][] resMap = rg.analyzeParticles(img,
+            "area centroid perimeter bounding shape display redirect=None decimal=2",
+            "size=500-10000 display");
         // update rg.rrrs with appropriate result info from resMap
         for(int i = 0; i < rg.rrrs.length; i++) {
             for(int ii = 0; ii < rg.rrrs[i].length; ii++) {
@@ -303,30 +305,25 @@ public class IJProcess {
         pa.analyze(img);
         System.out.println("Detected " + rm.getCount() + " kernels.");
         RRR[][] rrrs = RoiGrid.createRRRs(rm);
-        // Update rrrs with Area results from rt
-        double[] area_col = rt.getColumn("Area");
-        int last_min_y = 0;
-        for (int j = 0; j < area_col.length; j++) {
-            int min_y_so_far = Integer.MAX_VALUE;
-            int min_y_so_far_i = 0;
-            int min_y_so_far_ii = 0;
-            for (int i = 0; i < rrrs.length; i++) {
-                for (int ii = 0; ii < rrrs[i].length; ii++) {
-                    int this_y = rrrs[i][ii].roi.getBounds().y;
-                    if (this_y < min_y_so_far && this_y > last_min_y) {
-                        min_y_so_far = this_y;
-                        min_y_so_far_i = i;
-                        min_y_so_far_ii = ii;
-                    }//end if this is j-th rrr by y-val
-                }//end looping through rrrs
-            }//end looping through rrr rows
-            rrrs[min_y_so_far_i][min_y_so_far_ii].resultsHeaders.add("Area");
-            rrrs[min_y_so_far_i][min_y_so_far_ii].resultsValues.add(area_col[j]);
-            last_min_y = min_y_so_far;
-        }//end adding area to rois in y-order
-        // RoiGrid.addResultColumn(rrrs,"Area",area_col);
         RoiGrid nrg = new RoiGrid(rrrs);
-        // img = image;
+        // get measurements for the kernels
+        HashMap<String,double[]>[][] resMap = nrg.analyzeParticles(img,
+            "area centroid perimeter bounding shape display redirect=None decimal=2",
+            "size=4000-50000 display");
+        for (int i = 0; i < nrg.rrrs.length; i++) {
+            for (int ii = 0; ii < nrg.rrrs[i].length; ii++) {
+                Set<String> these_headers = resMap[i][ii].keySet();
+                for (String header : these_headers) {
+                    double[] res = resMap[i][ii].get(header);
+                    if (res.length == 0) {System.out.println("Couldn't get results for roi at grid 0-index " + nrg.rrrs[i][ii].gridCellIdx);}
+                    else if (header == "Area") {
+                        nrg.rrrs[i][ii].resultsHeaders.add("Area");
+                        double totalArea = 0; for(int j = 0; j < res.length; j++) {totalArea += res[j];}
+                        nrg.rrrs[i][ii].resultsValues.add(totalArea);
+                    } else {System.out.println("Didn't include header " + header + " for whole kernels.");}
+                }//end looping over each header in headers
+            }//end looping over kernel rois
+        }//end looping over rows of kernel rois
         return nrg;
     }//end getRoiGrid
 
