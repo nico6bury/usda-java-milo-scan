@@ -137,7 +137,18 @@ public class IJProcess {
         // pw.printf("flag lower threshold: %f     flag upper threshold: %f\n", lower_flag_thresh, upper_flag_thresh);
 
         // print headers for the columns we're about to print
-        pw.print("FileID,X,Y,GridIdx,Area1,Area2,%Area2\n");
+        pw.print(
+            "FileID,GridIdx,Area1,Area2,%Area2" + 
+            "," +
+            ",KX,KY" + 
+            ",EX,EY" + 
+            ",KBX,KBY,KWidth,KHeight" + 
+            ",EBX,EBY,EWidth,EHeight" +
+            ",KPerim" +
+            ",EPerim" +
+            ",KCirc,KRound,KAR,KSolidity" +
+            ",ECirc,ERound,EAR,ESolidity" +
+            "\n");
         
         StringBuilder data_output = new StringBuilder();
         // build timestamp for output file
@@ -151,9 +162,61 @@ public class IJProcess {
             double total_area = res.getResValSentinel("Area");
             double endosperm_area = res.getResValSentinel("EndospermArea");
             double endo_percent = (endosperm_area * 100) / total_area;
-            double x = res.rrr.roi.getBounds().getCenterX();
-            double y = res.rrr.roi.getBounds().getCenterY();
-            data_output.append(String.format("%s,%f,%f,%d,%3.1f,%3.1f,%3.1f\n",res.file.getName(),x,y,res.rrr.gridCellIdx + 1,total_area,endosperm_area,endo_percent));
+
+            double kx = res.rrr.roi.getBounds().getCenterX();
+            double ky = res.rrr.roi.getBounds().getCenterY();
+            
+            double ex = res.getResValSentinel("EndospermX") + res.rrr.roi.getBounds().getX();
+            double ey = res.getResValSentinel("EndospermY") + res.rrr.roi.getBounds().getY();
+            
+            int kbx = res.rrr.roi.getBounds().x;
+            int kby = res.rrr.roi.getBounds().y;
+            int kw = res.rrr.roi.getBounds().width;
+            int kh = res.rrr.roi.getBounds().height;
+
+            double ebx = res.getResValSentinel("EndospermBX") + kbx;
+            double eby = res.getResValSentinel("EndospermBY") + kby;
+            double ew = res.getResValSentinel("EndospermWidth");
+            double eh = res.getResValSentinel("EndospermHeight");
+
+            double kperim = res.getResValSentinel("KernPerim.");
+
+            double eperim = res.getResValSentinel("EndospermPerim.");
+
+            double kcirc = res.getResValSentinel("KernCirc.");
+            double kround = res.getResValSentinel("KernRound");
+            double kar = res.getResValSentinel("KernAR");
+            double ksolidity = res.getResValSentinel("KernSolidity");
+
+            double ecirc = res.getResValSentinel("EndospermCirc.");
+            double eround = res.getResValSentinel("EndospermRound");
+            double ear = res.getResValSentinel("EndospermAR");
+            double esolidity = res.getResValSentinel("EndospermSolidity");
+
+            data_output.append(String.format(
+                "%s,%d,%3.1f,%3.1f,%3.1f" +
+                "," +
+                ",%f,%f" +
+                ",%f,%f" +
+                ",%d,%d,%d,%d" +
+                ",%f,%f,%f,%f" +
+                ",%f" +
+                ",%f" +
+                ",%f,%f,%f,%f" +
+                ",%f,%f,%f,%f" +
+                "\n",
+
+                res.file.getName(), res.rrr.gridCellIdx + 1, total_area, endosperm_area, endo_percent,
+
+                kx,ky,
+                ex,ey,
+                kbx,kby,kw,kh,
+                ebx,eby,ew,eh,
+                kperim,
+                eperim,
+                kcirc,kround,kar,ksolidity,
+                ecirc,eround,ear,esolidity
+            ));
         }//end making the output string
         
         // print output for all images
@@ -275,7 +338,24 @@ public class IJProcess {
                         rg.rrrs[i][ii].resultsHeaders.add("EndospermArea");
                         double totalArea = 0; for(int j = 0; j < res.length; j++) {totalArea += res[j];}
                         rg.rrrs[i][ii].resultsValues.add(totalArea);
-                    } else {System.out.println("Didn't include header " + header);}
+                    } else if (header == "AR" || header == "Solidity" || header == "Perim." || header == "BX" || header == "BY" ||
+                    header == "Circ." || header == "X" || header == "Y" || header == "Round" || header == "Height" || header == "Width") {
+                        if (res.length == 1) {
+                            rg.rrrs[i][ii].resultsHeaders.add("Endosperm" + header);
+                            rg.rrrs[i][ii].resultsValues.add(res[0]);
+                        }//end if we have one particle, as expected
+                        else if (res.length == 0) {
+                            rg.rrrs[i][ii].resultsHeaders.add("Endosperm" + header);
+                            rg.rrrs[i][ii].resultsValues.add(-1.0);
+                        }//end else if we need to alert someone that nothing was detected
+                        else {
+                            for (int r = 0; r < res.length; r++) {
+                                rg.rrrs[i][ii].resultsHeaders.add("Endosperm" + r + header);
+                                rg.rrrs[i][ii].resultsValues.add(res[r]);
+                            }//end looping over all results we got for this kernel
+                        }//end else we try to output whatever we can find
+                    }
+                    else {System.out.println("Didn't include header " + header);}
                 }//end looping over each header in headers
             }//end looping over kernels
         }//end looping over groups of kernels
@@ -320,6 +400,22 @@ public class IJProcess {
                         nrg.rrrs[i][ii].resultsHeaders.add("Area");
                         double totalArea = 0; for(int j = 0; j < res.length; j++) {totalArea += res[j];}
                         nrg.rrrs[i][ii].resultsValues.add(totalArea);
+                    } else if (header == "AR" || header == "Solidity" || header == "Perim." || header == "BX" || header == "BY" ||
+                    header == "Circ." || header == "X" || header == "Y" || header == "Round" || header == "Height" || header == "Width") {
+                        if (res.length == 1) {
+                            nrg.rrrs[i][ii].resultsHeaders.add("Kern" + header);
+                            nrg.rrrs[i][ii].resultsValues.add(res[0]);
+                        }//end if we have one particle, as expected
+                        else if (res.length == 0) {
+                            nrg.rrrs[i][ii].resultsHeaders.add("Kern" + header);
+                            nrg.rrrs[i][ii].resultsValues.add(-1.0);
+                        }//end else if we need to alert someone that nothing was detected
+                        else {
+                            for (int r = 0; r < res.length; r++) {
+                                nrg.rrrs[i][ii].resultsHeaders.add("Kern" + r + header);
+                                nrg.rrrs[i][ii].resultsValues.add(res[r]);
+                            }//end looping over all results we got for this kernel
+                        }//end else we try to output whatever we can find
                     } else {System.out.println("Didn't include header " + header + " for whole kernels.");}
                 }//end looping over each header in headers
             }//end looping over kernel rois
