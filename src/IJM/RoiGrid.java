@@ -99,13 +99,16 @@ public class RoiGrid {
     /**
      * Uses Particle Analyzer to analyze every kernel roi in provided image.
      * The image provided should already be edited such that 8-bit threshold 1-255
-     * retrieves all required information.
-     * TODO: Add make particle analysis params accessible
+     * retrieves all required information.  
+     * Because parameters are passed to a macro as strings, it's possible that imagej will refuse to do
+     * something and print something to the console. This is done to get around the buggy ParticleAnalyzer class.
      * @param image The image you wish to process. It should be based on image for rrrs.
+     * @param measurementsParam The parameter to pass to setMeasurements macro call. For example, "area centroid perimeter bounding shape display redirect=None decimal=2"
+     * @param particlesParam The parameter to pass to analyze particles macro call. For example, "size=500-10000 display"
      * @return Parallel 2d array to rrrs. Each element is results-table information, column-header->column vals.
      */
     @SuppressWarnings("unchecked")
-    public HashMap<String,double[]>[][] analyzeParticles(ImagePlus image) {
+    public HashMap<String,double[]>[][] analyzeParticles(ImagePlus image, String measurmentsParam, String particlesParam) {
         HashMap<String,double[]>[][] resMap = new HashMap[rrrs.length][];
         // go through and do image analysis on each roi
         String jarDir = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -124,37 +127,26 @@ public class RoiGrid {
                 IJ.setThreshold(kern, 1, 255);
                 try {
                     // analyze particles in image of kernel
-                    // pa.analyze(kern);
-                    
                     IJ.save(kern,tmpPth);
                     System.out.println("Getting ready to analyze particles for kernel with gridIdx " + rrrs[i][ii].gridCellIdx +
                     ", X:" + rrrs[i][ii].roi.getBounds().getCenterX() + ", y:" + rrrs[i][ii].roi.getBounds().getCenterY());
+                    // area centroid perimeter bounding shape display redirect=None decimal=2
+                    // size=500-10000 display
                     IJ.runMacro(
                         "open(\"" + tmpPth + "\");" + 
-                        "run(\"Set Measurements...\", \"area display redirect=None decimal=2\");" +
+                        "run(\"Set Measurements...\", \"" + measurmentsParam + "\");" +
                         "setThreshold(1,255);" + 
-                        "run(\"Analyze Particles...\", \"size=500-10000 display\");"
+                        "run(\"Analyze Particles...\", \"" + particlesParam + "\");"
                     );
-                    // IJ.run(image, "Analyze Particles...", "size=500-10000 show=Nothing display");
                     ResultsTable rt = ResultsTable.getResultsTable();
-                    // try and get stuff from roi manager
-                    // Roi[] rois = rm.getRoisAsArray();
-                    // for (int j = 0; j < rois.length; j++) {
-                    //     System.out.println("grid 0-idx " + rrrs[i][ii].gridCellIdx + "\t" + rois[i].getStatistics().area);
-                    // }//end looping over rois. there should be only one
-                    // save headers and results from kernel
                     String[] headings = rt.getHeadings();
-                    // rt.get
                     for(int headIdx = 0; headIdx < headings.length; headIdx++) {
-                        // rt.size();
                         if (headings[headIdx] == "Label") {continue;}
                         resMap[i][ii].put(headings[headIdx],rt.getColumn(headings[headIdx]));
                     }//end adding each column and heading to resMap
                     rt.reset();
                 }//end trying to catch dumb ParticleAnalyzer bugs
                 catch (ArrayIndexOutOfBoundsException e) {System.out.println("Out of bounds?\t" + rrrs[i][ii].roi.getBounds().toString() + " grididx " + rrrs[i][ii].gridCellIdx);}
-                // rm.reset();
-                // rt.reset();
             }//end looping over kernels
         }//end looping over kernel groups
         return resMap;
