@@ -303,7 +303,7 @@ public class IJProcess {
             this_image.close();
 
             // add all the results and stuff we got
-            runningSum.addAll(SumResult.fromRoiGrid(file, kernGrid));
+            runningSum.addAll(SumResult.sortSumResultList(SumResult.fromRoiGrid(file, kernGrid)));
         }//end looping over each file we want to split
 
         // output the output file
