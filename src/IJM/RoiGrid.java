@@ -1,6 +1,9 @@
 package IJM;
 
 import java.awt.Rectangle;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -111,8 +114,15 @@ public class RoiGrid {
     public HashMap<String,double[]>[][] analyzeParticles(ImagePlus image, String measurmentsParam, String particlesParam) {
         HashMap<String,double[]>[][] resMap = new HashMap[rrrs.length][];
         // go through and do image analysis on each roi
-        String jarDir = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-        String tmpPth = jarDir + "temp.tiff";
+        URL jarurl = getClass().getProtectionDomain().getCodeSource().getLocation();
+        File jarFile;
+        try {
+            jarFile = new File(jarurl.toURI());
+        } catch (URISyntaxException e) {e.printStackTrace(); return null;}
+        String tmpPth = jarFile.getParent() + "\\temp.tif";
+        File tmpFile = new File(tmpPth);
+        tmpFile.deleteOnExit();
+        System.out.println(tmpFile.getAbsolutePath());
 
         for(int i = 0; i < rrrs.length; i++) {
             resMap[i] = new HashMap[rrrs[i].length];
@@ -127,17 +137,21 @@ public class RoiGrid {
                 IJ.setThreshold(kern, 1, 255);
                 try {
                     // analyze particles in image of kernel
-                    IJ.save(kern,tmpPth);
+                    
+                    IJ.save(kern,tmpFile.getAbsolutePath());
+                    System.out.println(tmpFile.exists());
                     System.out.println("Getting ready to analyze particles for kernel with gridIdx " + rrrs[i][ii].gridCellIdx +
                     ", X:" + rrrs[i][ii].roi.getBounds().getCenterX() + ", y:" + rrrs[i][ii].roi.getBounds().getCenterY());
                     // area centroid perimeter bounding shape display redirect=None decimal=2
                     // size=500-10000 display
-                    IJ.runMacro(
-                        "open(\"" + tmpPth + "\");" + 
-                        "run(\"Set Measurements...\", \"" + measurmentsParam + "\");" +
-                        "setThreshold(1,255);" + 
-                        "run(\"Analyze Particles...\", \"" + particlesParam + "\");"
-                    );
+                    String macro = 
+                        // "open(\"" + tmpPth + "\");\n" + 
+                        "run(\"Set Measurements...\", \"" + measurmentsParam + "\");\n" +
+                        "setThreshold(1,255);\n" + 
+                        "run(\"Analyze Particles...\", \"" + particlesParam + "\");\n";
+                    // System.out.println("macro: \n" + macro);
+                    IJ.open(tmpFile.getAbsolutePath());
+                    IJ.runMacro(macro);
                     ResultsTable rt = ResultsTable.getResultsTable();
                     String[] headings = rt.getHeadings();
                     for(int headIdx = 0; headIdx < headings.length; headIdx++) {
