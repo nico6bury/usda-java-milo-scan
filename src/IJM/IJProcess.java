@@ -159,6 +159,11 @@ public class IJProcess {
         // build output for all the images processed
         for(int i = 0; i < inputList.size(); i++) {
             SumResult res = inputList.get(i);
+            String filename_no_ext = res.file.getName();
+            if (filename_no_ext.contains(".")) {
+                int last_dot_idx = filename_no_ext.lastIndexOf('.');
+                filename_no_ext = filename_no_ext.substring(0, last_dot_idx);
+            }//end if we should remove the file extension
             double total_area = res.getResValSentinel("Area");
             double endosperm_area = res.getResValSentinel("EndospermArea");
             double endo_percent = (endosperm_area * 100) / total_area;
@@ -206,7 +211,7 @@ public class IJProcess {
                 ",%f,%f,%f,%f" +
                 "\n",
 
-                res.file.getName(), res.rrr.gridCellIdx + 1, total_area, endosperm_area, endo_percent,
+                filename_no_ext, res.rrr.gridCellIdx + 1, total_area, endosperm_area, endo_percent,
 
                 kx,ky,
                 ex,ey,
