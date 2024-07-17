@@ -56,6 +56,16 @@ public class Scan {
         return new Result<>();
     }//end initScanner()
 
+    public boolean isScannerConnected() {
+        try {
+            if (scanSource == null) {return false;}
+            System.out.println("ScanSource Condition Code: " + scanSource.getConditionCode());
+            return true;
+        }//end trying to figure out if the scanner is connected
+        catch (TwainException twe) {return false;}
+        catch (NullPointerException npe) {return false;}
+    }
+
     /**
      * Tries to set the scan settings of the saved twain source.
      * @return Returns an error if one was thrown, otherwise is Ok.

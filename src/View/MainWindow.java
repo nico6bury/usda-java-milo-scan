@@ -828,6 +828,9 @@ public class MainWindow extends javax.swing.JFrame {
      */
     private Result<File> PerformScan() {
         System.out.println("You clicked the \"Scan\" button.");
+        if (scan == null || !scan.isScannerConnected()) { 
+            return new Result<File>(new Exception("Scanner is not connected."));
+        }
         // try to set scanner settings
         Result<ResultType> setScanSettingResult = scan.setScanSettings(this.config_store_h);
         if (setScanSettingResult.isErr()) {
