@@ -1029,8 +1029,8 @@ public class MainWindow extends javax.swing.JFrame {
         DefaultTableModel this_table_model = (DefaultTableModel)uxOutputTable.getModel();
         for (List<SumResult> resultGroup : groupedResults) {
             for (SumResult res : resultGroup) {
-                double total_area = res.getResValSentinel("Area");
-                double endosperm_area = res.getResValSentinel("EndospermArea");
+                int total_area = (int)Math.floor(res.getResValSentinel("Area"));
+                int endosperm_area = (int)Math.floor(res.getResValSentinel("EndospermArea"));
                 double endo_percent = (endosperm_area * 100) / total_area;
                 Object[] this_row = new Object[5];
                 this_row[0] = res.file.getName();
