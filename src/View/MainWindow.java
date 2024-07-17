@@ -973,7 +973,7 @@ public class MainWindow extends javax.swing.JFrame {
      * @param filename The filename (as from File.getName()) of the image to display.
      */
     private void updateImageDisplay(String filename) {
-        if (filename == "%=empty") {uxImageLabelE.setIcon(null); return;}
+        if (filename == "%=empty") {uxImageLabel.setIcon(null); return;}
         // pick throug the list of files that have been loaded into queue to find the one that matches the selected file name
         File imageMatch = getSelectedFileFromAll(filename);
         // edge case validation
@@ -981,7 +981,7 @@ public class MainWindow extends javax.swing.JFrame {
         // display the image in the label
         ImageIcon icon = scaleImageToIcon(imageMatch);
         if (icon == null) {JOptionPane.showMessageDialog(this, "Could not read selected image to buffer."); return;}
-        uxImageLabelE.setIcon(icon);
+        uxImageLabel.setIcon(icon);
     }//end updateImageDisplay(filename)
 
     /**
@@ -1023,14 +1023,14 @@ public class MainWindow extends javax.swing.JFrame {
          */
         int imgWidth = buf_img.getWidth();
         int imgHeight = buf_img.getHeight();
-        if (imgWidth > uxImageLabelE.getWidth()) {
-            int newImgWidth = (int)((double)uxImageLabelE.getWidth() * 0.85);
+        if (imgWidth > uxImageLabel.getWidth()) {
+            int newImgWidth = (int)((double)uxImageLabel.getWidth() * 0.85);
             int newImgHeight = newImgWidth * imgHeight / imgWidth;
             imgWidth = newImgWidth;
             imgHeight = newImgHeight;
         }//end if we need to scale down because of width
-        if (imgHeight > uxImageLabelE.getHeight()) {
-            int newImgHeight = (int)((double)uxImageLabelE.getHeight() * 0.85);
+        if (imgHeight > uxImageLabel.getHeight()) {
+            int newImgHeight = (int)((double)uxImageLabel.getHeight() * 0.85);
             int newImgWidth = imgWidth * newImgHeight / imgHeight;
             imgHeight = newImgHeight;
             imgWidth = newImgWidth;
