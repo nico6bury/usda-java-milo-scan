@@ -327,7 +327,12 @@ public class IJProcess {
     public void procEndosperm(RoiGrid rg, ImagePlus image) {
         // prepare image to be processed
         ImagePlus img = image.duplicate();
-        colorThHSB(img, new int[] {120,0,166}, new int[] {180,255,255}, new String[] {"stop","pass","pass"});
+        colorThHSB(
+            img,
+            IJM.Constants.endosperm_lower_hsb_thresh(),
+            IJM.Constants.endosperm_upper_hsb_thresh(),
+            IJM.Constants.endosperm_hsb_pass_or_not()
+        );
         ImageConverter ic = new ImageConverter(img);
         ic.convertToGray8();
         HashMap<String,double[]>[][] resMap = rg.analyzeParticles(img,
@@ -384,7 +389,11 @@ public class IJProcess {
         ParticleAnalyzer.setRoiManager(rm);
         ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, 4000, 50000,0.0,1.0);
         // actually get on processing
-        colorThHSB(img, new int[] {120,0,0}, new int[] {180,255,255}, new String[] {"stop","pass","pass"});
+        colorThHSB(
+            img,
+            IJM.Constants.kernel_lower_hsb_thresh(),
+            IJM.Constants.kernel_upper_hsb_thresh(),
+            IJM.Constants.kernel_hsb_pass_or_not());
         ImageConverter ic = new ImageConverter(img);
         ic.convertToGray8();
         IJ.setThreshold(img, 1, 255);
