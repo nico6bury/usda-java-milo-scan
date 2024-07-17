@@ -306,6 +306,16 @@ public class IJProcess {
             // Get procs from endosperm(white) area
             procEndosperm(kernGrid, this_image);
 
+            // Save Kernel images, if we want to
+            if (shouldOutputKernImages) {
+                outputKernImages(
+                    kernGrid,
+                    this_image,
+                    file.getParentFile(),
+                    file.getName().substring(0, file.getName().lastIndexOf(".")) + "-kern-imgs"
+                );
+            }//end if we should output kernel images
+
             this_image.close();
 
             // add all the results and stuff we got
@@ -318,6 +328,65 @@ public class IJProcess {
         // return the rows of data that wil show up in the output file
         return outputFileResult;
     }//end Main Macro converted from ijm
+
+    /**
+     * Saves images of each rrr in the image, in three flavors:
+     * - Unthresholded
+     * - Thresholded to show kernels
+     * - Thresholded to show endosperm
+     * @param rg The roi grid, shows were individual rois are.
+     * @param image The image to cut up and save to the filesystem.
+     * @param baseDirectory The directory holding the image, most likely.
+     * @param newFolderName The name of the new folder to create to hold images.
+     */
+    protected void outputKernImages(
+        RoiGrid rg,
+        ImagePlus image,
+        File baseDirectory,
+        String newFolderName
+    ) {
+        // get images in all the right thresholds
+        ImagePlus plain_img = image.duplicate();
+        ImagePlus kern_img = image.duplicate();
+        colorThHSB(
+            kern_img,
+            IJM.Constants.kernel_lower_hsb_thresh(),
+            IJM.Constants.kernel_upper_hsb_thresh(),
+            IJM.Constants.kernel_hsb_pass_or_not()
+            );
+        ImagePlus endo_img = image.duplicate();
+        colorThHSB(
+            endo_img,
+            IJM.Constants.endosperm_lower_hsb_thresh(),
+            IJM.Constants.endosperm_upper_hsb_thresh(),
+            IJM.Constants.endosperm_hsb_pass_or_not()
+            );
+        // fileio to figure base location to print stuff
+        File baseDir = new File(baseDirectory, newFolderName);
+        for (int i = 0; baseDir.exists(); i++) {
+            baseDir = new File(baseDirectory, newFolderName + "" + i);
+        }//end ensuring that we have a new directory
+        boolean createDirRes = baseDir.mkdirs();
+        System.out.println("Base directory provided for kern output: " + baseDirectory.getAbsolutePath());
+        System.out.println("New folder for kern-output: " + baseDir.getAbsolutePath());
+        System.out.println("Successfully created directory?: " + createDirRes);
+        // actually try to start saving all the kernel images we want
+        for(int i = 0; i < rg.rrrs.length; i++) {
+            for(int ii = 0; ii < rg.rrrs[i].length; ii++) {
+                RRR this_roi = rg.rrrs[i][ii];
+                ImagePlus this_plain = plain_img.crop(new Roi[] {this_roi.roi})[0];
+                ImagePlus this_kern = kern_img.crop(new Roi[] {this_roi.roi})[0];
+                ImagePlus this_endo = endo_img.crop(new Roi[] {this_roi.roi})[0];
+                File plain_path = new File(baseDir, i + "-" + ii + "-0p.tif");
+                File kern_path = new File(baseDir, i + "-" + ii + "-1k.tif");
+                File endo_path = new File(baseDir, i + "-" + ii + "-2e.tif");
+                System.out.println("Plain image path for kern output: " + plain_path.getAbsolutePath());
+                IJ.save(this_plain, plain_path.getAbsolutePath());
+                IJ.save(this_kern, kern_path.getAbsolutePath());
+                IJ.save(this_endo, endo_path.getAbsolutePath());
+            }//end looping within rows in rrrs
+        }//end looping over rows in rrrs
+    }//end outputKernImages()
 
     /**
      * Adds endosperm(white) area from each kernel to each kernel.
