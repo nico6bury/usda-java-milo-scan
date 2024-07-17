@@ -13,7 +13,7 @@ public class IJTask extends SwingWorker<Result<String>,Void> {
 
     protected List<File> imageQueue = new ArrayList<File>();
     protected IJProcess ijProcess = new IJProcess();
-    protected MainWindow caller = null;
+    protected IJTaskCaller caller = null;
 
     /**
      * Make sure to set imageQueue and ijProcess props before calling this.
@@ -42,9 +42,13 @@ public class IJTask extends SwingWorker<Result<String>,Void> {
         }
     }
 
-    public IJTask(List<File> imageQueue, IJProcess ijProcess, MainWindow mainWindow) {
+    public IJTask(List<File> imageQueue, IJProcess ijProcess, IJTaskCaller caller) {
         this.imageQueue = imageQueue;
         this.ijProcess = ijProcess;
-        this.caller = mainWindow;
+        this.caller = caller;
     }//end 2-arg constructor
+
+    public interface IJTaskCaller {
+        public void postProcessHandling(Result<String> result);
+    }
 }//end class IJTask

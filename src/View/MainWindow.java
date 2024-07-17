@@ -37,6 +37,8 @@ import Utils.ConfigStoreH;
 import Utils.Constants;
 import Utils.Result;
 import Utils.Result.ResultType;
+import View.DisplayTask.DisplayTaskCaller;
+import View.IJTask.IJTaskCaller;
 import ij.IJ;
 import ij.ImagePlus;
 
@@ -44,7 +46,7 @@ import ij.ImagePlus;
  *
  * @author Nicholas.Sixbury
  */
-public class MainWindow extends javax.swing.JFrame {
+public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, DisplayTaskCaller {
 
     protected Scan scan = null;
     private JFileChooser selectFilesChooser = new JFileChooser();
@@ -1002,6 +1004,17 @@ public class MainWindow extends javax.swing.JFrame {
     }//end updateImageDisplay(filename)
 
     /**
+     * Handler to be called by DisplayTask once it finishes
+     * making the icons.
+     * @param finishedIcons 3 finished icons to be displayed
+     */
+    public void giveFinishedImageDisplay(ImageIcon plain_icon, ImageIcon kern_icon, ImageIcon endo_icon) {
+        uxImageLabel.setIcon(plain_icon);
+        uxImageLabelK.setIcon(kern_icon);
+        uxImageLabelE.setIcon(endo_icon);
+    }//end giveFinishedImageDisplay
+
+    /**
      * A helper method written for uxQueueListValueChange(). This method loops through all 
      * the files in the queue until it finds one whose name matches the file name selected in uxQueueList.
      * @return This method returns the File that matches if found, or null if it couldn't find a match.
@@ -1218,7 +1231,7 @@ public class MainWindow extends javax.swing.JFrame {
         }//end else we should probably be able to process the file
     }//GEN-LAST:event_uxProcessAllBtnActionPerformed
 
-    protected void postProcessHandling(Result<String> outputData) {
+    public void postProcessHandling(Result<String> outputData) {
         if (outputData.isErr()) {
             outputData.getError().printStackTrace();
             showGenericExceptionMessage(outputData.getError());
