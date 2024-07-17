@@ -1083,9 +1083,18 @@ public class MainWindow extends javax.swing.JFrame {
      * Clears the output table
      */
     private void uxClearOutputBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxClearOutputBtnActionPerformed
-        DefaultTableModel this_table_model = (DefaultTableModel)uxOutputTable.getModel();
-        this_table_model.setRowCount(0);
+        try {
+            uxClearOutputTable();
+        } catch (ArrayIndexOutOfBoundsException e) {}
+        uxClearOutputTable();
     }//GEN-LAST:event_uxClearOutputBtnActionPerformed
+        
+    private void uxClearOutputTable() {
+            DefaultTableModel this_table_model = (DefaultTableModel)uxOutputTable.getModel();
+            this_table_model.getDataVector().removeAllElements();
+            this_table_model.fireTableDataChanged();
+            uxOutputTable.revalidate();
+    }//end uxClearOutputTable()
 
     /**
      * This function finds the directory of output files and opens it in file explorer.
