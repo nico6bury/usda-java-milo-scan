@@ -1197,8 +1197,9 @@ public class MainWindow extends javax.swing.JFrame {
                 ijProcess.th01 = thresholdDialog.thresholdToReturn;
 
                 // roll over area flag stuff to the processing
-                IJProcess.lower_flag_thresh = areaFlagDialog.firstFlag;
-                IJProcess.upper_flag_thresh = areaFlagDialog.secondFlag;
+                ijProcess.lower_flag_thresh = areaFlagDialog.firstFlag;
+                ijProcess.upper_flag_thresh = areaFlagDialog.secondFlag;
+                ijProcess.shouldOutputKernImages = uxShouldOutputKernImages.isSelected();
 
                 // handing for gui stuff
                 // clear queue now that it's being processed

@@ -45,8 +45,9 @@ public class IJProcess {
     // upper threshold for analyze particles
     public int th01 = 160;
     public List<SumResult> lastProcResult;
-    public static double lower_flag_thresh = 0.05;
-    public static double upper_flag_thresh = 0.10;
+    public double lower_flag_thresh = 0.05;
+    public double upper_flag_thresh = 0.10;
+    public boolean shouldOutputKernImages = false;
 
     /**
      * Constructs the class
@@ -63,7 +64,7 @@ public class IJProcess {
      * @param ensureDirectoryExists If this is true, then this method will create a new directory if it doesn't already exist.
      * @return Returns a resulting path as a File if successful. Otherwise, returns the exception that prevented success.
      */
-    public static Result<File> getOutputFilePath(boolean ensureDirectoryExists) {
+    public Result<File> getOutputFilePath(boolean ensureDirectoryExists) {
         // get path of the jar as base directory
         String jar_location;
         try {
@@ -105,7 +106,7 @@ public class IJProcess {
      * @param inputList The list of SumResult objects that represent the processed data. This will be formatted and written to the file.
      * @return Returns a result containing the full string output, or a wrapped error if something prevents the output file from being written.
      */
-    public static Result<String> makeOutputFile(List<SumResult> inputList) {
+    public Result<String> makeOutputFile(List<SumResult> inputList) {
         // save to output file
         Result<File> outputFileResult = getOutputFilePath(true);
         if (outputFileResult.isErr()) {
@@ -323,7 +324,7 @@ public class IJProcess {
      * @param rg The roigrid holding all the kernel location information.
      * @param image The image to process.
      */
-    public static void procEndosperm(RoiGrid rg, ImagePlus image) {
+    public void procEndosperm(RoiGrid rg, ImagePlus image) {
         // prepare image to be processed
         ImagePlus img = image.duplicate();
         colorThHSB(img, new int[] {120,0,166}, new int[] {180,255,255}, new String[] {"stop","pass","pass"});
@@ -372,7 +373,7 @@ public class IJProcess {
      * @param image Image to pull kernels from.
      * @return Returns RoiGrid with sorted, grouped Rois for all kernels.
      */
-    public static RoiGrid getRoiGrid(ImagePlus image) {
+    public RoiGrid getRoiGrid(ImagePlus image) {
         ImagePlus img = image.duplicate();
 
         // set up results, roi, particle analysis
@@ -434,7 +435,7 @@ public class IJProcess {
      * @param image The image to pull grid cell locations from
      * @return Returns sorted array list of Rois, representing all grid cells in img
      */
-    public static ArrayList<Roi[]> getGridCells(ImagePlus image) {
+    public ArrayList<Roi[]> getGridCells(ImagePlus image) {
         ImagePlus img = image.duplicate();
         // set up roi, particle analysis
         ResultsTable rt = new ResultsTable();
