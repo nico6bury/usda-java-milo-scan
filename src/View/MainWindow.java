@@ -1164,7 +1164,6 @@ public class MainWindow extends javax.swing.JFrame {
         else {
             try {
                 // tell user we're about to do processing
-                // JOptionPane.showMessageDialog(this, "Please wait. Your images will now be processed.");
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 List<File> tempImageQueue = new ArrayList<File>(imageQueue);
                 IJTask ijTask = new IJTask(tempImageQueue, ijProcess, this);
@@ -1182,6 +1181,7 @@ public class MainWindow extends javax.swing.JFrame {
                 // SwingUtilities.invokeLater(doIjTask);
                 ijTask.execute();
                 System.out.println("Just invoked the task");
+                JOptionPane.showMessageDialog(this, "Your images will now be processed.\nWhen they are done, they will show up in the output table on the bottom right.");
                 // ijTask.doInBackground();
             } catch (Exception e) {
                 e.printStackTrace();
