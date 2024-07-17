@@ -67,8 +67,6 @@ public class MainWindow extends javax.swing.JFrame {
     private ScanAreaDialog scanAreaDialog = new ScanAreaDialog(this, true);
     // progress bar for imagej processing
     ProgressMonitor progressMonitor;
-    // task for background work
-    IJTask ijTask = new IJTask(imageQueue, ijProcess);
     /**
      * Class for handling serializing and deserialization of config options.
      */
@@ -100,6 +98,17 @@ public class MainWindow extends javax.swing.JFrame {
         // set the application theme / look and feel
         if (useDarkMode) { FlatDarkLaf.setup(); }
         else { FlatLightLaf.setup(); }
+
+        // ijTask.caller = this;
+
+        // doIjTask = new Runnable() {
+        //     public void run() {
+        //         System.out.println("Hello World on " + Thread.currentThread());
+        //         try {
+        //             ijTask.doInBackground();
+        //         } catch (Exception e) { e.printStackTrace(); }
+        //     }
+        // };
 
         // set up file listeners
         selectFilesChooser.addActionListener(selectFilesListener);
@@ -1157,56 +1166,54 @@ public class MainWindow extends javax.swing.JFrame {
                 // tell user we're about to do processing
                 // JOptionPane.showMessageDialog(this, "Please wait. Your images will now be processed.");
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                List<File> tempImageQueue = new ArrayList<File>(imageQueue);
+                IJTask ijTask = new IJTask(tempImageQueue, ijProcess, this);
                 ijProcess.th01 = thresholdDialog.thresholdToReturn;
-                // set up progress bar
-                progressMonitor = new ProgressMonitor(this, "Progress!", "", 0, 5);
-                progressMonitor.setProgress(3);
-                progressMonitor.setMillisToDecideToPopup(0);
-                progressMonitor.setMillisToPopup(0);
-                // actually run the imagej stuff
 
                 // roll over area flag stuff to the processing
                 IJProcess.lower_flag_thresh = areaFlagDialog.firstFlag;
                 IJProcess.upper_flag_thresh = areaFlagDialog.secondFlag;
 
-                Result<String> outputData = ijTask.doInBackground();
-                if (ijTask.isDone()) {
-                    setCursor(Cursor.getDefaultCursor());
-                }//end if the task is done
-                // SwingUtilities.invokeLater(
-                    //     () -> JOptionPane.showMessageDialog(this, "Your images have finsihed processing.")
-                    // );
-                // progressDialog.setVisible(false);
-                if (outputData.isErr()) {
-                    outputData.getError().printStackTrace();
-                    showGenericExceptionMessage(outputData.getError());
-                }//end if we couldn't get output data
-                int prev_row_count = uxOutputTable.getRowCount();
-                // group together SumResults which came from the same file path
-                List<List<SumResult>> groupedResults = SumResult.groupResultsByFile(ijProcess.lastProcResult);
-                // process sumResults into string columns
-                updateOutputTable(groupedResults);
-                // clear queue now that it's been processed
+                // handing for gui stuff
+                // clear queue now that it's being processed
                 imageQueue.clear();
                 UpdateQueueList();
-                // clear displayed image
-                if (lastSelectedFrom == LastSelectedFrom.QueueList) {
-                    updateImageDisplay("%=empty");
-                    uxImagePropertiesTxt.setText("");
-                    lastSelectedFrom = LastSelectedFrom.NoSelection;
-                }//end if we need to clear moved image
-                // see about updating selections
-                if (prev_row_count < uxOutputTable.getRowCount()) {
-                    uxOutputTable.changeSelection(prev_row_count, 0, false, false);
-                }//end if we have a new row to select
-                // make sure cursor is updated
-                setCursor(Cursor.getDefaultCursor());
+
+                // SwingUtilities.invokeLater(doIjTask);
+                ijTask.execute();
+                System.out.println("Just invoked the task");
+                // ijTask.doInBackground();
             } catch (Exception e) {
                 e.printStackTrace();
                 showGenericExceptionMessage(e);
             }//end catching URISyntaxException
         }//end else we should probably be able to process the file
     }//GEN-LAST:event_uxProcessAllBtnActionPerformed
+
+    protected void postProcessHandling(Result<String> outputData) {
+        if (outputData.isErr()) {
+            outputData.getError().printStackTrace();
+            showGenericExceptionMessage(outputData.getError());
+            return;
+        }//end if we just got an error
+        int prev_row_count = uxOutputTable.getRowCount();
+        // group together SumResults which came from the same file path
+        List<List<SumResult>> groupedResults = SumResult.groupResultsByFile(ijProcess.lastProcResult);
+        // process sumResults into string columns
+        updateOutputTable(groupedResults);
+        // clear displayed image
+        if (lastSelectedFrom == LastSelectedFrom.QueueList) {
+            updateImageDisplay("%=empty");
+            uxImagePropertiesTxt.setText("");
+            lastSelectedFrom = LastSelectedFrom.NoSelection;
+        }//end if we need to clear moved image
+        // see about updating selections
+        if (prev_row_count < uxOutputTable.getRowCount()) {
+            uxOutputTable.changeSelection(prev_row_count, 0, false, false);
+        }//end if we have a new row to select
+        // make sure cursor is updated
+        setCursor(Cursor.getDefaultCursor());
+    }//end postProcessHandling(outputData)
 
     /**
      * Shows file chooser for adding files to processing queue.
