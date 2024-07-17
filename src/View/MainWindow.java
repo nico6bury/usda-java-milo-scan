@@ -229,6 +229,7 @@ public class MainWindow extends javax.swing.JFrame {
         uxOverwriteName = new javax.swing.JTextField();
         uxShouldOverwriteName = new javax.swing.JCheckBox();
         jLabel1 = new javax.swing.JLabel();
+        uxShouldOutputKernImages = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         uxQueueList = new javax.swing.JList<>();
@@ -374,6 +375,15 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel1.setFont(jLabel1.getFont().deriveFont(jLabel1.getFont().getSize()+1f));
         jLabel1.setText("Scanned Image Name");
 
+        uxShouldOutputKernImages.setFont(uxShouldOutputKernImages.getFont().deriveFont(uxShouldOutputKernImages.getFont().getSize()+2f));
+        uxShouldOutputKernImages.setText("Output Thresholded images of individual kernels");
+        uxShouldOutputKernImages.setToolTipText("If selected, then the program will output images of individual kernels, including threshold information.");
+        uxShouldOutputKernImages.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uxShouldOutputKernImagesActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -396,11 +406,16 @@ public class MainWindow extends javax.swing.JFrame {
                         .addComponent(uxProcessAllBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(uxEmptyQueueBtn)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(117, 132, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(uxOverwriteName)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(uxOverwriteName))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(uxShouldOutputKernImages)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -424,7 +439,9 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(uxOverwriteName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
-                .addContainerGap(173, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(uxShouldOutputKernImages)
+                .addContainerGap(143, Short.MAX_VALUE))
         );
 
         jSplitPane2.setTopComponent(jPanel1);
@@ -1280,6 +1297,10 @@ public class MainWindow extends javax.swing.JFrame {
         uxConnectScannerBtnActionPerformed(evt);
     }//GEN-LAST:event_uxConnectToScannerBtnActionPerformed
 
+    private void uxShouldOutputKernImagesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxShouldOutputKernImagesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_uxShouldOutputKernImagesActionPerformed
+
     /**
      * THIS is the MAIN METHOD that the program should start from.
      * @param args the command line arguments
@@ -1344,6 +1365,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem uxSetAreaFlagMenuBtn;
     private javax.swing.JMenuItem uxSetThresholdMenuBtn;
     private javax.swing.JMenuItem uxSetUnsharpMenuBtn;
+    private javax.swing.JCheckBox uxShouldOutputKernImages;
     private javax.swing.JCheckBox uxShouldOverwriteName;
     private javax.swing.JTextArea uxStatusTxt;
     private javax.swing.JTextArea uxTitleBlockTxt;
