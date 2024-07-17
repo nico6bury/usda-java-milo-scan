@@ -516,7 +516,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         uxImageLabelE.setFont(uxImageLabelE.getFont().deriveFont(uxImageLabelE.getFont().getSize()+2f));
         uxImageLabelE.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        uxImageLabelE.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         uxClearOutputBtn.setFont(uxClearOutputBtn.getFont().deriveFont(uxClearOutputBtn.getFont().getSize()+2f));
         uxClearOutputBtn.setText("Clear Output");
@@ -538,11 +537,9 @@ public class MainWindow extends javax.swing.JFrame {
 
         uxImageLabelK.setFont(uxImageLabelK.getFont().deriveFont(uxImageLabelK.getFont().getSize()+2f));
         uxImageLabelK.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        uxImageLabelK.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         uxImageLabel.setFont(uxImageLabel.getFont().deriveFont(uxImageLabel.getFont().getSize()+2f));
         uxImageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        uxImageLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
