@@ -944,10 +944,12 @@ public class MainWindow extends javax.swing.JFrame {
     /**
      * This method updates the image label with the image which has the specified filename (as from File.getName()).
      * This is somewhat awkward, as we have to search through a list of all files to find the one with a matching name.
-     * It's also possible that this could cause problems if two images are loaded with the same filename (but different directories).
+     * It's also possible that this could cause problems if two images are loaded with the same filename (but different directories).  
+     * Use filename sentinel value "%=empty" to remove the image
      * @param filename The filename (as from File.getName()) of the image to display.
      */
     private void updateImageDisplay(String filename) {
+        if (filename == "%=empty") {uxImageLabel.setIcon(null); return;}
         // pick throug the list of files that have been loaded into queue to find the one that matches the selected file name
         File imageMatch = getSelectedFileFromAll(filename);
         // edge case validation
@@ -1083,10 +1085,17 @@ public class MainWindow extends javax.swing.JFrame {
      * Clears the output table
      */
     private void uxClearOutputBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxClearOutputBtnActionPerformed
+        // clear text from output table
         try {
             uxClearOutputTable();
         } catch (ArrayIndexOutOfBoundsException e) {}
         uxClearOutputTable();
+        // clear image display
+        if (lastSelectedFrom == LastSelectedFrom.OutputTable) {
+            updateImageDisplay("%=empty");
+            uxImagePropertiesTxt.setText("");
+            lastSelectedFrom = LastSelectedFrom.NoSelection;
+        }//end if we need to clear selected image
     }//GEN-LAST:event_uxClearOutputBtnActionPerformed
         
     private void uxClearOutputTable() {
@@ -1119,6 +1128,12 @@ public class MainWindow extends javax.swing.JFrame {
     private void uxEmptyQueueBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxEmptyQueueBtnActionPerformed
         imageQueue.clear();
         UpdateQueueList();
+        // clear image display
+        if (lastSelectedFrom == LastSelectedFrom.QueueList) {
+            updateImageDisplay("%=empty");
+            uxImagePropertiesTxt.setText("");
+            lastSelectedFrom = LastSelectedFrom.NoSelection;
+        }//end if we should clear image
     }//GEN-LAST:event_uxEmptyQueueBtnActionPerformed
 
     /**
@@ -1169,6 +1184,12 @@ public class MainWindow extends javax.swing.JFrame {
                 // clear queue now that it's been processed
                 imageQueue.clear();
                 UpdateQueueList();
+                // clear displayed image
+                if (lastSelectedFrom == LastSelectedFrom.QueueList) {
+                    updateImageDisplay("%=empty");
+                    uxImagePropertiesTxt.setText("");
+                    lastSelectedFrom = LastSelectedFrom.NoSelection;
+                }//end if we need to clear moved image
                 // see about updating selections
                 if (prev_row_count < uxOutputTable.getRowCount()) {
                     uxOutputTable.changeSelection(prev_row_count, 0, false, false);
