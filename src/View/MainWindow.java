@@ -240,9 +240,11 @@ public class MainWindow extends javax.swing.JFrame {
         uxPrevImageBtn = new javax.swing.JButton();
         uxNextImageBtn = new javax.swing.JButton();
         uxOpenFileBtn = new javax.swing.JButton();
-        uxImageLabel = new javax.swing.JLabel();
+        uxImageLabelE = new javax.swing.JLabel();
         uxClearOutputBtn = new javax.swing.JButton();
         uxOpenOutputFile = new javax.swing.JButton();
+        uxImageLabelK = new javax.swing.JLabel();
+        uxImageLabel = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         uxOutputTable = new javax.swing.JTable();
@@ -481,6 +483,7 @@ public class MainWindow extends javax.swing.JFrame {
         uxImagePropertiesTxt.setEditable(false);
         uxImagePropertiesTxt.setColumns(1);
         uxImagePropertiesTxt.setFont(uxImagePropertiesTxt.getFont().deriveFont(uxImagePropertiesTxt.getFont().getSize()+1f));
+        uxImagePropertiesTxt.setLineWrap(true);
         uxImagePropertiesTxt.setRows(1);
         uxImagePropertiesTxt.setEnabled(false);
         uxImagePropertiesTxt.setPreferredSize(new java.awt.Dimension(102, 84));
@@ -511,8 +514,8 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
-        uxImageLabel.setFont(uxImageLabel.getFont().deriveFont(uxImageLabel.getFont().getSize()+2f));
-        uxImageLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        uxImageLabelE.setFont(uxImageLabelE.getFont().deriveFont(uxImageLabelE.getFont().getSize()+2f));
+        uxImageLabelE.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         uxClearOutputBtn.setFont(uxClearOutputBtn.getFont().deriveFont(uxClearOutputBtn.getFont().getSize()+2f));
         uxClearOutputBtn.setText("Clear Output");
@@ -532,25 +535,31 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
+        uxImageLabelK.setFont(uxImageLabelK.getFont().deriveFont(uxImageLabelK.getFont().getSize()+2f));
+        uxImageLabelK.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        uxImageLabel.setFont(uxImageLabel.getFont().deriveFont(uxImageLabel.getFont().getSize()+2f));
+        uxImageLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(uxOpenFileBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(uxPrevImageBtn)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(uxNextImageBtn))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(uxOpenOutputFile)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(uxClearOutputBtn))
-                    .addComponent(jScrollPane3))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(uxPrevImageBtn)
+                    .addComponent(uxOpenOutputFile)
+                    .addComponent(uxOpenFileBtn)
+                    .addComponent(uxClearOutputBtn)
+                    .addComponent(uxNextImageBtn)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(uxImageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 335, Short.MAX_VALUE)
+                .addComponent(uxImageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(uxImageLabelK, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(uxImageLabelE, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -559,18 +568,19 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(uxPrevImageBtn)
-                            .addComponent(uxNextImageBtn))
+                        .addComponent(uxPrevImageBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(uxNextImageBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(uxOpenFileBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(uxOpenOutputFile)
-                            .addComponent(uxClearOutputBtn))
-                        .addGap(0, 177, Short.MAX_VALUE))
+                        .addComponent(uxOpenOutputFile)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(uxClearOutputBtn))
+                    .addComponent(uxImageLabelE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(uxImageLabelK, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(uxImageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -963,7 +973,7 @@ public class MainWindow extends javax.swing.JFrame {
      * @param filename The filename (as from File.getName()) of the image to display.
      */
     private void updateImageDisplay(String filename) {
-        if (filename == "%=empty") {uxImageLabel.setIcon(null); return;}
+        if (filename == "%=empty") {uxImageLabelE.setIcon(null); return;}
         // pick throug the list of files that have been loaded into queue to find the one that matches the selected file name
         File imageMatch = getSelectedFileFromAll(filename);
         // edge case validation
@@ -971,7 +981,7 @@ public class MainWindow extends javax.swing.JFrame {
         // display the image in the label
         ImageIcon icon = scaleImageToIcon(imageMatch);
         if (icon == null) {JOptionPane.showMessageDialog(this, "Could not read selected image to buffer."); return;}
-        uxImageLabel.setIcon(icon);
+        uxImageLabelE.setIcon(icon);
     }//end updateImageDisplay(filename)
 
     /**
@@ -1013,14 +1023,14 @@ public class MainWindow extends javax.swing.JFrame {
          */
         int imgWidth = buf_img.getWidth();
         int imgHeight = buf_img.getHeight();
-        if (imgWidth > uxImageLabel.getWidth()) {
-            int newImgWidth = (int)((double)uxImageLabel.getWidth() * 0.85);
+        if (imgWidth > uxImageLabelE.getWidth()) {
+            int newImgWidth = (int)((double)uxImageLabelE.getWidth() * 0.85);
             int newImgHeight = newImgWidth * imgHeight / imgWidth;
             imgWidth = newImgWidth;
             imgHeight = newImgHeight;
         }//end if we need to scale down because of width
-        if (imgHeight > uxImageLabel.getHeight()) {
-            int newImgHeight = (int)((double)uxImageLabel.getHeight() * 0.85);
+        if (imgHeight > uxImageLabelE.getHeight()) {
+            int newImgHeight = (int)((double)uxImageLabelE.getHeight() * 0.85);
             int newImgWidth = imgWidth * newImgHeight / imgHeight;
             imgHeight = newImgHeight;
             imgWidth = newImgWidth;
@@ -1313,6 +1323,8 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton uxEmptyQueueBtn;
     private javax.swing.JMenuItem uxIjBtn;
     private javax.swing.JLabel uxImageLabel;
+    private javax.swing.JLabel uxImageLabelE;
+    private javax.swing.JLabel uxImageLabelK;
     private javax.swing.JTextArea uxImagePropertiesTxt;
     private javax.swing.JMenu uxInitMenu;
     private javax.swing.JButton uxNextImageBtn;
