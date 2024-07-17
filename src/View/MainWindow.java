@@ -151,6 +151,8 @@ public class MainWindow extends javax.swing.JFrame {
             }//end valueChanged(e)
         };
         uxOutputTable.getSelectionModel().addListSelectionListener(lsl);
+        uxOutputTable.setDefaultRenderer(Double.class, new CustomRenderer());
+        uxOutputTable.setDefaultRenderer(Integer.class, new CustomRenderer());
 
         // mess with the jtable so that column text is centered
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -578,7 +580,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class
+                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false
