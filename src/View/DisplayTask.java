@@ -1,6 +1,5 @@
 package View;
 
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.io.File;
 
@@ -19,7 +18,6 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
     protected File imageMatch;
     protected int imgWidth = 256;
     protected int imgHeight = 256;
-    public int imageScaleType = Image.SCALE_DEFAULT;
 
     @Override
     protected ImageIcon[] doInBackground() throws Exception {
