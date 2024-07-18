@@ -16,10 +16,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.Cursor;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -39,8 +37,6 @@ import Utils.Result;
 import Utils.Result.ResultType;
 import View.DisplayTask.DisplayTaskCaller;
 import View.IJTask.IJTaskCaller;
-import ij.IJ;
-import ij.ImagePlus;
 
 /**
  *
@@ -998,9 +994,10 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
         // edge case validation
         if (imageMatch == null) {JOptionPane.showMessageDialog(this, "Could not find matching file for selection."); return;}
         // display the image in the label
-        ImageIcon icon = scaleImageToIcon(imageMatch);
-        if (icon == null) {JOptionPane.showMessageDialog(this, "Could not read selected image to buffer."); return;}
-        uxImageLabel.setIcon(icon);
+        DisplayTask displayWorker = new DisplayTask(this, imageMatch);
+        displayWorker.imgWidth = uxImageLabel.getWidth();
+        displayWorker.imgHeight = uxImageLabel.getHeight();
+        displayWorker.execute();
     }//end updateImageDisplay(filename)
 
     /**
@@ -1030,43 +1027,6 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
         }//end looping over all images
         return imageMatch;
     }//end getSelectedFileFromQueue()
-
-    /**
-     * This method was written as a helper method for uxQueueListValueChanged(). This method reads an image File into memory as
-     * a BufferedImage, and then converts that image into an Icon which has been scaled down to fit in the window. 
-     * @param imageFile The File representing an image file to be opened and displayed.
-     * @return Returns an ImageIcon if the file is found. Otherwise, returns null if we can't open the image.
-     */
-    private ImageIcon scaleImageToIcon(File imageFile) {
-        ImagePlus img = IJ.openImage(imageFile.getAbsolutePath()); img.getProcessor().flipHorizontal();
-        BufferedImage buf_img = img.getBufferedImage();
-        if (buf_img == null) {return null;}
-        // It would maybe be good to improve image scaling at some point
-        /*
-         * It would maybe be good to improve image scaling at some point, as currently, 
-         * in order to resize the image, you have to select a different file, which is pretty jank.
-         * 
-         * The reason we scale the image to less than the size of the label container is that if you set the iamge to the same
-         * width and height as that of the container, then the image will be slightly larger than the label, so every time a new
-         * image is selected, the size of the label will just continually grow in size. But, if you set the size to 95% or 99%
-         * the size of the label, then that doesn't happen for some reason.
-         */
-        int imgWidth = buf_img.getWidth();
-        int imgHeight = buf_img.getHeight();
-        if (imgWidth > uxImageLabel.getWidth()) {
-            int newImgWidth = (int)((double)uxImageLabel.getWidth() * 0.85);
-            int newImgHeight = newImgWidth * imgHeight / imgWidth;
-            imgWidth = newImgWidth;
-            imgHeight = newImgHeight;
-        }//end if we need to scale down because of width
-        if (imgHeight > uxImageLabel.getHeight()) {
-            int newImgHeight = (int)((double)uxImageLabel.getHeight() * 0.85);
-            int newImgWidth = imgWidth * newImgHeight / imgHeight;
-            imgHeight = newImgHeight;
-            imgWidth = newImgWidth;
-        }//end if we need to scale down because of height
-        return new ImageIcon(new ImageIcon(buf_img).getImage().getScaledInstance(imgWidth, imgHeight, Image.SCALE_DEFAULT));
-    }//end scaleImageToIcon(imageFile)
 
     /**
      * Updates the output table with the provided results from image processing.
