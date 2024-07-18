@@ -1,1 +1,1 @@
-"jre/bin/java.exe" -jar usda-java-milo-scan.jar
+"jre/bin/java.exe" -Xmx1024m -jar usda-java-milo-scan.jar
