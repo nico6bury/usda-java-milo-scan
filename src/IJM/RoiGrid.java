@@ -235,7 +235,15 @@ public class RoiGrid {
         Roi[] rois = rm.getRoisAsArray();
         ArrayList<Roi[]> groupedClonedRois = new ArrayList<Roi[]>();
         int curGroupNum;
-        if (rois.length > 0) {curGroupNum = rois[0].getGroup();} else {return null;}
+        if (rois.length > 0) {curGroupNum = rois[0].getGroup();}
+        else {
+            ArrayList<Roi[]> tmp = new ArrayList<Roi[]>();
+            tmp.add(new Roi[0]);
+            System.out.println("\n\n\tWe're trying to create sorted clones, but there's no ROIs.");
+            System.out.println("\tThis should never happen...\n\tDid you change the dpi?");
+            System.out.println("\tMaybe the size constraints for analyze particles failed?\n");
+            return tmp;
+        }
         int roiIndex = 0;
         while(true) {
             // loop maintenance for ending loop
