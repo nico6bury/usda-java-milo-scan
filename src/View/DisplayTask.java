@@ -25,6 +25,7 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
 
         // get the base image
         ImagePlus img = IJ.openImage(imageMatch.getAbsolutePath());
+        img.getProcessor().flipHorizontal();
         RoiGrid kernGrid = (new IJProcess()).getRoiGrid(img);
         
         // figure out some bounds to zoom in on kernels
