@@ -37,7 +37,6 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
             for(int i = 0; i < kernGrid.rrrs.length; i++) {
                 for(int ii = 0; ii < kernGrid.rrrs[i].length; ii++) {
                     Rectangle r = kernGrid.rrrs[i][ii].roi.getBounds();
-                    if (r.height < 2 || r.width < 2) {continue;}
                     if (r.x < lowest_x) {lowest_x = r.x;}
                     if (r.y < lowest_y) {lowest_y = r.y;}
                     if (r.x + r.width > highest_x) {highest_x = r.x + r.width;}
