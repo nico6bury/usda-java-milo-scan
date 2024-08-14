@@ -473,7 +473,7 @@ public class IJProcess {
         // get measurements for the kernels
         HashMap<String,double[]>[][] resMap = nrg.analyzeParticles(img,
             "area centroid perimeter bounding shape display redirect=None decimal=2",
-            "size=4000-50000 display");
+            "size=2000-50000 display");
         for (int i = 0; i < nrg.rrrs.length; i++) {
             for (int ii = 0; ii < nrg.rrrs[i].length; ii++) {
                 Set<String> these_headers = resMap[i][ii].keySet();
