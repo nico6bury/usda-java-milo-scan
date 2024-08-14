@@ -4,6 +4,8 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -515,31 +517,53 @@ public class IJProcess {
      */
     public ArrayList<Roi[]> getGridCells(ImagePlus image) {
         ImagePlus img = image.duplicate();
-        // set up roi, particle analysis
-        ResultsTable rt = new ResultsTable();
-        RoiManager rm = new RoiManager(false);
-        int options = ParticleAnalyzer.ADD_TO_MANAGER + ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES +
-        ParticleAnalyzer.SHOW_NONE + ParticleAnalyzer.INCLUDE_HOLES + ParticleAnalyzer.CLEAR_WORKSHEET;
-        int measurements = Measurements.RECT;
-        ParticleAnalyzer.setRoiManager(rm);
-        ParticleAnalyzer pa = new ParticleAnalyzer(options,measurements,rt,26000,50000);
 
         // actually get processing
         colorThHSB(img, new int[] {149,0,0}, new int[] {158,255,255}, new String[] {"pass","pass","pass"});
         ImageConverter ic = new ImageConverter(img);
         // IJ.save(img, img.getTitle() + "-grid");
         ic.convertToGray8();
-        IJ.setThreshold(img,1,255);
-        pa.analyze(img);
-        // rt.save(img.getTitle() + "restults.txt");
-        System.out.println("Detected " + rm.getCount() + " grid cells.");
-        for(int i = 0; i < rm.getCount(); i++) {
-            Roi thisRoi = rm.getRoi(i);
-            Rectangle thisBound = thisRoi.getBounds();
-            thisBound.grow(-25,-30);
-            Roi newRoi = new Roi(thisBound);
-            rm.setRoi(newRoi, i);
-        }//end shrinking and rectangling every roi
+
+        // get temp file path and work around IJ's buggy BS
+        URL jarurl = getClass().getProtectionDomain().getCodeSource().getLocation();
+        File jarFile;
+        try {
+            jarFile = new File(jarurl.toURI());
+        } catch (URISyntaxException e) {e.printStackTrace(); return null;}
+        String tmpPth = jarFile.getParent() + "\\temp.tif";
+        File tmpFile = new File(tmpPth);
+        tmpFile.deleteOnExit();
+        System.out.println(tmpFile.getAbsolutePath());
+        IJ.save(img,tmpFile.getAbsolutePath());
+        System.out.println(tmpFile.exists());
+        System.out.println("Getting ready to analyze particles for grid cells");
+        String macro = 
+            "run(\"Set Measurements...\",\"bounding\");\n" +
+            "setThreshold(1,255);\n" +
+            "run(\"Analyze Particles...\", \"size=26000-50000\")";
+        IJ.open(tmpFile.getAbsolutePath());
+        IJ.runMacro(macro);
+
+        ResultsTable rt = ResultsTable.getResultsTable();
+        Rectangle[] rects = new Rectangle[rt.size()];
+        for(int i = 0; i < rt.size(); i++) {
+            int bx = (int)rt.getValue("BX", i);
+            int by = (int)rt.getValue("BY", i);
+            int bw = (int)rt.getValue("Width", i);
+            int bh = (int)rt.getValue("Height", i);
+            Rectangle rect = new Rectangle(bx, by, bw, bh);
+            rects[i] = rect;
+        }
+
+        System.out.println("Detected " + rects.length + " grid cells.");
+        RoiManager rm = new RoiManager(false);
+
+        for(int i = 0; i < rects.length; i++) {
+            rects[i].grow(-25,-30);
+            Roi newRoi = new Roi(rects[i]);
+            rm.addRoi(newRoi);
+        }//end shrinking every rectangle roi
+
         RoiGrid.groupRoiRows(rm);
         ArrayList<Roi[]> sortedRois = RoiGrid.createSortedClones(rm);
         // rm.save(img.getShortTitle() + "-roi.zip");
