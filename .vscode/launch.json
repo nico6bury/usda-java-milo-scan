@@ -9,6 +9,13 @@
             "name": "MainWindow",
             "request": "launch",
             "mainClass": "View.MainWindow",
+            "projectName": "usda-java-milo-scan_ab6c87e8"
+        },
+        {
+            "type": "java",
+            "name": "MainWindow",
+            "request": "launch",
+            "mainClass": "View.MainWindow",
             "projectName": "usda-java-milo-scan_639dd3cd"
         },
         {
