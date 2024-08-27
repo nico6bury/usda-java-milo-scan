@@ -19,3 +19,6 @@ nbdist/
 # program config
 .config
 milo-scan.config
+
+# VS Code config
+/.vscode
