@@ -86,11 +86,17 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
             IJM.Constants.kernel_hsb_pass_or_not
         );
         ImagePlus endo_img = img.duplicate();
-        IJProcess.colorThHSB(
+        // IJProcess.colorThHSB(
+        //     endo_img,
+        //     IJM.Constants.endosperm_lower_hsb_thresh,
+        //     IJM.Constants.endosperm_upper_hsb_thresh,
+        //     IJM.Constants.endosperm_hsb_pass_or_not
+        // );
+        IJProcess.colorThYUV(
             endo_img,
-            IJM.Constants.endosperm_lower_hsb_thresh,
-            IJM.Constants.endosperm_upper_hsb_thresh,
-            IJM.Constants.endosperm_hsb_pass_or_not
+            IJM.Constants.chalk_endosperm_lower_yuv_thresh,
+            IJM.Constants.chalk_endosperm_upper_yuv_thresh,
+            IJM.Constants.chalk_endosperm_yuv_pass_or_not
         );
 
         // Get ImageIcon for each image, scaled down

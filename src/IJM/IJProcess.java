@@ -359,12 +359,18 @@ public class IJProcess {
             IJM.Constants.kernel_hsb_pass_or_not
             );
         ImagePlus endo_img = image.duplicate();
-        colorThHSB(
+        // colorThHSB(
+        //     endo_img,
+        //     IJM.Constants.endosperm_lower_hsb_thresh,
+        //     IJM.Constants.endosperm_upper_hsb_thresh,
+        //     IJM.Constants.endosperm_hsb_pass_or_not
+        //     );
+        IJProcess.colorThYUV(
             endo_img,
-            IJM.Constants.endosperm_lower_hsb_thresh,
-            IJM.Constants.endosperm_upper_hsb_thresh,
-            IJM.Constants.endosperm_hsb_pass_or_not
-            );
+            IJM.Constants.chalk_endosperm_lower_yuv_thresh,
+            IJM.Constants.chalk_endosperm_upper_yuv_thresh,
+            IJM.Constants.chalk_endosperm_yuv_pass_or_not
+        );
         // fileio to figure base location to print stuff
         File baseDir = new File(baseDirectory, newFolderName);
         for (int i = 0; baseDir.exists(); i++) {
@@ -400,11 +406,17 @@ public class IJProcess {
     public void procEndosperm(RoiGrid rg, ImagePlus image) {
         // prepare image to be processed
         ImagePlus img = image.duplicate();
-        colorThHSB(
+        // colorThHSB(
+        //     img,
+        //     IJM.Constants.endosperm_lower_hsb_thresh,
+        //     IJM.Constants.endosperm_upper_hsb_thresh,
+        //     IJM.Constants.endosperm_hsb_pass_or_not
+        // );
+        IJProcess.colorThYUV(
             img,
-            IJM.Constants.endosperm_lower_hsb_thresh,
-            IJM.Constants.endosperm_upper_hsb_thresh,
-            IJM.Constants.endosperm_hsb_pass_or_not
+            IJM.Constants.chalk_endosperm_lower_yuv_thresh,
+            IJM.Constants.chalk_endosperm_upper_yuv_thresh,
+            IJM.Constants.chalk_endosperm_yuv_pass_or_not
         );
         ImageConverter ic = new ImageConverter(img);
         ic.convertToGray8();
