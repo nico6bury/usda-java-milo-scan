@@ -601,7 +601,7 @@ public class IJProcess {
      * @param img The image to process. This parameter is mutated.
      * @param min int[3], minimum value (0-255) for H,S,B
      * @param max int[3], maximum value (0-255) for H,S,B
-     * @param filter String[3], for H,S,B, either "pass", or inverts
+     * @param filter PassOrNot[3], for H,S,B, either "pass", or inverts
      */
     public static void colorThHSB(ImagePlus img, int[] min, int[] max, IJM.Constants.PassOrNot[] filter) {
         ColorProcessor prc = img.getProcessor().convertToColorProcessor();
@@ -635,9 +635,9 @@ public class IJProcess {
      * @param img The image to process. This parameter is mutated.
      * @param min int[3], minimum value (0-255) for R,G,B
      * @param max int[3], maximum value (0-255) for R,G,B
-     * @param filter String[3], for R,G,B, either "pass", or inverts
+     * @param filter PassOrNot[3], for R,G,B, either "pass", or inverts
      */
-    public static void colorThRGB(ImagePlus img, int[] min, int[] max, String[] filter) {
+    public static void colorThRGB(ImagePlus img, int[] min, int[] max, PassOrNot[] filter) {
         ImageProcessor prc = img.getProcessor();
         for (int x = 0; x < prc.getWidth(); x++) {
             for (int y = 0; y < prc.getHeight(); y++) {
@@ -648,9 +648,9 @@ public class IJProcess {
                 boolean rin = r >= min[0] && r <= max[0];
                 boolean gin = g >= min[1] && g <= max[1];
                 boolean bin = b >= min[2] && b <= max[2];
-                if (filter[0] != "pass") {rin = !rin;}
-                if (filter[1] != "pass") {gin = !gin;}
-                if (filter[2] != "pass") {bin = !bin;}
+                if (filter[0] != PassOrNot.Pass) {rin = !rin;}
+                if (filter[1] != PassOrNot.Pass) {gin = !gin;}
+                if (filter[2] != PassOrNot.Pass) {bin = !bin;}
                 if (!rin || !gin || !bin) {
                     prc.set(x,y,0);
                 }//end if pixel is outside constraints
