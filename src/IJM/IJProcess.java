@@ -15,6 +15,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+
+import IJM.Constants.PassOrNot;
 import Utils.Constants;
 import Utils.Result;
 import ij.IJ;
@@ -352,16 +354,16 @@ public class IJProcess {
         ImagePlus kern_img = image.duplicate();
         colorThHSB(
             kern_img,
-            IJM.Constants.kernel_lower_hsb_thresh(),
-            IJM.Constants.kernel_upper_hsb_thresh(),
-            IJM.Constants.kernel_hsb_pass_or_not()
+            IJM.Constants.kernel_lower_hsb_thresh,
+            IJM.Constants.kernel_upper_hsb_thresh,
+            IJM.Constants.kernel_hsb_pass_or_not
             );
         ImagePlus endo_img = image.duplicate();
         colorThHSB(
             endo_img,
-            IJM.Constants.endosperm_lower_hsb_thresh(),
-            IJM.Constants.endosperm_upper_hsb_thresh(),
-            IJM.Constants.endosperm_hsb_pass_or_not()
+            IJM.Constants.endosperm_lower_hsb_thresh,
+            IJM.Constants.endosperm_upper_hsb_thresh,
+            IJM.Constants.endosperm_hsb_pass_or_not
             );
         // fileio to figure base location to print stuff
         File baseDir = new File(baseDirectory, newFolderName);
@@ -400,9 +402,9 @@ public class IJProcess {
         ImagePlus img = image.duplicate();
         colorThHSB(
             img,
-            IJM.Constants.endosperm_lower_hsb_thresh(),
-            IJM.Constants.endosperm_upper_hsb_thresh(),
-            IJM.Constants.endosperm_hsb_pass_or_not()
+            IJM.Constants.endosperm_lower_hsb_thresh,
+            IJM.Constants.endosperm_upper_hsb_thresh,
+            IJM.Constants.endosperm_hsb_pass_or_not
         );
         ImageConverter ic = new ImageConverter(img);
         ic.convertToGray8();
@@ -462,9 +464,9 @@ public class IJProcess {
         // actually get on processing
         colorThHSB(
             img,
-            IJM.Constants.kernel_lower_hsb_thresh(),
-            IJM.Constants.kernel_upper_hsb_thresh(),
-            IJM.Constants.kernel_hsb_pass_or_not());
+            IJM.Constants.kernel_lower_hsb_thresh,
+            IJM.Constants.kernel_upper_hsb_thresh,
+            IJM.Constants.kernel_hsb_pass_or_not);
         ImageConverter ic = new ImageConverter(img);
         ic.convertToGray8();
         IJ.setThreshold(img, 1, 255);
@@ -519,7 +521,7 @@ public class IJProcess {
         ImagePlus img = image.duplicate();
 
         // actually get processing
-        colorThHSB(img, new int[] {149,0,0}, new int[] {158,255,255}, new String[] {"pass","pass","pass"});
+        colorThHSB(img, new int[] {149,0,0}, new int[] {158,255,255}, new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass});
         ImageConverter ic = new ImageConverter(img);
         // IJ.save(img, img.getTitle() + "-grid");
         ic.convertToGray8();
@@ -601,7 +603,7 @@ public class IJProcess {
      * @param max int[3], maximum value (0-255) for H,S,B
      * @param filter String[3], for H,S,B, either "pass", or inverts
      */
-    public static void colorThHSB(ImagePlus img, int[] min, int[] max, String[] filter) {
+    public static void colorThHSB(ImagePlus img, int[] min, int[] max, IJM.Constants.PassOrNot[] filter) {
         ColorProcessor prc = img.getProcessor().convertToColorProcessor();
         ImageStack hsb = prc.getHSBStack();
         ImageProcessor h = hsb.getProcessor(1);
@@ -615,9 +617,9 @@ public class IJProcess {
                 boolean hin = H >= min[0] && H <= max[0];
                 boolean sin = S >= min[1] && S <= max[1];
                 boolean bin = B >= min[2] && B <= max[2];
-                if (filter[0] != "pass") {hin = !hin;}
-                if (filter[1] != "pass") {sin = !sin;}
-                if (filter[2] != "pass") {bin = !bin;}
+                if (filter[0] != PassOrNot.Pass) {hin = !hin;}
+                if (filter[1] != PassOrNot.Pass) {sin = !sin;}
+                if (filter[2] != PassOrNot.Pass) {bin = !bin;}
                 if (!hin || !sin || !bin) {
                     prc.set(x,y,0);
                 }//end if pixel is outside constraints
