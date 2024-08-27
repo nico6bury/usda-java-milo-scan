@@ -643,8 +643,8 @@ public class IJProcess {
             for (int y = 0; y < prc.getHeight(); y++) {
                 int[] rgb = prc.getPixel(x, y, null);
                 int r = rgb[0];
-                int g = rgb[0];
-                int b = rgb[0];
+                int g = rgb[1];
+                int b = rgb[2];
                 boolean rin = r >= min[0] && r <= max[0];
                 boolean gin = g >= min[1] && g <= max[1];
                 boolean bin = b >= min[2] && b <= max[2];
