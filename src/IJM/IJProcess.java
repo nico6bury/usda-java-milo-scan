@@ -533,7 +533,12 @@ public class IJProcess {
         ImagePlus img = image.duplicate();
 
         // actually get processing
-        colorThHSB(img, new int[] {149,0,0}, new int[] {158,255,255}, new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass});
+        colorThHSB(
+            img,
+            IJM.Constants.cells_lower_hsb_thresh,
+            IJM.Constants.cells_upper_hsb_thresh,
+            IJM.Constants.cells_hsb_pass_or_not
+        );
         ImageConverter ic = new ImageConverter(img);
         // IJ.save(img, img.getTitle() + "-grid");
         ic.convertToGray8();
