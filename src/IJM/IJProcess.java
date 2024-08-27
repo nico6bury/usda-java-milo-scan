@@ -658,4 +658,41 @@ public class IJProcess {
         }//end looping over x coords for pixels
         img.setProcessor(prc);
     }//end colorThRGB
+
+    
+    /**
+     * Removes pixels outside a range by setting them to 0.  
+     * Uses YUV color space for constraints.
+     * Mutates the img parameter.
+     * @param img The image to process. This parameter is mutated.
+     * @param min int[3], minimum value (0-255) for Y,U,V
+     * @param max int[3], maximum value (0-255) for Y,U,V
+     * @param filter PassOrNot[3], for Y,U,V, either "pass", or inverts
+     */
+    public static void colorThYUV(ImagePlus img, int[] min, int[] max, PassOrNot[] filter) {
+        ImageProcessor prc = img.getProcessor();
+        for (int x = 0; x < prc.getWidth(); x++) {
+            for (int y = 0; y < prc.getHeight(); y++) {
+                int[] rgb = prc.getPixel(x, y, null);
+                double r = rgb[0];
+                double g = rgb[1];
+                double b = rgb[2];
+                // conversion formula taken from:
+                // https://softpixel.com/~cwright/programming/colorspace/yuv/
+                double Y = r * 0.299000 + g * 0.587000 + b * 0.114000;
+                double u = r * -0.168736 + g * -0.331264 + b * 0.5 + 128;
+                double v = r * 0.500000 + g * -0.418688 + b * -0.081312 + 128;
+                boolean yin = Y >= min[0] && Y <= max[0];
+                boolean uin = u >= min[1] && u <= max[1];
+                boolean vin = v >= min[2] && v <= max[2];
+                if (filter[0] != PassOrNot.Pass) {yin = !yin;}
+                if (filter[1] != PassOrNot.Pass) {uin = !uin;}
+                if (filter[2] != PassOrNot.Pass) {vin = !vin;}
+                if (!yin || !uin || !vin) {
+                    prc.set(x,y,0);
+                }//end if pixel is outside constraints
+            }//end looping over y coords for pixels
+        }//end looping over x coords for pixels
+        img.setProcessor(prc);
+    }//end colorThYUV
 }//end class IJProcess
