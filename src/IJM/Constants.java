@@ -29,8 +29,13 @@ public class Constants {
     public static int[] endosperm_upper_hsb_thresh = new int[] {180,255,255};
     public static PassOrNot[] endosperm_hsb_pass_or_not = new PassOrNot[] {PassOrNot.Stop,PassOrNot.Pass,PassOrNot.Pass};
 
-    public static boolean chalk_endosperm_lab_thresh_enabled = true;
+    public static boolean chalk_endosperm_lab_thresh_enabled = false;
     public static int[] chalk_endosperm_lower_lab_thresh = new int[] {181,0,0};
     public static int[] chalk_endosperm_upper_lab_thresh = new int[] {255,255,125};
     public static PassOrNot[] chalk_endosperm_lab_pass_or_not = new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass};
+
+    public static boolean chalk_endosperm_yuv_thresh_enabled = true;
+    public static int[] chalk_endosperm_lower_yuv_thresh = new int[] {166,120,0};
+    public static int[] chalk_endosperm_upper_yuv_thresh = new int[] {255,255,255};
+    public static PassOrNot[] chalk_endosperm_yuv_pass_or_not = new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass};
 }//end class Constants
