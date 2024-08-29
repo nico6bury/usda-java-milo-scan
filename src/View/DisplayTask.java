@@ -11,6 +11,7 @@ import IJM.RoiGrid;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
+import ij.plugin.frame.RoiManager;
 import ij.process.ImageProcessor;
 
 public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
@@ -92,17 +93,26 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
         //     IJM.Constants.endosperm_upper_hsb_thresh,
         //     IJM.Constants.endosperm_hsb_pass_or_not
         // );
-        IJProcess.colorThYUV(
+        // IJProcess.colorThYUV(
+        //     endo_img,
+        //     IJM.Constants.chalk_endosperm_lower_yuv_thresh,
+        //     IJM.Constants.chalk_endosperm_upper_yuv_thresh,
+        //     IJM.Constants.chalk_endosperm_yuv_pass_or_not
+        // );
+        IJProcess.colorThGrayscale(
             endo_img,
-            IJM.Constants.chalk_endosperm_lower_yuv_thresh,
-            IJM.Constants.chalk_endosperm_upper_yuv_thresh,
-            IJM.Constants.chalk_endosperm_yuv_pass_or_not
+            IJM.Constants.chalk_endosperm_lower_gray_thresh,
+            IJM.Constants.chalk_endosperm_upper_gray_thresh,
+            IJM.Constants.chalk_endosperm_gray_pass_or_not
         );
-
         // Get ImageIcon for each image, scaled down
         finishedIcons[0] = new ImageIcon(img.getImage());
         finishedIcons[1] = new ImageIcon(kern_img.getImage());
         finishedIcons[2] = new ImageIcon(endo_img.getImage());
+        RoiManager rm = RoiManager.getInstance();
+        if (rm != null) {
+            rm.close();
+        }
         return finishedIcons;
     }//end doInBackground()
 
