@@ -24,15 +24,15 @@ public class Constants {
     public static int[] kernel_upper_hsb_thresh = new int[] {180,255,255};
     public static PassOrNot[] kernel_hsb_pass_or_not = new PassOrNot[] {PassOrNot.Stop,PassOrNot.Pass,PassOrNot.Pass};
 
-    public static boolean endosperm_hsb_thresh_enabled = false;
-    public static int[] endosperm_lower_hsb_thresh = new int[] {120,0,166};
-    public static int[] endosperm_upper_hsb_thresh = new int[] {180,255,255};
-    public static PassOrNot[] endosperm_hsb_pass_or_not = new PassOrNot[] {PassOrNot.Stop,PassOrNot.Pass,PassOrNot.Pass};
-
     public static boolean cells_hsb_thresh_enabled = true;
     public static int[] cells_lower_hsb_thresh = new int[] {149,0,0};
     public static int[] cells_upper_hsb_thresh = new int[] {158,255,255};
     public static PassOrNot[] cells_hsb_pass_or_not = new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass};
+    
+    public static boolean chalk_endosperm_hsb_thresh_enabled = false;
+    public static int[] chalk_endosperm_lower_hsb_thresh = new int[] {120,0,166};
+    public static int[] chalk_endosperm_upper_hsb_thresh = new int[] {180,255,255};
+    public static PassOrNot[] chalk_endosperm_hsb_pass_or_not = new PassOrNot[] {PassOrNot.Stop,PassOrNot.Pass,PassOrNot.Pass};
 
     public static boolean chalk_endosperm_lab_thresh_enabled = false;
     public static int[] chalk_endosperm_lower_lab_thresh = new int[] {181,0,0};
