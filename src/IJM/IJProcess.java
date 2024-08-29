@@ -371,6 +371,12 @@ public class IJProcess {
             IJM.Constants.chalk_endosperm_upper_yuv_thresh,
             IJM.Constants.chalk_endosperm_yuv_pass_or_not
         );
+        // IJProcess.colorThGrayscale(
+        //     endo_img,
+        //     IJM.Constants.chalk_endosperm_lower_gray_thresh,
+        //     IJM.Constants.chalk_endosperm_upper_gray_thresh,
+        //     IJM.Constants.chalk_endosperm_gray_pass_or_not
+        // );
         // fileio to figure base location to print stuff
         File baseDir = new File(baseDirectory, newFolderName);
         for (int i = 0; baseDir.exists(); i++) {
@@ -418,11 +424,17 @@ public class IJProcess {
             IJM.Constants.chalk_endosperm_upper_yuv_thresh,
             IJM.Constants.chalk_endosperm_yuv_pass_or_not
         );
+        // IJProcess.colorThGrayscale(
+        //     img,
+        //     IJM.Constants.chalk_endosperm_lower_gray_thresh,
+        //     IJM.Constants.chalk_endosperm_upper_gray_thresh,
+        //     IJM.Constants.chalk_endosperm_gray_pass_or_not
+        // );
         ImageConverter ic = new ImageConverter(img);
         ic.convertToGray8();
         HashMap<String,double[]>[][] resMap = rg.analyzeParticles(img,
             "area centroid perimeter bounding shape display redirect=None decimal=2",
-            "size=500-10000 display");
+            "size=300-10000 display");
         // update rg.rrrs with appropriate result info from resMap
         for(int i = 0; i < rg.rrrs.length; i++) {
             for(int ii = 0; ii < rg.rrrs[i].length; ii++) {
