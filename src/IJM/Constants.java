@@ -43,4 +43,9 @@ public class Constants {
     public static int[] chalk_endosperm_lower_yuv_thresh = new int[] {166,120,0};
     public static int[] chalk_endosperm_upper_yuv_thresh = new int[] {255,255,255};
     public static PassOrNot[] chalk_endosperm_yuv_pass_or_not = new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass};
+
+    public static boolean chalk_endosperm_gray_thresh_enabled = false;
+    public static int chalk_endosperm_lower_gray_thresh = 180;
+    public static int chalk_endosperm_upper_gray_thresh = 255;
+    public static PassOrNot chalk_endosperm_gray_pass_or_not = PassOrNot.Pass;
 }//end class Constants
