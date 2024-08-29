@@ -712,4 +712,26 @@ public class IJProcess {
         }//end looping over x coords for pixels
         img.setProcessor(prc);
     }//end colorThYUV
+
+    /**
+     * Removes pixels outside a range by setting them to 0
+     * Uses grayscale color spaces for constraints.
+     * Mutates the img parameter.
+     * @param img The image to process. This parameter is mutated.
+     * @param min minimum grayscale value (0,255)
+     * @param max maximum grayscale value (0,255)
+     * @param filter Either "pass", or inverts
+     */
+    public static void colorThGrayscale(ImagePlus img, int min, int max, PassOrNot filter) {
+        ImageProcessor prc = img.getProcessor();
+        for (int x = 0; x < prc.getWidth(); x++) {
+            for (int y = 0; y < prc.getHeight(); y++) {
+                double val = prc.getPixelValue(x,y);
+                boolean in = val >= min && val <= max;
+                if (filter != PassOrNot.Pass) {in = !in;}
+                if (!in) { prc.set(x,y,0); }
+            }//end looping over y coords for pixels
+        }//end looping over x coords for pixels
+        img.setProcessor(prc);
+    }//end colorThGrayscale
 }//end class IJProcess
