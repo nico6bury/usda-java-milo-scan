@@ -2,241 +2,241 @@
 
 <Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="defaultCloseOperation" type="int" value="2"/>
-    <Property name="title" type="java.lang.String" value="Set Scan Area"/>
+	<Property name="defaultCloseOperation" type="int" value="2"/>
+	<Property name="title" type="java.lang.String" value="Set Scan Area"/>
   </Properties>
   <SyntheticProperties>
-    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
-    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+	<SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+	<SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
   <AuxValues>
-    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
-    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
-    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
-    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
-    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
-    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+	<AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+	<AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+	<AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+	<AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+	<AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+	<AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+	<AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+	<AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+	<AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
   </AuxValues>
 
   <Layout>
-    <DimensionLayout dim="0">
-      <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
-                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="uxX1Spnr" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
-                      <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="uxY1Spnr" min="-2" max="-2" attributes="0"/>
-                  </Group>
-              </Group>
-          </Group>
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" pref="52" max="-2" attributes="0"/>
-              <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="uxX2Spnr" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
-              <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="uxY2Spnr" min="-2" max="-2" attributes="0"/>
-          </Group>
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
-              <Component id="uxCancelBtn" pref="254" max="32767" attributes="0"/>
-              <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-              <Component id="uxConfirmBtn" pref="245" max="32767" attributes="0"/>
-              <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
-          </Group>
-      </Group>
-    </DimensionLayout>
-    <DimensionLayout dim="1">
-      <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="uxX1Spnr" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="uxY1Spnr" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="uxX2Spnr" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="uxY2Spnr" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="uxConfirmBtn" alignment="3" min="-2" pref="49" max="-2" attributes="0"/>
-                  <Component id="uxCancelBtn" alignment="3" min="-2" pref="49" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace pref="14" max="32767" attributes="0"/>
-          </Group>
-      </Group>
-    </DimensionLayout>
+	<DimensionLayout dim="0">
+	  <Group type="103" groupAlignment="0" attributes="0">
+		  <Group type="102" attributes="0">
+			  <EmptySpace max="-2" attributes="0"/>
+			  <Group type="103" groupAlignment="0" attributes="0">
+				  <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+				  <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
+				  <Group type="102" alignment="0" attributes="0">
+					  <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
+					  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+					  <EmptySpace max="-2" attributes="0"/>
+					  <Component id="uxX1Spnr" min="-2" max="-2" attributes="0"/>
+					  <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
+					  <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+					  <EmptySpace max="-2" attributes="0"/>
+					  <Component id="uxY1Spnr" min="-2" max="-2" attributes="0"/>
+				  </Group>
+			  </Group>
+		  </Group>
+		  <Group type="102" alignment="0" attributes="0">
+			  <EmptySpace min="-2" pref="52" max="-2" attributes="0"/>
+			  <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+			  <EmptySpace max="-2" attributes="0"/>
+			  <Component id="uxX2Spnr" min="-2" max="-2" attributes="0"/>
+			  <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
+			  <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
+			  <EmptySpace max="-2" attributes="0"/>
+			  <Component id="uxY2Spnr" min="-2" max="-2" attributes="0"/>
+		  </Group>
+		  <Group type="102" alignment="0" attributes="0">
+			  <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
+			  <Component id="uxCancelBtn" pref="254" max="32767" attributes="0"/>
+			  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+			  <Component id="uxConfirmBtn" pref="245" max="32767" attributes="0"/>
+			  <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
+		  </Group>
+	  </Group>
+	</DimensionLayout>
+	<DimensionLayout dim="1">
+	  <Group type="103" groupAlignment="0" attributes="0">
+		  <Group type="102" alignment="0" attributes="0">
+			  <EmptySpace max="-2" attributes="0"/>
+			  <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+			  <EmptySpace max="-2" attributes="0"/>
+			  <Group type="103" groupAlignment="3" attributes="0">
+				  <Component id="uxX1Spnr" alignment="3" min="-2" max="-2" attributes="0"/>
+				  <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+				  <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+				  <Component id="uxY1Spnr" alignment="3" min="-2" max="-2" attributes="0"/>
+			  </Group>
+			  <EmptySpace min="-2" max="-2" attributes="0"/>
+			  <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+			  <EmptySpace max="-2" attributes="0"/>
+			  <Group type="103" groupAlignment="3" attributes="0">
+				  <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
+				  <Component id="uxX2Spnr" alignment="3" min="-2" max="-2" attributes="0"/>
+				  <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
+				  <Component id="uxY2Spnr" alignment="3" min="-2" max="-2" attributes="0"/>
+			  </Group>
+			  <EmptySpace type="separate" max="-2" attributes="0"/>
+			  <Group type="103" groupAlignment="3" attributes="0">
+				  <Component id="uxConfirmBtn" alignment="3" min="-2" pref="49" max="-2" attributes="0"/>
+				  <Component id="uxCancelBtn" alignment="3" min="-2" pref="49" max="-2" attributes="0"/>
+			  </Group>
+			  <EmptySpace pref="14" max="32767" attributes="0"/>
+		  </Group>
+	  </Group>
+	</DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JLabel" name="jLabel1">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="jLabel1" property="font" relativeSize="true" size="2"/>
-          </FontInfo>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Coordinates of upper left corner of scan area in inches: (def 2.89,1.38)"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel2">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="jLabel2" property="font" relativeSize="true" size="2"/>
-          </FontInfo>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Coordinates of lower right corner of scan area in inches: (def 4.99,9.89)"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JSpinner" name="uxX1Spnr">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="uxX1Spnr" property="font" relativeSize="true" size="2"/>
-          </FontInfo>
-        </Property>
-        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="2.89" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel3">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="jLabel3" property="font" relativeSize="true" size="2"/>
-          </FontInfo>
-        </Property>
-        <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
-          <ComponentRef name="uxX1Spnr"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="X:"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel4">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="jLabel4" property="font" relativeSize="true" size="2"/>
-          </FontInfo>
-        </Property>
-        <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
-          <ComponentRef name="uxY1Spnr"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Y:"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JSpinner" name="uxY1Spnr">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="uxY1Spnr" property="font" relativeSize="true" size="2"/>
-          </FontInfo>
-        </Property>
-        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="1.38" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel5">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="jLabel5" property="font" relativeSize="true" size="2"/>
-          </FontInfo>
-        </Property>
-        <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
-          <ComponentRef name="uxX2Spnr"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="X:"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JSpinner" name="uxX2Spnr">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="uxX2Spnr" property="font" relativeSize="true" size="2"/>
-          </FontInfo>
-        </Property>
-        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="4.99" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel6">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="jLabel6" property="font" relativeSize="true" size="2"/>
-          </FontInfo>
-        </Property>
-        <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
-          <ComponentRef name="uxY2Spnr"/>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Y:"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JSpinner" name="uxY2Spnr">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="uxY2Spnr" property="font" relativeSize="true" size="2"/>
-          </FontInfo>
-        </Property>
-        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-          <SpinnerModel initial="9.89" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JButton" name="uxCancelBtn">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="uxCancelBtn" property="font" relativeSize="true" size="2"/>
-          </FontInfo>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Cancel"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="uxCancelBtnActionPerformed"/>
-      </Events>
-    </Component>
-    <Component class="javax.swing.JButton" name="uxConfirmBtn">
-      <Properties>
-        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-          <FontInfo relative="true">
-            <Font component="uxConfirmBtn" property="font" relativeSize="true" size="2"/>
-          </FontInfo>
-        </Property>
-        <Property name="text" type="java.lang.String" value="Confirm"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="uxConfirmBtnActionPerformed"/>
-      </Events>
-    </Component>
+	<Component class="javax.swing.JLabel" name="jLabel1">
+	  <Properties>
+		<Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+		  <FontInfo relative="true">
+			<Font component="jLabel1" property="font" relativeSize="true" size="2"/>
+		  </FontInfo>
+		</Property>
+		<Property name="text" type="java.lang.String" value="Coordinates of upper left corner of scan area in inches: (def 2.89,1.38)"/>
+	  </Properties>
+	</Component>
+	<Component class="javax.swing.JLabel" name="jLabel2">
+	  <Properties>
+		<Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+		  <FontInfo relative="true">
+			<Font component="jLabel2" property="font" relativeSize="true" size="2"/>
+		  </FontInfo>
+		</Property>
+		<Property name="text" type="java.lang.String" value="Coordinates of lower right corner of scan area in inches: (def 4.99,9.89)"/>
+	  </Properties>
+	</Component>
+	<Component class="javax.swing.JSpinner" name="uxX1Spnr">
+	  <Properties>
+		<Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+		  <FontInfo relative="true">
+			<Font component="uxX1Spnr" property="font" relativeSize="true" size="2"/>
+		  </FontInfo>
+		</Property>
+		<Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+		  <SpinnerModel initial="2.89" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
+		</Property>
+	  </Properties>
+	</Component>
+	<Component class="javax.swing.JLabel" name="jLabel3">
+	  <Properties>
+		<Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+		  <FontInfo relative="true">
+			<Font component="jLabel3" property="font" relativeSize="true" size="2"/>
+		  </FontInfo>
+		</Property>
+		<Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+		  <ComponentRef name="uxX1Spnr"/>
+		</Property>
+		<Property name="text" type="java.lang.String" value="X:"/>
+	  </Properties>
+	</Component>
+	<Component class="javax.swing.JLabel" name="jLabel4">
+	  <Properties>
+		<Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+		  <FontInfo relative="true">
+			<Font component="jLabel4" property="font" relativeSize="true" size="2"/>
+		  </FontInfo>
+		</Property>
+		<Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+		  <ComponentRef name="uxY1Spnr"/>
+		</Property>
+		<Property name="text" type="java.lang.String" value="Y:"/>
+	  </Properties>
+	</Component>
+	<Component class="javax.swing.JSpinner" name="uxY1Spnr">
+	  <Properties>
+		<Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+		  <FontInfo relative="true">
+			<Font component="uxY1Spnr" property="font" relativeSize="true" size="2"/>
+		  </FontInfo>
+		</Property>
+		<Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+		  <SpinnerModel initial="1.38" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
+		</Property>
+	  </Properties>
+	</Component>
+	<Component class="javax.swing.JLabel" name="jLabel5">
+	  <Properties>
+		<Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+		  <FontInfo relative="true">
+			<Font component="jLabel5" property="font" relativeSize="true" size="2"/>
+		  </FontInfo>
+		</Property>
+		<Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+		  <ComponentRef name="uxX2Spnr"/>
+		</Property>
+		<Property name="text" type="java.lang.String" value="X:"/>
+	  </Properties>
+	</Component>
+	<Component class="javax.swing.JSpinner" name="uxX2Spnr">
+	  <Properties>
+		<Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+		  <FontInfo relative="true">
+			<Font component="uxX2Spnr" property="font" relativeSize="true" size="2"/>
+		  </FontInfo>
+		</Property>
+		<Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+		  <SpinnerModel initial="4.99" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
+		</Property>
+	  </Properties>
+	</Component>
+	<Component class="javax.swing.JLabel" name="jLabel6">
+	  <Properties>
+		<Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+		  <FontInfo relative="true">
+			<Font component="jLabel6" property="font" relativeSize="true" size="2"/>
+		  </FontInfo>
+		</Property>
+		<Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+		  <ComponentRef name="uxY2Spnr"/>
+		</Property>
+		<Property name="text" type="java.lang.String" value="Y:"/>
+	  </Properties>
+	</Component>
+	<Component class="javax.swing.JSpinner" name="uxY2Spnr">
+	  <Properties>
+		<Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+		  <FontInfo relative="true">
+			<Font component="uxY2Spnr" property="font" relativeSize="true" size="2"/>
+		  </FontInfo>
+		</Property>
+		<Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+		  <SpinnerModel initial="9.89" maximum="100.0" minimum="0.01" numberType="java.lang.Double" stepSize="0.01" type="number"/>
+		</Property>
+	  </Properties>
+	</Component>
+	<Component class="javax.swing.JButton" name="uxCancelBtn">
+	  <Properties>
+		<Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+		  <FontInfo relative="true">
+			<Font component="uxCancelBtn" property="font" relativeSize="true" size="2"/>
+		  </FontInfo>
+		</Property>
+		<Property name="text" type="java.lang.String" value="Cancel"/>
+	  </Properties>
+	  <Events>
+		<EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="uxCancelBtnActionPerformed"/>
+	  </Events>
+	</Component>
+	<Component class="javax.swing.JButton" name="uxConfirmBtn">
+	  <Properties>
+		<Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+		  <FontInfo relative="true">
+			<Font component="uxConfirmBtn" property="font" relativeSize="true" size="2"/>
+		  </FontInfo>
+		</Property>
+		<Property name="text" type="java.lang.String" value="Confirm"/>
+	  </Properties>
+	  <Events>
+		<EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="uxConfirmBtnActionPerformed"/>
+	  </Events>
+	</Component>
   </SubComponents>
 </Form>
