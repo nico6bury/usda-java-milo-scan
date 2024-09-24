@@ -27,6 +27,7 @@ import com.formdev.flatlaf.FlatLightLaf;
 
 import IJM.IJProcess;
 import IJM.SumResult;
+import Main.Controller;
 import Scan.Scan;
 import Utils.ConfigScribe;
 import Utils.ConfigScribe.PairedConfigStores;
@@ -94,7 +95,7 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
 	/**
 	 * Creates new form MainWindow
 	 */
-	public MainWindow() {
+	public MainWindow(Controller root) {
 		// try and figure out if we should use dark mode
 		boolean useDarkMode = false;
 		// set the application theme / look and feel
