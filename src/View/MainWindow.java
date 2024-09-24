@@ -35,6 +35,10 @@ import Utils.ConfigStoreH;
 import Utils.Constants;
 import Utils.Result;
 import Utils.Result.ResultType;
+import View.Dialog.AreaFlagDialog;
+import View.Dialog.ScanAreaDialog;
+import View.Dialog.ThresholdDialog;
+import View.Dialog.UnsharpDialog;
 import View.DisplayTask.DisplayTaskCaller;
 import View.IJTask.IJTaskCaller;
 
