@@ -4,11 +4,13 @@
  */
 package View;
 
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.ListModel;
 import javax.swing.ProgressMonitor;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -20,7 +22,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
@@ -36,26 +37,17 @@ import View.Dialog.ScanAreaDialog;
 import View.Dialog.ThresholdDialog;
 import View.Dialog.UnsharpDialog;
 import View.DisplayTask.DisplayTaskCaller;
-import View.IJTask.IJTaskCaller;
 
 /**
  *
  * @author Nicholas.Sixbury
  */
-public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, DisplayTaskCaller {
+public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller {
 	private Controller root;
 	private JFileChooser selectFilesChooser = new JFileChooser();
-	/**
-	 * Holds the images to eventually process. This should only contain images that have yet to be processed.
-	 */
-	private List<File> imageQueue = new ArrayList<File>();
-	/**
-	 * Holds all images added, regardless of whether or not they've been processed
-	 */
-	private List<File> allImages = new ArrayList<File>();
-	private IJProcess ijProcess = new IJProcess();
+	
 	// where displayed image was last selected from
-	private LastSelectedFrom lastSelectedFrom = LastSelectedFrom.NoSelection;
+	public LastSelectedFrom lastSelectedFrom = LastSelectedFrom.NoSelection;
 	// dialog boxes we can re-use
 	public AreaFlagDialog areaFlagDialog = new AreaFlagDialog(this, true);
 	public ThresholdDialog thresholdDialog = new ThresholdDialog(this, true);
@@ -67,7 +59,7 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
 	/**
 	 * enum added for use in keeping track of whether displayed image was selected from QueueList or OutputTable
 	 */
-	private enum LastSelectedFrom {
+	public enum LastSelectedFrom {
 		QueueList,
 		OutputTable,
 		NoSelection
@@ -116,6 +108,10 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
 		tb.append("To collect reflective image of milo sample in a plastic grid\n");
 		tb.append("Process image to do something eventually");
 		uxTitleBlockTxt.setText(tb.toString());
+
+		// configure the listbox model
+		DefaultListModel<String> listModel = new DefaultListModel<>();
+		uxQueueList.setModel(listModel);
 
 		// configure the table model
 		ListSelectionListener lsl = new ListSelectionListener() {
@@ -764,9 +760,10 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
 				// uxScannedFileTxt.setText(lastScannedFile.getPath());
 				for (int i = 0; i < selectedFiles.length; i++) {
 					uxStatusTxt.append("\"" + selectedFiles[i].getAbsolutePath() + "\"\n");
-					imageQueue.add(selectedFiles[i]);
-					allImages.add(selectedFiles[i]);
+					// root.getImageQueue().add(selectedFiles[i]);
+					// allImages.add(selectedFiles[i]);
 				}//end adding each selected file to the queue
+				root.handleMessage(InterfaceMessage.AddFilesToQueue, selectedFiles);
 			}//end if selection was approved
 			else if (e.getActionCommand() == "CancelSelection") {
 				uxStatusTxt.append("File selection cancelled.\n");
@@ -790,13 +787,15 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
 	/**
 	 * This method should be called whenever the image queue is updated, in order to show the changes in the list.
 	 */
-	private void UpdateQueueList() {
+	public void updateQueueList() {
 		uxQueueList.removeAll();
-		String[] imageArray = new String[imageQueue.size()];
-		for(int i = 0; i < imageArray.length; i++) {
-			imageArray[i] = imageQueue.get(i).getName();
+		DefaultListModel<String> model = (DefaultListModel<String>)uxQueueList.getModel();
+		model.clear();
+		// String[] imageArray = new String[root.getImageQueue().size()];
+		for(int i = 0; i < root.getImageQueue().size(); i++) {
+			model.addElement(root.getImageQueue().get(i).getName());
 		}//end adding each image file to the array
-		uxQueueList.setListData(imageArray);
+		// uxQueueList.setListData(imageArray);
 	}//end UpdateQueueList()
 
 	/**
@@ -876,7 +875,7 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
 	 * Use filename sentinel value "%=empty" to remove the image
 	 * @param filename The filename (as from File.getName()) of the image to display.
 	 */
-	private void updateImageDisplay(String filename) {
+	public void updateImageDisplay(String filename) {
 		if (filename == "%=empty") {uxImageLabel.setIcon(null); return;}
 		// pick throug the list of files that have been loaded into queue to find the one that matches the selected file name
 		File imageMatch = getSelectedFileFromAll(filename);
@@ -908,12 +907,20 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
 	private File getSelectedFileFromAll(String filename) {
 		// search through imageQueue for File which matches
 		File imageMatch = null;
-		for (File this_image : allImages) {
+		for (File this_image : root.getImageQueue()) {
 			if (this_image.getName().equals(filename)) {
 				imageMatch = this_image;
 				break;
 			}//end if we found a match
-		}//end looping over all images
+		}//end looping over processing queue
+		if (imageMatch == null) {
+			for (File this_image : root.getProcessedImages()) {
+				if (this_image.getName().equals(filename)) {
+					imageMatch = this_image;
+					break;
+				}//end if we found a match
+			}//end looping over processed images
+		}//end if we haven't already found a match
 		return imageMatch;
 	}//end getSelectedFileFromQueue()
 
@@ -923,7 +930,7 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
 	 * This is also where the string formatting for numeric columns in the table is handled.
 	 * @param groupedResults A grouped list of SumResults, likely generated by passing IJM.IJProcess.lastProcResult to IJM.SumResult.GroupResultsByFile().
 	 */
-	private void updateOutputTable(List<List<SumResult>> groupedResults) {
+	public void updateOutputTable(List<List<SumResult>> groupedResults) {
 		DefaultTableModel this_table_model = (DefaultTableModel)uxOutputTable.getModel();
 		for (List<SumResult> resultGroup : groupedResults) {
 			for (SumResult res : resultGroup) {
@@ -991,8 +998,8 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
 		// clear text from output table
 		try {
 			uxClearOutputTable();
+			uxClearOutputTable();
 		} catch (ArrayIndexOutOfBoundsException e) {}
-		uxClearOutputTable();
 		// clear image display
 		if (lastSelectedFrom == LastSelectedFrom.OutputTable) {
 			updateImageDisplay("%=empty");
@@ -1002,10 +1009,10 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
 	}//GEN-LAST:event_uxClearOutputBtnActionPerformed
 		
 	private void uxClearOutputTable() {
-			DefaultTableModel this_table_model = (DefaultTableModel)uxOutputTable.getModel();
-			this_table_model.getDataVector().removeAllElements();
-			this_table_model.fireTableDataChanged();
-			uxOutputTable.revalidate();
+		DefaultTableModel this_table_model = (DefaultTableModel)uxOutputTable.getModel();
+		this_table_model.getDataVector().removeAllElements();
+		this_table_model.fireTableDataChanged();
+		uxOutputTable.revalidate();
 	}//end uxClearOutputTable()
 
 	/**
@@ -1029,8 +1036,8 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
 	}//GEN-LAST:event_uxShouldOverwriteNameActionPerformed
 
 	private void uxEmptyQueueBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxEmptyQueueBtnActionPerformed
-		imageQueue.clear();
-		UpdateQueueList();
+		root.getImageQueue().clear();
+		updateQueueList();
 		// clear image display
 		if (lastSelectedFrom == LastSelectedFrom.QueueList) {
 			updateImageDisplay("%=empty");
@@ -1044,66 +1051,18 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
 	 * @param evt
 	 */
 	private void uxProcessAllBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxProcessAllBtnActionPerformed
-		if (imageQueue == null || imageQueue.size() == 0) {
+		if (root.getImageQueue() == null || root.getImageQueue().size() == 0) {
 			JOptionPane.showMessageDialog(this, "Please select the image file generated by the scanner.", "No scanned image selected", JOptionPane.ERROR_MESSAGE);
 		}//end if last scanned file is null
 		// else if () {
 			//     JOptionPane.showMessageDialog(this, "Please select a scanned image that exists. \nFile " + lastScannedFile.getAbsolutePath() + "\n does not exist.", "Scanned image file does not exist.", JOptionPane.ERROR_MESSAGE);
 			// }//end if last scanned file doesn't exist
 		else {
-			try {
-				// tell user we're about to do processing
-				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				List<File> tempImageQueue = new ArrayList<File>(imageQueue);
-				IJTask ijTask = new IJTask(tempImageQueue, ijProcess, this);
-				ijProcess.th01 = thresholdDialog.thresholdToReturn;
-
-				// roll over area flag stuff to the processing
-				ijProcess.lower_flag_thresh = areaFlagDialog.firstFlag;
-				ijProcess.upper_flag_thresh = areaFlagDialog.secondFlag;
-				ijProcess.shouldOutputKernImages = uxShouldOutputKernImages.isSelected();
-
-				// handing for gui stuff
-				// clear queue now that it's being processed
-				imageQueue.clear();
-				UpdateQueueList();
-
-				// SwingUtilities.invokeLater(doIjTask);
-				ijTask.execute();
-				System.out.println("Just invoked the task");
-				JOptionPane.showMessageDialog(this, "Your images will now be processed.\nWhen they are done, they will show up in the output table on the bottom right.");
-				// ijTask.doInBackground();
-			} catch (Exception e) {
-				e.printStackTrace();
-				showGenericExceptionMessage(e);
-			}//end catching URISyntaxException
+			root.handleMessage(InterfaceMessage.ProcessQueue, null);
+			JOptionPane.showMessageDialog(this, "Your images will now be processed.\nWhen they are done, they will show up in the output table on the bottom right.");
 		}//end else we should probably be able to process the file
 	}//GEN-LAST:event_uxProcessAllBtnActionPerformed
 
-	public void postProcessHandling(Result<String> outputData) {
-		if (outputData.isErr()) {
-			outputData.getError().printStackTrace();
-			showGenericExceptionMessage(outputData.getError());
-			return;
-		}//end if we just got an error
-		int prev_row_count = uxOutputTable.getRowCount();
-		// group together SumResults which came from the same file path
-		List<List<SumResult>> groupedResults = SumResult.groupResultsByFile(ijProcess.lastProcResult);
-		// process sumResults into string columns
-		updateOutputTable(groupedResults);
-		// clear displayed image
-		if (lastSelectedFrom == LastSelectedFrom.QueueList) {
-			updateImageDisplay("%=empty");
-			uxImagePropertiesTxt.setText("");
-			lastSelectedFrom = LastSelectedFrom.NoSelection;
-		}//end if we need to clear moved image
-		// see about updating selections
-		if (prev_row_count < uxOutputTable.getRowCount()) {
-			uxOutputTable.changeSelection(prev_row_count, 0, false, false);
-		}//end if we have a new row to select
-		// make sure cursor is updated
-		setCursor(Cursor.getDefaultCursor());
-	}//end postProcessHandling(outputData)
 
 	/**
 	 * Shows file chooser for adding files to processing queue.
@@ -1113,7 +1072,7 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
 		int prev_list_count = uxQueueList.getModel().getSize();
 		// adding selected files to queue should be handled by selectFIlesListener
 		selectFilesChooser.showOpenDialog(this);
-		UpdateQueueList();
+		updateQueueList();
 		// make sure that new images in queue list show up to the right
 		if (prev_list_count != uxQueueList.getModel().getSize()) {
 			uxQueueList.setSelectedValue(uxQueueList.getModel().getElementAt(prev_list_count), true);
@@ -1134,9 +1093,9 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
 		Result<File> scanResult = (Result<File>) root.handleMessage(InterfaceMessage.Scan,null);
 		if (scanResult.isErr()) {showGenericExceptionMessage(scanResult.getError());}
 		else if (scanResult.isOk()) {
-			imageQueue.add(scanResult.getValue());
-			allImages.add(scanResult.getValue());
-			UpdateQueueList();
+			root.getImageQueue().add(scanResult.getValue());
+			// allImages.add(scanResult.getValue());
+			updateQueueList();
 			// hopefully ensure that scanned image shows up immediately for user
 			uxQueueList.setSelectedValue(scanResult.getValue(), true);
 		}//end else if we can add something to the queue
@@ -1194,12 +1153,12 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
     private javax.swing.JLabel uxImageLabel;
     private javax.swing.JLabel uxImageLabelE;
     private javax.swing.JLabel uxImageLabelK;
-    private javax.swing.JTextArea uxImagePropertiesTxt;
+    public javax.swing.JTextArea uxImagePropertiesTxt;
     private javax.swing.JMenu uxInitMenu;
     private javax.swing.JButton uxNextImageBtn;
     private javax.swing.JButton uxOpenFileBtn;
     private javax.swing.JButton uxOpenOutputFile;
-    private javax.swing.JTable uxOutputTable;
+    public javax.swing.JTable uxOutputTable;
     public javax.swing.JTextField uxOverwriteName;
     private javax.swing.JButton uxPrevImageBtn;
     private javax.swing.JButton uxProcessAllBtn;
@@ -1213,7 +1172,7 @@ public class MainWindow extends javax.swing.JFrame implements IJTaskCaller, Disp
     private javax.swing.JMenuItem uxSetAreaFlagMenuBtn;
     private javax.swing.JMenuItem uxSetThresholdMenuBtn;
     private javax.swing.JMenuItem uxSetUnsharpMenuBtn;
-    private javax.swing.JCheckBox uxShouldOutputKernImages;
+    public javax.swing.JCheckBox uxShouldOutputKernImages;
     public javax.swing.JCheckBox uxShouldOverwriteName;
     private javax.swing.JTextArea uxStatusTxt;
     private javax.swing.JTextArea uxTitleBlockTxt;

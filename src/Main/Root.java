@@ -5,7 +5,10 @@ import java.rmi.UnexpectedException;
 
 import javax.swing.JOptionPane;
 
+import java.awt.Cursor;
+
 import IJM.IJProcess;
+import IJM.SumResult;
 import Scan.Scan;
 import Utils.ConfigScribe;
 import Utils.ConfigScribe.PairedConfigStores;
@@ -13,15 +16,23 @@ import Utils.ConfigStoreC;
 import Utils.ConfigStoreH;
 import Utils.Result;
 import Utils.Result.ResultType;
+import View.IJTask;
 import View.MainWindow;
+import View.MainWindow.LastSelectedFrom;
+import View.IJTask.IJTaskCaller;
 
-public class Root implements Controller {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Root implements Controller, IJTaskCaller {
 	/** The main window, holding the gui for the whole application. */
 	private MainWindow mainWindow = new MainWindow(this);
 	/** The scan object that we'll use for scanning */
 	protected Scan scan = null;
 	/** the last file scanned in by the program */
 	private File lastScannedFile = null;
+	/** The class which holds IJ processing functions. */
+	private IJProcess ijProcess = new IJProcess();
 
 	/** Class for handling serialization of config options */
 	private ConfigScribe configScribe = new ConfigScribe();
@@ -33,6 +44,12 @@ public class Root implements Controller {
 	/** Class for storing settings of non-human-readable config values */
 	private ConfigStoreC configStoreC = new ConfigStoreC();
 	public ConfigStoreC getConfigStoreC() {return configStoreC;}
+	/** Holds the images to eventually process. */
+	private List<File> imageQueue = new ArrayList<File>();
+	public List<File> getImageQueue() {return imageQueue;}
+	/** Holds images that have been processed. */
+	private List<File> processedImages = new ArrayList<File>();
+	public List<File> getProcessedImages() {return processedImages;}
 
 	public Root() {
 		// read config files
@@ -71,13 +88,17 @@ public class Root implements Controller {
 			case Scan:
 				return performScan();
 			case AddFilesToQueue:
-				System.out.println(m);
-				return null;
-			case EmptyQueue:
-				System.out.println(m);
+				File[] filesToAdd = (File[]) args;
+				addFilesToQueue(filesToAdd);
 				return null;
 			case ProcessQueue:
-				System.out.println(m);
+				processQueue();
+				return null;
+			case EmptyQueue:
+				emptyQueue();
+				return null;
+			case EmptyOutput:
+				emptyOutput();
 				return null;
 		}//end switching based on message
 		return new UnexpectedException("unexpected interface message");
@@ -169,4 +190,105 @@ public class Root implements Controller {
 			return new Result<File>(scanResult.getError());
 		}//end if we have an error to show
 	}//end method performScan()
+
+	/**
+	 * Adds the selected files to the image queue, awaiting processing. 
+	 * @param files The files to add to the processing queue.
+	 */
+	private void addFilesToQueue(File[] files) {
+		for (File file : files) {
+			imageQueue.add(file);
+		}//end looping over each file in files
+		// update display
+		mainWindow.updateQueueList();
+	}//end method addFilesToQueue
+
+	/**
+	 * Empties the image processing queue and updates the display.
+	 */
+	private void emptyQueue() {
+		imageQueue.clear();
+		mainWindow.updateQueueList();
+		mainWindow.updateImageDisplay("%=empty");
+	}//end method emptyQueue
+
+	/**
+	 * Empties the list of processed images and updates the display.
+	 */
+	private void emptyOutput() {
+		processedImages.clear();
+		mainWindow.updateOutputTable(new ArrayList<List<SumResult>>());
+		mainWindow.updateImageDisplay("%=empty");
+	}//end method emptyOutput
+
+	/**
+	 * Starts the image processing on all images in the image queue,
+	 * then moves finsihed images into the processedImages list.
+	 */
+	private void processQueue() {
+		try {
+			// tell user we're about to do processing
+			
+			List<File> tempImageQueue = new ArrayList<File>(imageQueue);
+			IJTask ijTask = new IJTask(tempImageQueue, ijProcess, this);
+			ijProcess.th01 = mainWindow.thresholdDialog.thresholdToReturn;
+
+			// roll over area flag stuff to the processing
+			ijProcess.lower_flag_thresh = mainWindow.areaFlagDialog.firstFlag;
+			ijProcess.upper_flag_thresh = mainWindow.areaFlagDialog.secondFlag;
+			ijProcess.shouldOutputKernImages = mainWindow.uxShouldOutputKernImages.isSelected();
+
+			// handing for gui stuff
+			// clear queue now that it's being processed
+			for (File img : imageQueue) {
+				processedImages.add(img);
+			}//end moving each processed image from queue to finished images
+			while (imageQueue.size() > 0) {
+				imageQueue.remove(imageQueue.size() - 1);
+			}//end removing everything from imageQueue
+			// mainWindow.updateQueueList();
+			mainWindow.updateQueueList();
+			
+			// SwingUtilities.invokeLater(doIjTask);
+			ijTask.execute();
+			// emptyQueue();
+			System.out.println("Just invoked the task");
+			// ijTask.doInBackground();
+		} catch (Exception e) {
+			e.printStackTrace();
+			MainWindow.showGenericExceptionMessage(e);
+		}//end catching URISyntaxException
+	}//end method processQueue
+
+	/**
+	 * The method called by the imagej task once processing
+	 * finishes.
+	 * @param outputData The data output by the ij task.
+	 */
+	public void postProcessHandling(Result<String> outputData) {
+		if (outputData.isErr()) {
+			outputData.getError().printStackTrace();
+			MainWindow.showGenericExceptionMessage(outputData.getError());
+			return;
+		}//end if we just got an error
+		int prev_row_count = mainWindow.uxOutputTable.getRowCount();
+		// group together SumResults which came from the same file path
+		List<List<SumResult>> groupedResults = SumResult.groupResultsByFile(ijProcess.lastProcResult);
+		// process sumResults into string columns
+		mainWindow.updateOutputTable(groupedResults);
+		imageQueue.removeAll(processedImages);
+		mainWindow.updateQueueList();
+		// clear displayed image
+		if (mainWindow.lastSelectedFrom == LastSelectedFrom.QueueList) {
+			mainWindow.updateImageDisplay("%=empty");
+			mainWindow.uxImagePropertiesTxt.setText("");
+			mainWindow.lastSelectedFrom = LastSelectedFrom.NoSelection;
+		}//end if we need to clear moved image
+		// see about updating selections
+		if (prev_row_count < mainWindow.uxOutputTable.getRowCount()) {
+			mainWindow.uxOutputTable.changeSelection(prev_row_count, 0, false, false);
+		}//end if we have a new row to select
+		// make sure cursor is updated
+		mainWindow.setCursor(Cursor.getDefaultCursor());
+	}//end method postProcessHandling
 }//end class Root
