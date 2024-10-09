@@ -5,8 +5,6 @@ import java.rmi.UnexpectedException;
 
 import javax.swing.JOptionPane;
 
-import java.awt.Cursor;
-
 import IJM.IJProcess;
 import IJM.SumResult;
 import Scan.Scan;
@@ -16,15 +14,11 @@ import Utils.ConfigStoreC;
 import Utils.ConfigStoreH;
 import Utils.Result;
 import Utils.Result.ResultType;
-import View.IJTask;
 import View.MainWindow;
-import View.MainWindow.LastSelectedFrom;
-import View.IJTask.IJTaskCaller;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class Root implements Controller, IJTaskCaller {
+public class Root implements Controller {
 	/** The main window, holding the gui for the whole application. */
 	private MainWindow mainWindow = new MainWindow(this);
 	/** The scan object that we'll use for scanning */
@@ -33,6 +27,7 @@ public class Root implements Controller, IJTaskCaller {
 	private File lastScannedFile = null;
 	/** The class which holds IJ processing functions. */
 	private IJProcess ijProcess = new IJProcess();
+	public IJProcess getIJProcess() {return ijProcess;}
 
 	/** Class for handling serialization of config options */
 	private ConfigScribe configScribe = new ConfigScribe();
@@ -226,38 +221,7 @@ public class Root implements Controller, IJTaskCaller {
 	 * then moves finsihed images into the processedImages list.
 	 */
 	private void processQueue() {
-		try {
-			// tell user we're about to do processing
-			
-			List<File> tempImageQueue = new ArrayList<File>(imageQueue);
-			IJTask ijTask = new IJTask(tempImageQueue, ijProcess, this);
-			ijProcess.th01 = mainWindow.thresholdDialog.thresholdToReturn;
-
-			// roll over area flag stuff to the processing
-			ijProcess.lower_flag_thresh = mainWindow.areaFlagDialog.firstFlag;
-			ijProcess.upper_flag_thresh = mainWindow.areaFlagDialog.secondFlag;
-			ijProcess.shouldOutputKernImages = mainWindow.uxShouldOutputKernImages.isSelected();
-
-			// handing for gui stuff
-			// clear queue now that it's being processed
-			for (File img : imageQueue) {
-				processedImages.add(img);
-			}//end moving each processed image from queue to finished images
-			while (imageQueue.size() > 0) {
-				imageQueue.remove(imageQueue.size() - 1);
-			}//end removing everything from imageQueue
-			// mainWindow.updateQueueList();
-			mainWindow.updateQueueList();
-			
-			// SwingUtilities.invokeLater(doIjTask);
-			ijTask.execute();
-			// emptyQueue();
-			System.out.println("Just invoked the task");
-			// ijTask.doInBackground();
-		} catch (Exception e) {
-			e.printStackTrace();
-			MainWindow.showGenericExceptionMessage(e);
-		}//end catching URISyntaxException
+		System.out.println("Starting to gather data for processing, returning to view.");
 	}//end method processQueue
 
 	/**
@@ -271,24 +235,6 @@ public class Root implements Controller, IJTaskCaller {
 			MainWindow.showGenericExceptionMessage(outputData.getError());
 			return;
 		}//end if we just got an error
-		int prev_row_count = mainWindow.uxOutputTable.getRowCount();
-		// group together SumResults which came from the same file path
-		List<List<SumResult>> groupedResults = SumResult.groupResultsByFile(ijProcess.lastProcResult);
-		// process sumResults into string columns
-		mainWindow.updateOutputTable(groupedResults);
-		imageQueue.removeAll(processedImages);
-		mainWindow.updateQueueList();
-		// clear displayed image
-		if (mainWindow.lastSelectedFrom == LastSelectedFrom.QueueList) {
-			mainWindow.updateImageDisplay("%=empty");
-			mainWindow.uxImagePropertiesTxt.setText("");
-			mainWindow.lastSelectedFrom = LastSelectedFrom.NoSelection;
-		}//end if we need to clear moved image
-		// see about updating selections
-		if (prev_row_count < mainWindow.uxOutputTable.getRowCount()) {
-			mainWindow.uxOutputTable.changeSelection(prev_row_count, 0, false, false);
-		}//end if we have a new row to select
-		// make sure cursor is updated
-		mainWindow.setCursor(Cursor.getDefaultCursor());
+		
 	}//end method postProcessHandling
 }//end class Root

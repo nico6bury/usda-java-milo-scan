@@ -3,7 +3,12 @@ package Main;
 import Utils.ConfigScribe;
 import Utils.ConfigStoreC;
 import Utils.ConfigStoreH;
+import Utils.Result;
+
 import java.util.List;
+
+import IJM.IJProcess;
+
 import java.io.File;
 
 public interface Controller {
@@ -18,6 +23,7 @@ public interface Controller {
 	}//end enum InterfaceMessage
 
 	public Object handleMessage(InterfaceMessage m, Object args);
+	public void postProcessHandling(Result<String> outputData);
 
 	public ConfigScribe getConfigScribe();
 	public ConfigStoreH getConfigStoreH();
@@ -25,4 +31,5 @@ public interface Controller {
 	public ConfigStoreC getConfigStoreC();
 	public List<File> getImageQueue();
 	public List<File> getProcessedImages();
+	public IJProcess getIJProcess();
 }//end interface Controller
