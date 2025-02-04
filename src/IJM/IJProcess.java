@@ -18,7 +18,7 @@ import java.util.Set;
 
 import IJM.Constants.PassOrNot;
 import Utils.Constants;
-import Utils.Result;
+import SimpleResult.SimpleResult;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -68,7 +68,7 @@ public class IJProcess {
 	 * @param ensureDirectoryExists If this is true, then this method will create a new directory if it doesn't already exist.
 	 * @return Returns a resulting path as a File if successful. Otherwise, returns the exception that prevented success.
 	 */
-	public Result<File> getOutputFilePath(boolean ensureDirectoryExists) {
+	public SimpleResult<File> getOutputFilePath(boolean ensureDirectoryExists) {
 		// get path of the jar as base directory
 		String jar_location;
 		try {
@@ -98,9 +98,9 @@ public class IJProcess {
 			String newFileName = current_time_stamp + newExtension;
 			File outputFile = new File(newDirectory.getAbsolutePath() + File.separator + newFileName);
 
-			return new Result<File>(outputFile);
+			return new SimpleResult<File>(outputFile);
 		} catch (Exception e) {
-			return new Result<File>(e);
+			return new SimpleResult<File>(e);
 		}//end catching any exceptions
 	}//end getOutputFilePath(ensureDirectoryExists)
 
@@ -110,11 +110,11 @@ public class IJProcess {
 	 * @param inputList The list of SumResult objects that represent the processed data. This will be formatted and written to the file.
 	 * @return Returns a result containing the full string output, or a wrapped error if something prevents the output file from being written.
 	 */
-	public Result<String> makeOutputFile(List<SumResult> inputList) {
+	public SimpleResult<String> makeOutputFile(List<SumResult> inputList) {
 		// save to output file
-		Result<File> outputFileResult = getOutputFilePath(true);
+		SimpleResult<File> outputFileResult = getOutputFilePath(true);
 		if (outputFileResult.isErr()) {
-			return new Result<>(outputFileResult.getError());
+			return new SimpleResult<>(outputFileResult.getError());
 		}//end if we couldn't get output file path
 		// otherwise, continue as normal
 		File outputFile = outputFileResult.getValue();
@@ -126,7 +126,7 @@ public class IJProcess {
 		try {
 			pw = new PrintWriter(outputFile);
 		} catch (FileNotFoundException e) {
-			return new Result<>(e);
+			return new SimpleResult<>(e);
 		}//end catching FileNotFoundExceptions
 
 		// print first section of header
@@ -235,7 +235,7 @@ public class IJProcess {
 		// close output file
 		pw.close();
 
-		return new Result<>(data_output.toString());
+		return new SimpleResult<>(data_output.toString());
 	}//end makeOutputFile(inputList, icl)
 
 	/**
@@ -247,7 +247,7 @@ public class IJProcess {
 	 * @param rename_file Whether or not we should rename the unsharp masked file.
 	 * @return Returns either the filepath for the resulting file, or some error.
 	 */
-	public static Result<String> doUnsharpCorrection(String filepath, double sigma, double weight, boolean rename_file) {
+	public static SimpleResult<String> doUnsharpCorrection(String filepath, double sigma, double weight, boolean rename_file) {
 		// open img and run the unsharp mask
 		ImagePlus img = IJ.openImage(filepath);
 		IJ.run(img, "Unsharp Mask...", "radius=" + sigma + " mask=" + weight);
@@ -267,7 +267,7 @@ public class IJProcess {
 
 		IJ.save(img, newPath);
 		// return filename as string, probably
-		return new Result<String>(newPath);
+		return new SimpleResult<String>(newPath);
 	}//end doUnsharpCorrection(filepath, sigma, weight)
 
 	/**
@@ -275,11 +275,11 @@ public class IJProcess {
 	 * @param files_to_process The list of image Files to process.
 	 * @return Returns a result that will contain the full string written to an output file, or an error if something prevented completion.
 	 */
-	public Result<String> runMacro(List<File> files_to_process) {
+	public SimpleResult<String> runMacro(List<File> files_to_process) {
 		try {
 			return MainMacro(files_to_process);
 		} catch (Exception e) {
-			return new Result<>(e);
+			return new SimpleResult<>(e);
 		}//end if we catch any exceptions
 	}//end runMacro()
 
@@ -288,7 +288,7 @@ public class IJProcess {
 	 * @param files_to_process The list of image Files to process
 	 * @return Returns a result that will contain the full string written to an output file, or an error if something prevented completion.
 	 */
-	public Result<String> MainMacro(List<File> files_to_process) {
+	public SimpleResult<String> MainMacro(List<File> files_to_process) {
 		List<SumResult> runningSum = new ArrayList<SumResult>();
 		for (int i = 0; i < files_to_process.size(); i++) {
 			File file = files_to_process.get(i);
@@ -327,7 +327,7 @@ public class IJProcess {
 		}//end looping over each file we want to split
 
 		// output the output file
-		Result<String> outputFileResult = makeOutputFile(runningSum);
+		SimpleResult<String> outputFileResult = makeOutputFile(runningSum);
 		lastProcResult = runningSum;
 		// return the rows of data that wil show up in the output file
 		return outputFileResult;

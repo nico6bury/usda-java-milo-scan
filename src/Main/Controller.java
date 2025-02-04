@@ -1,13 +1,10 @@
 package Main;
 
-import Utils.ConfigScribe;
-import Utils.ConfigStoreC;
-import Utils.ConfigStoreH;
-import Utils.Result;
-
 import java.util.List;
 
 import IJM.IJProcess;
+import SimpleResult.SimpleResult;
+import Utils.Config;
 
 import java.io.File;
 
@@ -23,12 +20,10 @@ public interface Controller {
 	}//end enum InterfaceMessage
 
 	public Object handleMessage(InterfaceMessage m, Object args);
-	public void postProcessHandling(Result<String> outputData);
+	public void postProcessHandling(SimpleResult<String> outputData);
 
-	public ConfigScribe getConfigScribe();
-	public ConfigStoreH getConfigStoreH();
-	public void setConfigStoreH(ConfigStoreH c);
-	public ConfigStoreC getConfigStoreC();
+	public Config getConfig();
+	public void setConfig(Config c);
 	public List<File> getImageQueue();
 	public List<File> getProcessedImages();
 	public IJProcess getIJProcess();

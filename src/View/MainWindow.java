@@ -31,7 +31,7 @@ import IJM.SumResult;
 import Main.Controller;
 import Main.Controller.InterfaceMessage;
 import Utils.Constants;
-import Utils.Result;
+import SimpleResult.SimpleResult;
 import View.Dialog.AreaFlagDialog;
 import View.Dialog.ScanAreaDialog;
 import View.Dialog.ThresholdDialog;
@@ -954,9 +954,9 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 */
 	private void uxSetAreaFlagMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxSetAreaFlagMenuBtnActionPerformed
 		areaFlagDialog.setVisible(true);
-		root.getConfigStoreH().area_threshold_lower = areaFlagDialog.firstFlag;
-		root.getConfigStoreH().area_threshold_upper = areaFlagDialog.secondFlag;
-		root.getConfigScribe().write_config(root.getConfigStoreH(), root.getConfigStoreC());
+		root.getConfig().area_threshold_lower = areaFlagDialog.firstFlag;
+		root.getConfig().area_threshold_upper = areaFlagDialog.secondFlag;
+		root.getConfig().write_config();
 	}//GEN-LAST:event_uxSetAreaFlagMenuBtnActionPerformed
 
 	/**
@@ -964,8 +964,8 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 */
 	private void uxSetThresholdMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxSetThresholdMenuBtnActionPerformed
 		thresholdDialog.setVisible(true);
-		root.getConfigStoreH().proc_threshold = thresholdDialog.thresholdToReturn;
-		root.getConfigScribe().write_config(root.getConfigStoreH(), root.getConfigStoreC());
+		root.getConfig().proc_threshold = thresholdDialog.thresholdToReturn;
+		root.getConfig().write_config();
 	}//GEN-LAST:event_uxSetThresholdMenuBtnActionPerformed
 
 	/**
@@ -973,11 +973,11 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 */
 	private void uxSetUnsharpMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxSetUnsharpMenuBtnActionPerformed
 		unsharpDialog.setVisible(true);
-		root.getConfigStoreH().unsharp_sigma = unsharpDialog.unsharp_sigma;
-		root.getConfigStoreH().unsharp_weight = unsharpDialog.unsharp_weight;
-		root.getConfigStoreH().unsharp_skip = unsharpDialog.unsharp_skip;
-		root.getConfigStoreH().unsharp_rename = unsharpDialog.unsharp_rename;
-		root.getConfigScribe().write_config(root.getConfigStoreH(), root.getConfigStoreC());
+		root.getConfig().unsharp_sigma = unsharpDialog.unsharp_sigma;
+		root.getConfig().unsharp_weight = unsharpDialog.unsharp_weight;
+		root.getConfig().unsharp_skip = unsharpDialog.unsharp_skip;
+		root.getConfig().unsharp_rename = unsharpDialog.unsharp_rename;
+		root.getConfig().write_config();
 	}//GEN-LAST:event_uxSetUnsharpMenuBtnActionPerformed
 
 	/**
@@ -985,11 +985,11 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 */
 	private void uxScanAreaMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxScanAreaMenuBtnActionPerformed
 		scanAreaDialog.setVisible(true);
-		root.getConfigStoreH().scan_x1 = scanAreaDialog.X1;
-		root.getConfigStoreH().scan_y1 = scanAreaDialog.Y1;
-		root.getConfigStoreH().scan_x2 = scanAreaDialog.X2;
-		root.getConfigStoreH().scan_y2 = scanAreaDialog.Y2;
-		root.getConfigScribe().write_config(root.getConfigStoreH(), root.getConfigStoreC());
+		root.getConfig().scan_x1 = scanAreaDialog.X1;
+		root.getConfig().scan_y1 = scanAreaDialog.Y1;
+		root.getConfig().scan_x2 = scanAreaDialog.X2;
+		root.getConfig().scan_y2 = scanAreaDialog.Y2;
+		root.getConfig().write_config();
 	}//GEN-LAST:event_uxScanAreaMenuBtnActionPerformed
 
 	/**
@@ -1094,7 +1094,7 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 		}//end catching URISyntaxException
 	}//end processQueue()
 
-	public void postProcessHandling(Result<String> outputData) {
+	public void postProcessHandling(SimpleResult<String> outputData) {
 		root.postProcessHandling(outputData);
 		int prev_row_count = uxOutputTable.getRowCount();
 		// group together SumResults which came from the same file path
@@ -1143,7 +1143,7 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		@SuppressWarnings("unchecked")
-		Result<File> scanResult = (Result<File>) root.handleMessage(InterfaceMessage.Scan,null);
+		SimpleResult<File> scanResult = (SimpleResult<File>) root.handleMessage(InterfaceMessage.Scan,null);
 		if (scanResult.isErr()) {showGenericExceptionMessage(scanResult.getError());}
 		else if (scanResult.isOk()) {
 			root.getImageQueue().add(scanResult.getValue());
@@ -1164,7 +1164,7 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	private void uxScanBigBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxScanBigBtnActionPerformed
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		@SuppressWarnings("unchecked")
-		Result<File> scanResult = (Result<File>) root.handleMessage(InterfaceMessage.Scan,null);
+		SimpleResult<File> scanResult = (SimpleResult<File>) root.handleMessage(InterfaceMessage.Scan,null);
 		if (scanResult.isErr()) {showGenericExceptionMessage(scanResult.getError());}
 		setCursor(Cursor.getDefaultCursor());
 	}//GEN-LAST:event_uxScanBigBtnActionPerformed

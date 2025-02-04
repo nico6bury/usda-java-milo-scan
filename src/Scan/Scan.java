@@ -4,10 +4,10 @@ import SK.gnome.twain.TwainConstants;
 import SK.gnome.twain.TwainException;
 import SK.gnome.twain.TwainManager;
 import SK.gnome.twain.TwainSource;
-import Utils.ConfigStoreH;
+import Utils.Config;
 import Utils.Constants;
-import Utils.Result;
-import Utils.Result.ResultType;
+import SimpleResult.SimpleResult;
+import SimpleResult.SimpleResult.ResultType;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -29,7 +29,7 @@ public class Scan {
 	 * Tries to find a valid TwainSource and save it for later.
 	 * @return Returns an error if one was thrown, otherwise is Ok.
 	 */
-	public Result<Result.ResultType> initScanner() {
+	public SimpleResult<SimpleResult.ResultType> initScanner() {
 		// make an attempt to initialize the scanner
 		try {
 			// Figure out which source to use
@@ -49,11 +49,11 @@ public class Scan {
 			}//end if scanSource is null
 		}//end trying to figure out the twain source
 		catch (Exception e) {
-			return new Result<>(e);
+			return new SimpleResult<>(e);
 		}//end catching any exceptions
 
 		// if we've reached this point, we must be fine
-		return new Result<>();
+		return new SimpleResult<>();
 	}//end initScanner()
 
 	public boolean isScannerConnected() {
@@ -70,7 +70,7 @@ public class Scan {
 	 * Tries to set the scan settings of the saved twain source.
 	 * @return Returns an error if one was thrown, otherwise is Ok.
 	 */
-	public Result<Result.ResultType> setScanSettings(ConfigStoreH config) {
+	public SimpleResult<SimpleResult.ResultType> setScanSettings(Config config) {
 		// make an attempt to set settings of twain source
 		try {
 			// it's unknown what this does (found in Bill's config)
@@ -112,11 +112,11 @@ public class Scan {
 			}//end else statement
 		}//end trying to set scan settings
 		catch (Exception e) {
-			return new Result<>(e);
+			return new SimpleResult<>(e);
 		}//end catching any exceptions
 
 		// if we've reached this point, we must be fine
-		return new Result<>();
+		return new SimpleResult<>();
 	}//end setScanSettings()
 
 	/**
@@ -125,12 +125,12 @@ public class Scan {
 	 * @param use_filename Whether to use filename parameter (true) or ignore it and use timestamp (false)
 	 * @return Returns an error if one was thrown, otherwise is Ok.
 	 */
-	public Result<String> runScanner(String filename, boolean use_filename) {
+	public SimpleResult<String> runScanner(String filename, boolean use_filename) {
 		// make an attempt to run the scanner
 		try {
 			// determine file path where image will be outputted
-			Result<File> outF_result = getBaseScanDir(filename, use_filename);
-			Result<File> tmpF_result = getBaseScanDir(filename,false);
+			SimpleResult<File> outF_result = getBaseScanDir(filename, use_filename);
+			SimpleResult<File> tmpF_result = getBaseScanDir(filename,false);
 			if (outF_result.isOk() && tmpF_result.isOk()) {
 				File outF = outF_result.getValue();
 				File tmpF = tmpF_result.getValue();
@@ -141,14 +141,14 @@ public class Scan {
 					tmpF.renameTo(outF);
 				}//end if we want to have the image file be named what the user wanted
 				// ImageIO.write(bimg, "bmp", outF);
-				return new Result<>(outF.getAbsolutePath());
+				return new SimpleResult<>(outF.getAbsolutePath());
 			}//end if we successfully got a filename
 			else {
-				return new Result<>(outF_result.getError());
+				return new SimpleResult<>(outF_result.getError());
 			}//end else we got an error
 		}//end trying to run the scanner
 		catch (Exception e) {
-			return new Result<>(e);
+			return new SimpleResult<>(e);
 		}//end catching any exceptions
 	}//end runScanner()
 
@@ -160,7 +160,7 @@ public class Scan {
 	 * @param use_filename Whether to use filename parameter (true) or ignore it and use timestamp (false)
 	 * @return Returns a File at which to save a file, or an error if an exception happened.
 	 */
-	public static Result<File> getBaseScanDir(String filename, boolean use_filename) {
+	public static SimpleResult<File> getBaseScanDir(String filename, boolean use_filename) {
 		String jar_location;
 		try {
 			jar_location = new File(IJProcess.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().toString();
@@ -190,20 +190,20 @@ public class Scan {
 			else {newFileName = current_time_stamp + newExtension;}
 			File outputFile = new File(newDirectory.getAbsolutePath() + File.separator + newFileName);
 
-			return new Result<File>(outputFile);
-		} catch (Exception e) {return new Result<File>(e);}
+			return new SimpleResult<File>(outputFile);
+		} catch (Exception e) {return new SimpleResult<File>(e);}
 	}//end getBaseScanDir()
 
 	/**
 	 * Closes the twain manager. This operation might fail, for some reason. If it does, an error will be returned with the result type.
 	 * @return Returns an exception result if an exception returns. Otherwise, nothing useful is returned.
 	 */
-	public Result<ResultType> closeScanner() {
+	public SimpleResult<ResultType> closeScanner() {
 		try {
 			TwainManager.close();
 		} catch (TwainException e) {
-			return new Result<>(e);
+			return new SimpleResult<>(e);
 		}//end catching and returning exceptions
-		return new Result<>();
+		return new SimpleResult<>();
 	}//end closeScanner()
 }//end class Scan

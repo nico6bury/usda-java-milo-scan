@@ -8,12 +8,8 @@ import javax.swing.JOptionPane;
 import IJM.IJProcess;
 import IJM.SumResult;
 import Scan.Scan;
-import Utils.ConfigScribe;
-import Utils.ConfigScribe.PairedConfigStores;
-import Utils.ConfigStoreC;
-import Utils.ConfigStoreH;
-import Utils.Result;
-import Utils.Result.ResultType;
+import SimpleResult.SimpleResult;
+import Utils.Config;
 import View.MainWindow;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,16 +25,10 @@ public class Root implements Controller {
 	private IJProcess ijProcess = new IJProcess();
 	public IJProcess getIJProcess() {return ijProcess;}
 
-	/** Class for handling serialization of config options */
-	private ConfigScribe configScribe = new ConfigScribe();
-	public ConfigScribe getConfigScribe() {return configScribe;}
-	/** Class for storing settings of human-readable config values */
-	private ConfigStoreH configStoreH = new ConfigStoreH();
-	public ConfigStoreH getConfigStoreH() {return configStoreH;}
-	public void setConfigStoreH(ConfigStoreH c) {configStoreH = c;}
-	/** Class for storing settings of non-human-readable config values */
-	private ConfigStoreC configStoreC = new ConfigStoreC();
-	public ConfigStoreC getConfigStoreC() {return configStoreC;}
+	/** Class for handling config options */
+	private Config config = new Config();
+	public Config getConfig() {return config;}
+	public void setConfig(Config c) {config = c;}
 	/** Holds the images to eventually process. */
 	private List<File> imageQueue = new ArrayList<File>();
 	public List<File> getImageQueue() {return imageQueue;}
@@ -48,22 +38,22 @@ public class Root implements Controller {
 
 	public Root() {
 		// read config files
-		Result<PairedConfigStores> config_result =  configScribe.read_config();
+		Config config = new Config();
+		SimpleResult<String> config_result = config.read_config();
 		if (config_result.isOk()) {
-			this.configStoreH = config_result.getValue().configStoreH;
-			this.configStoreC = config_result.getValue().configStoreC;
+			this.config = config;
 			// update dialog based on config
-			mainWindow.thresholdDialog.thresholdToReturn = this.configStoreH.proc_threshold;
-			mainWindow.areaFlagDialog.firstFlag = this.configStoreH.area_threshold_lower;
-			mainWindow.areaFlagDialog.secondFlag = this.configStoreH.area_threshold_upper;
-			mainWindow.unsharpDialog.unsharp_sigma = this.configStoreH.unsharp_sigma;
-			mainWindow.unsharpDialog.unsharp_weight = this.configStoreH.unsharp_weight;
-			mainWindow.unsharpDialog.unsharp_skip = this.configStoreH.unsharp_skip;
-			mainWindow.unsharpDialog.unsharp_rename = this.configStoreH.unsharp_rename;
-			mainWindow.scanAreaDialog.X1 = this.configStoreH.scan_x1;
-			mainWindow.scanAreaDialog.Y1 = this.configStoreH.scan_y1;
-			mainWindow.scanAreaDialog.X2 = this.configStoreH.scan_x2;
-			mainWindow.scanAreaDialog.Y2 = this.configStoreH.scan_y2;
+			mainWindow.thresholdDialog.thresholdToReturn = this.config.proc_threshold;
+			mainWindow.areaFlagDialog.firstFlag = this.config.area_threshold_lower;
+			mainWindow.areaFlagDialog.secondFlag = this.config.area_threshold_upper;
+			mainWindow.unsharpDialog.unsharp_sigma = this.config.unsharp_sigma;
+			mainWindow.unsharpDialog.unsharp_weight = this.config.unsharp_weight;
+			mainWindow.unsharpDialog.unsharp_skip = this.config.unsharp_skip;
+			mainWindow.unsharpDialog.unsharp_rename = this.config.unsharp_rename;
+			mainWindow.scanAreaDialog.X1 = this.config.scan_x1;
+			mainWindow.scanAreaDialog.Y1 = this.config.scan_y1;
+			mainWindow.scanAreaDialog.X2 = this.config.scan_x2;
+			mainWindow.scanAreaDialog.Y2 = this.config.scan_y2;
 		}//end if we can read from config
 		else {
 			MainWindow.showGenericExceptionMessage(config_result.getError());
@@ -111,7 +101,7 @@ public class Root implements Controller {
 		
 		scan = new Scan();
 		// try to access the scanner source
-		Result<ResultType> initScannerResult = scan.initScanner();
+		SimpleResult<SimpleResult.ResultType> initScannerResult = scan.initScanner();
 		if (initScannerResult.isErr()) {
 			MainWindow.showGenericExceptionMessage(initScannerResult.getError());
 			// reset scanner to null
@@ -130,7 +120,7 @@ public class Root implements Controller {
 			JOptionPane.showMessageDialog(mainWindow, "The scanner is already disconnected. It can't be reset further.");
 			return false;
 		} else {
-			Result<ResultType> closeResult = scan.closeScanner();
+			SimpleResult<SimpleResult.ResultType> closeResult = scan.closeScanner();
 			if (closeResult.isErr()) {
 				MainWindow.showGenericExceptionMessage(closeResult.getError());
 				return false;
@@ -143,46 +133,46 @@ public class Root implements Controller {
 	 * This method performs the operation of scanning an image. 
 	 * It then returns the resulting file if successful, or 
 	 * the exception wrapped in a result if not.
-	 * @return Returns a Result wrapped File.
+	 * @return Returns a SimpleResult wrapped File.
 	 */
-	private Result<File> performScan() {
+	private SimpleResult<File> performScan() {
 		System.out.println("You clicked the \"Scan\" button.");
 		if (scan == null || !scan.isScannerConnected()) { 
-			return new Result<File>(new Exception("Scanner is not connected."));
+			return new SimpleResult<File>(new Exception("Scanner is not connected."));
 		}
 		// try to set scanner settings
-		Result<ResultType> setScanSettingResult = scan.setScanSettings(configStoreH);
+		SimpleResult<SimpleResult.ResultType> setScanSettingResult = scan.setScanSettings(config);
 		if (setScanSettingResult.isErr()) {
 			MainWindow.showGenericExceptionMessage(setScanSettingResult.getError());
 			// reset scan to null
 			scan = null;
 		}//end if we encountered an error while setting scan settings
 		// try to scan something with the scanner
-		Result<String> scanResult = scan.runScanner(mainWindow.uxOverwriteName.getText(), !mainWindow.uxShouldOverwriteName.isSelected());
+		SimpleResult<String> scanResult = scan.runScanner(mainWindow.uxOverwriteName.getText(), !mainWindow.uxShouldOverwriteName.isSelected());
 		if (scanResult.isOk()) {
 			String result = scanResult.getValue();
-			if (configStoreH.unsharp_skip == true) {
+			if (config.unsharp_skip == true) {
 				lastScannedFile = new File(result);
-				return new Result<File>(lastScannedFile);
+				return new SimpleResult<File>(lastScannedFile);
 			}//end if we should just skip the unsharp process
 			else {
-				Result<String> unsharpResult = IJProcess.doUnsharpCorrection(
+				SimpleResult<String> unsharpResult = IJProcess.doUnsharpCorrection(
 					result,
-					configStoreH.unsharp_sigma,
-					configStoreH.unsharp_weight,
-					configStoreH.unsharp_rename
+					config.unsharp_sigma,
+					config.unsharp_weight,
+					config.unsharp_rename
 				);
 				if (unsharpResult.isOk()) {
 					lastScannedFile = new File(unsharpResult.getValue());
-					return new Result<File>(lastScannedFile);
+					return new SimpleResult<File>(lastScannedFile);
 				}//end if we have an ok result
 				else {
-					return new Result<File>(unsharpResult.getError());
+					return new SimpleResult<File>(unsharpResult.getError());
 				}//end else we have an error to show
 			}//end else we should do the unsharp correction
 		}//end else if scan result is ok
 		else {
-			return new Result<File>(scanResult.getError());
+			return new SimpleResult<File>(scanResult.getError());
 		}//end if we have an error to show
 	}//end method performScan()
 
@@ -229,7 +219,7 @@ public class Root implements Controller {
 	 * finishes.
 	 * @param outputData The data output by the ij task.
 	 */
-	public void postProcessHandling(Result<String> outputData) {
+	public void postProcessHandling(SimpleResult<String> outputData) {
 		if (outputData.isErr()) {
 			outputData.getError().printStackTrace();
 			MainWindow.showGenericExceptionMessage(outputData.getError());

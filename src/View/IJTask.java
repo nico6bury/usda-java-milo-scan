@@ -7,9 +7,9 @@ import java.util.List;
 import javax.swing.SwingWorker;
 
 import IJM.IJProcess;
-import Utils.Result;
+import SimpleResult.SimpleResult;
 
-public class IJTask extends SwingWorker<Result<String>,Void> {
+public class IJTask extends SwingWorker<SimpleResult<String>,Void> {
 
 	protected List<File> imageQueue = new ArrayList<File>();
 	protected IJProcess ijProcess = new IJProcess();
@@ -20,15 +20,15 @@ public class IJTask extends SwingWorker<Result<String>,Void> {
 	 * If you want async handling, set caller as well.
 	 */
 	@Override
-	protected Result<String> doInBackground() throws Exception {
-		Result<String> processResult = ijProcess.runMacro(imageQueue);
+	protected SimpleResult<String> doInBackground() throws Exception {
+		SimpleResult<String> processResult = ijProcess.runMacro(imageQueue);
 		return processResult;
 	}//end doInBackground()
 
 	@Override
 	protected void done() {
 		try {
-			Result<String> processResult = get();
+			SimpleResult<String> processResult = get();
 			if (caller != null) {
 				caller.postProcessHandling(processResult);
 			}//end if we have reference to caller
@@ -49,6 +49,6 @@ public class IJTask extends SwingWorker<Result<String>,Void> {
 	}//end 2-arg constructor
 
 	public interface IJTaskCaller {
-		public void postProcessHandling(Result<String> result);
+		public void postProcessHandling(SimpleResult<String> result);
 	}
 }//end class IJTask
