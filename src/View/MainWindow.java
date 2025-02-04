@@ -840,7 +840,8 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 * finds the path of that image, and 
 	 * then opens + selects that file in file explorer
 	 */
-	private void uxOpenFileBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxOpenFileBtnActionPerformed
+	@SuppressWarnings("deprecation")
+    private void uxOpenFileBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxOpenFileBtnActionPerformed
 		// open the file in file explorer
 		try {
 			String selectedValue = "";
@@ -1019,7 +1020,8 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	/**
 	 * This function finds the directory of output files and opens it in file explorer.
 	 */
-	private void uxOpenOutputFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxOpenOutputFileActionPerformed
+	@SuppressWarnings("deprecation")
+    private void uxOpenOutputFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxOpenOutputFileActionPerformed
 		String jar_location;
 		try {
 			// Get path of output folder
