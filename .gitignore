@@ -6,6 +6,9 @@
 # Output jar
 usda-java-milo-scan.jar
 
+# JRE
+/jre
+
 ### NetBeans ###
 **/nbproject/private/
 **/nbproject/Makefile-*.mk
