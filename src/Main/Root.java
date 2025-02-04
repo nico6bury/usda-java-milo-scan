@@ -43,17 +43,17 @@ public class Root implements Controller {
 		if (config_result.isOk()) {
 			this.config = config;
 			// update dialog based on config
-			mainWindow.thresholdDialog.thresholdToReturn = this.config.proc_threshold;
-			mainWindow.areaFlagDialog.firstFlag = this.config.area_threshold_lower;
-			mainWindow.areaFlagDialog.secondFlag = this.config.area_threshold_upper;
-			mainWindow.unsharpDialog.unsharp_sigma = this.config.unsharp_sigma;
-			mainWindow.unsharpDialog.unsharp_weight = this.config.unsharp_weight;
-			mainWindow.unsharpDialog.unsharp_skip = this.config.unsharp_skip;
-			mainWindow.unsharpDialog.unsharp_rename = this.config.unsharp_rename;
-			mainWindow.scanAreaDialog.X1 = this.config.scan_x1;
-			mainWindow.scanAreaDialog.Y1 = this.config.scan_y1;
-			mainWindow.scanAreaDialog.X2 = this.config.scan_x2;
-			mainWindow.scanAreaDialog.Y2 = this.config.scan_y2;
+			mainWindow.thresholdDialog.thresholdToReturn = this.config.procThreshold;
+			mainWindow.areaFlagDialog.firstFlag = this.config.areaThresholdLower_;
+			mainWindow.areaFlagDialog.secondFlag = this.config.areaThresholdUpper;
+			mainWindow.unsharpDialog.unsharp_sigma = this.config.unsharpSigma;
+			mainWindow.unsharpDialog.unsharp_weight = this.config.unsharpWeight;
+			mainWindow.unsharpDialog.unsharp_skip = this.config.unsharpSkip;
+			mainWindow.unsharpDialog.unsharp_rename = this.config.unsharpRename;
+			mainWindow.scanAreaDialog.X1 = this.config.scanX1;
+			mainWindow.scanAreaDialog.Y1 = this.config.scanY1;
+			mainWindow.scanAreaDialog.X2 = this.config.scanX2;
+			mainWindow.scanAreaDialog.Y2 = this.config.scanY2;
 		}//end if we can read from config
 		else {
 			MainWindow.showGenericExceptionMessage(config_result.getError());
@@ -151,16 +151,16 @@ public class Root implements Controller {
 		SimpleResult<String> scanResult = scan.runScanner(mainWindow.uxOverwriteName.getText(), !mainWindow.uxShouldOverwriteName.isSelected());
 		if (scanResult.isOk()) {
 			String result = scanResult.getValue();
-			if (config.unsharp_skip == true) {
+			if (config.unsharpSkip == true) {
 				lastScannedFile = new File(result);
 				return new SimpleResult<File>(lastScannedFile);
 			}//end if we should just skip the unsharp process
 			else {
 				SimpleResult<String> unsharpResult = IJProcess.doUnsharpCorrection(
 					result,
-					config.unsharp_sigma,
-					config.unsharp_weight,
-					config.unsharp_rename
+					config.unsharpSigma,
+					config.unsharpWeight,
+					config.unsharpRename
 				);
 				if (unsharpResult.isOk()) {
 					lastScannedFile = new File(unsharpResult.getValue());

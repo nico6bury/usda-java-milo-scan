@@ -955,8 +955,8 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 */
 	private void uxSetAreaFlagMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxSetAreaFlagMenuBtnActionPerformed
 		areaFlagDialog.setVisible(true);
-		root.getConfig().area_threshold_lower = areaFlagDialog.firstFlag;
-		root.getConfig().area_threshold_upper = areaFlagDialog.secondFlag;
+		root.getConfig().areaThresholdLower_ = areaFlagDialog.firstFlag;
+		root.getConfig().areaThresholdUpper = areaFlagDialog.secondFlag;
 		root.getConfig().write_config();
 	}//GEN-LAST:event_uxSetAreaFlagMenuBtnActionPerformed
 
@@ -965,7 +965,7 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 */
 	private void uxSetThresholdMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxSetThresholdMenuBtnActionPerformed
 		thresholdDialog.setVisible(true);
-		root.getConfig().proc_threshold = thresholdDialog.thresholdToReturn;
+		root.getConfig().procThreshold = thresholdDialog.thresholdToReturn;
 		root.getConfig().write_config();
 	}//GEN-LAST:event_uxSetThresholdMenuBtnActionPerformed
 
@@ -974,10 +974,10 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 */
 	private void uxSetUnsharpMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxSetUnsharpMenuBtnActionPerformed
 		unsharpDialog.setVisible(true);
-		root.getConfig().unsharp_sigma = unsharpDialog.unsharp_sigma;
-		root.getConfig().unsharp_weight = unsharpDialog.unsharp_weight;
-		root.getConfig().unsharp_skip = unsharpDialog.unsharp_skip;
-		root.getConfig().unsharp_rename = unsharpDialog.unsharp_rename;
+		root.getConfig().unsharpSigma = unsharpDialog.unsharp_sigma;
+		root.getConfig().unsharpWeight = unsharpDialog.unsharp_weight;
+		root.getConfig().unsharpSkip = unsharpDialog.unsharp_skip;
+		root.getConfig().unsharpRename = unsharpDialog.unsharp_rename;
 		root.getConfig().write_config();
 	}//GEN-LAST:event_uxSetUnsharpMenuBtnActionPerformed
 
@@ -986,10 +986,10 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 */
 	private void uxScanAreaMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxScanAreaMenuBtnActionPerformed
 		scanAreaDialog.setVisible(true);
-		root.getConfig().scan_x1 = scanAreaDialog.X1;
-		root.getConfig().scan_y1 = scanAreaDialog.Y1;
-		root.getConfig().scan_x2 = scanAreaDialog.X2;
-		root.getConfig().scan_y2 = scanAreaDialog.Y2;
+		root.getConfig().scanX1 = scanAreaDialog.X1;
+		root.getConfig().scanY1 = scanAreaDialog.Y1;
+		root.getConfig().scanX2 = scanAreaDialog.X2;
+		root.getConfig().scanY2 = scanAreaDialog.Y2;
 		root.getConfig().write_config();
 	}//GEN-LAST:event_uxScanAreaMenuBtnActionPerformed
 

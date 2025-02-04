@@ -96,7 +96,7 @@ public class Scan {
 			// scanSource.setFrame(1260, 10751, 3667, 11981);
 			// correct inch cooridates, seems to give correct area
 			// defaults should be 1.05, 8.98, 3.05, 9.98
-			scanSource.setFrame(config.scan_x1, config.scan_y1, config.scan_x2, config.scan_y2);
+			scanSource.setFrame(config.scanX1, config.scanY1, config.scanX2, config.scanY2);
 			// shows more of circle, for testing
 			// scanSource.setFrame(.5, 8, 3.5, 11);
 

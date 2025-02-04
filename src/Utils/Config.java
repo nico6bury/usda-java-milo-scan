@@ -50,57 +50,78 @@ public class Config implements ConfigStore {
     /**
 	 * Threshold to use for imagej processing
 	 */
-	public int proc_threshold = 160;
-	
+	public int procThreshold = 160;
+	public String procThresholdNAME = "Processing Threshold";
+    public String procThresholdCOMMENT = "This is the number used as the upper threshold in imagej particle analysis";
     /**
 	 * lower threshold for classifying avg % area of image
 	 */
-	public double area_threshold_lower = 0.025;
+	public double areaThresholdLower_ = 0.025;
+    public String areaThresholdLowerNAME = "Area Threshold, Lower";
+    public String areaThresholdLowerCOMMENT = "Any file with average % area greater than this will get a flag of x";
 	
     /**
 	 * upper threshold for classifying avg % area of image
 	 */
-	public double area_threshold_upper = 0.05;
+	public double areaThresholdUpper = 0.05;
+    public String areaThresholdUpperNAME = "Area Threshold, Upper";
+    public String areaThresholdUpperCOMMENT = "Any file with average % area greater than this will get a flag of xx";
 	
     /**
 	 * sigma (radius) to use with unsharp mask filter
 	 */
-	public double unsharp_sigma = 1.5;
+	public double unsharpSigma = 1.5;
+    public String unsharpSigmaNAME = "Unsharp Mask Sigma (Radius)";
+    public String unsharpSigmaCOMMENT = "Sigma radius to use with unsharp mask to try and replicate epson setting.";
 	
     /**
 	 * mask weight to use with unsharp mask filter
 	 */
-	public double unsharp_weight = 0.5;
+	public double unsharpWeight = 0.5;
+    public String unsharpWeightNAME = "Unsharp Mask Weight";
+    public String unsharpWeightCOMMENT = "Mask weight to use with unsharp mask to try and replicate epson setting.";
 	
     /**
 	 * If this is true, then the unsharp mask will be skipped
 	 */
-	public boolean unsharp_skip = true;
+	public boolean unsharpSkip = true;
+    public String unsharpSkipNAME = "Should Skip Unsharp Mask";
+    public String unsharpSkipCOMMENT = "if true, then the unsharp mask will be skipped";
 	
     /**
 	 * If this is false, then the unsharp masked image will overwrite the original. If true, a new file will be generated.
 	 */
-	public boolean unsharp_rename = false;
+	public boolean unsharpRename = false;
+    public String unsharpRenameNAME = "Should Rename Unsharp Mask Output";
+    public String unsharpRenameCOMMENT = "if true, the unsharp masked image will be renamed as a new file. Otherwise, it will overwrite the original.";
 	
     /**
 	 * scan area x coordinate of upper left corner of scan area in inches
 	 */
-	public double scan_x1 = 2.89;
+	public double scanX1 = 2.89;
+    public String scanX1NAME = "Scan Area Upper Left X";
+    public String scanX1COMMENT = "x coordinate in inches of upper left corner of scan area";
 	
     /**
 	 * scan area y coordinate of upper left corner of scan area in inches
 	 */
-	public double scan_y1 = 1.38;
+	public double scanY1 = 2;
+    public String scanY1NAME = "Scan Area Upper Left Y";
+    public String scanY1COMMENT = "y coordinate in inches of upper left corner of scan area";
 	
     /**
 	 * scan area x coordinate of lower right corner of scan area in inches
 	 */
-	public double scan_x2 = 4.99;
+	public double scanX2 = 4.99;
+    public String scanX2NAME = "Scan Area Lower Right X";
+    public String scanX2COMMENT = "x coordinate in inches of lower right corner of scan area";
 	
     /**
 	 * scan area y coordinate of lower right corner of scan area in inches
 	 */
-	public double scan_y2 = 9.89;
+	public double scanY2 = 9.89;
+    public String scanY2NAME = "Scan Area Lower Right Y";
+    public String scanY2COMMENT = "y coordinate in inches of lower right corner of scan area";
 
     public SimpleResult<String> write_config() {
         return ConfigScribe.writeConfig(this);
