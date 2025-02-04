@@ -42,7 +42,7 @@ public class Config implements ConfigStore {
 
     @Override
     public File getDirectoryLocation() {
-        return null;
+        return new File(System.getProperty("user.home"), "AppData\\Local\\ARS-SPIERU");
     }//end getDirectoryLocation()
     
     public String file_chooser_dir = "";
