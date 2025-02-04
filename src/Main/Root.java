@@ -44,7 +44,7 @@ public class Root implements Controller {
 			this.config = config;
 			// update dialog based on config
 			mainWindow.thresholdDialog.thresholdToReturn = this.config.procThreshold;
-			mainWindow.areaFlagDialog.firstFlag = this.config.areaThresholdLower_;
+			mainWindow.areaFlagDialog.firstFlag = this.config.areaThresholdLower;
 			mainWindow.areaFlagDialog.secondFlag = this.config.areaThresholdUpper;
 			mainWindow.unsharpDialog.unsharp_sigma = this.config.unsharpSigma;
 			mainWindow.unsharpDialog.unsharp_weight = this.config.unsharpWeight;

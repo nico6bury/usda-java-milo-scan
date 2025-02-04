@@ -955,7 +955,7 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 */
 	private void uxSetAreaFlagMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxSetAreaFlagMenuBtnActionPerformed
 		areaFlagDialog.setVisible(true);
-		root.getConfig().areaThresholdLower_ = areaFlagDialog.firstFlag;
+		root.getConfig().areaThresholdLower = areaFlagDialog.firstFlag;
 		root.getConfig().areaThresholdUpper = areaFlagDialog.secondFlag;
 		root.getConfig().write_config();
 	}//GEN-LAST:event_uxSetAreaFlagMenuBtnActionPerformed

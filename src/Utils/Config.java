@@ -56,7 +56,7 @@ public class Config implements ConfigStore {
     /**
 	 * lower threshold for classifying avg % area of image
 	 */
-	public double areaThresholdLower_ = 0.025;
+	public double areaThresholdLower = 0.025;
     public String areaThresholdLowerNAME = "Area Threshold, Lower";
     public String areaThresholdLowerCOMMENT = "Any file with average % area greater than this will get a flag of x";
 	
