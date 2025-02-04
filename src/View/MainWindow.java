@@ -30,6 +30,7 @@ import IJM.IJProcess;
 import IJM.SumResult;
 import Main.Controller;
 import Main.Controller.InterfaceMessage;
+import Utils.Config;
 import Utils.Constants;
 import SimpleResult.SimpleResult;
 import View.Dialog.AreaFlagDialog;
@@ -954,7 +955,9 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 * Shows the dialog for changing area flag thresholds. 
 	 */
 	private void uxSetAreaFlagMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxSetAreaFlagMenuBtnActionPerformed
-		areaFlagDialog.setVisible(true);
+		areaFlagDialog.firstFlag = root.getConfig().areaThresholdLower;
+        areaFlagDialog.secondFlag = root.getConfig().areaThresholdUpper;
+        areaFlagDialog.setVisible(true);
 		root.getConfig().areaThresholdLower = areaFlagDialog.firstFlag;
 		root.getConfig().areaThresholdUpper = areaFlagDialog.secondFlag;
 		root.getConfig().write_config();
@@ -964,7 +967,8 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 * Shows the dialog for changing the image processing threshold. 
 	 */
 	private void uxSetThresholdMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxSetThresholdMenuBtnActionPerformed
-		thresholdDialog.setVisible(true);
+		thresholdDialog.thresholdToReturn = root.getConfig().procThreshold;
+        thresholdDialog.setVisible(true);
 		root.getConfig().procThreshold = thresholdDialog.thresholdToReturn;
 		root.getConfig().write_config();
 	}//GEN-LAST:event_uxSetThresholdMenuBtnActionPerformed
@@ -973,7 +977,12 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 * Shows the dialog for changing the unsharp settings.
 	 */
 	private void uxSetUnsharpMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxSetUnsharpMenuBtnActionPerformed
-		unsharpDialog.setVisible(true);
+		Config c = root.getConfig();
+        unsharpDialog.unsharp_sigma = c.unsharpSigma;
+        unsharpDialog.unsharp_weight = c.unsharpWeight;
+        unsharpDialog.unsharp_skip = c.unsharpSkip;
+        unsharpDialog.unsharp_rename = c.unsharpRename;
+        unsharpDialog.setVisible(true);
 		root.getConfig().unsharpSigma = unsharpDialog.unsharp_sigma;
 		root.getConfig().unsharpWeight = unsharpDialog.unsharp_weight;
 		root.getConfig().unsharpSkip = unsharpDialog.unsharp_skip;
@@ -985,7 +994,12 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 * Shows the dialog for changing the scan area.
 	 */
 	private void uxScanAreaMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxScanAreaMenuBtnActionPerformed
-		scanAreaDialog.setVisible(true);
+		Config c = root.getConfig();
+        scanAreaDialog.X1 = c.scanX1;
+        scanAreaDialog.Y1 = c.scanY1;
+        scanAreaDialog.X2 = c.scanX2;
+        scanAreaDialog.Y2 = c.scanY2;
+        scanAreaDialog.setVisible(true);
 		root.getConfig().scanX1 = scanAreaDialog.X1;
 		root.getConfig().scanY1 = scanAreaDialog.Y1;
 		root.getConfig().scanX2 = scanAreaDialog.X2;
