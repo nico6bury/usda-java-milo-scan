@@ -244,7 +244,7 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 
         uxStatusTxt.setEditable(false);
         uxStatusTxt.setColumns(20);
-        uxStatusTxt.setFont(uxStatusTxt.getFont());
+        uxStatusTxt.setFont(uxStatusTxt.getFont().deriveFont(uxStatusTxt.getFont().getSize()+2f));
         uxStatusTxt.setRows(5);
         jScrollPane1.setViewportView(uxStatusTxt);
 
@@ -306,7 +306,7 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 
         uxTitleBlockTxt.setEditable(false);
         uxTitleBlockTxt.setColumns(20);
-        uxTitleBlockTxt.setFont(uxTitleBlockTxt.getFont());
+        uxTitleBlockTxt.setFont(uxTitleBlockTxt.getFont().deriveFont(uxTitleBlockTxt.getFont().getSize()+2f));
         uxTitleBlockTxt.setRows(5);
         jScrollPane6.setViewportView(uxTitleBlockTxt);
 
@@ -385,7 +385,7 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(uxShouldOutputKernImages)
-                .addContainerGap(143, Short.MAX_VALUE))
+                .addContainerGap(101, Short.MAX_VALUE))
         );
 
         jSplitPane2.setTopComponent(jPanel1);
@@ -550,7 +550,7 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 
         jPanel6.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
-        uxOutputTable.setFont(uxOutputTable.getFont());
+        uxOutputTable.setFont(uxOutputTable.getFont().deriveFont(uxOutputTable.getFont().getSize()+2f));
         uxOutputTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
