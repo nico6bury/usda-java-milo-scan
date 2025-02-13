@@ -141,18 +141,34 @@ public class IJProcess {
 		// print third line of header
 		// pw.printf("flag lower threshold: %f     flag upper threshold: %f\n", lower_flag_thresh, upper_flag_thresh);
 
+		// print a little key for my abbreviations
+		pw.print("Abbreviation Key: K => Kernel | V => Vitreous Endosperm | C => Chalky Endosperm | G => Germ\n");
+
 		// print headers for the columns we're about to print
 		pw.print(
-			"FileID,GridIdx,Pixels1,Pixels2,%Area" + 
-			"," +
+			"FileID,GridIdx" + 
+			",KPixels,VPixels,CPixels,GPixels" + 
+			",V%Area,C%Area,G%Area" + 
+
 			",KX,KY" + 
-			",EX,EY" + 
+			",VX,VY" + 
+			",CX,CY" + 
+			",GX,GY" + 
+			
 			",KBX,KBY,KWidth,KHeight" + 
-			",EBX,EBY,EWidth,EHeight" +
+			",VBX,VBY,VWidth,VHeight" + 
+			",CBX,CBY,CWidth,CHeight" + 
+			",GBX,GBY,GWidth,GHeight" +
+			
 			",KPerim" +
-			",EPerim" +
+			",VPerim" +
+			",CPerim" +
+			",GPerim" +
+			
 			",KCirc,KRound,KAR,KSolidity" +
-			",ECirc,ERound,EAR,ESolidity" +
+			",VCirc,VRound,VAR,VSolidity" +
+			",CCirc,CRound,CAR,CSolidity" +
+			",GCirc,GRound,GAR,GSolidity" +
 			"\n");
 		
 		StringBuilder data_output = new StringBuilder();
@@ -170,62 +186,124 @@ public class IJProcess {
 				filename_no_ext = filename_no_ext.substring(0, last_dot_idx);
 			}//end if we should remove the file extension
 			double total_area = res.getResValSentinel("Area");
-			double endosperm_area = res.getResValSentinel("EndospermArea");
-			double endo_percent = (endosperm_area * 100) / total_area;
+			// double endosperm_area = res.getResValSentinel("EndospermArea");
+			// double endo_percent = (endosperm_area * 100) / total_area;
+			double vit_area = res.getResValSentinel("VitreousArea");
+			double chk_area = res.getResValSentinel("ChalkArea");
+			double grm_area = res.getResValSentinel("GermArea");
+			double vit_perc = (vit_area * 100) / total_area;
+			double chk_perc = (chk_area * 100) / total_area;
+			double grm_perc = (grm_area * 100) / total_area;
 
 			double kx = res.rrr.roi.getBounds().getCenterX();
 			double ky = res.rrr.roi.getBounds().getCenterY();
 			
-			double ex = res.getResValSentinel("EndospermX") + res.rrr.roi.getBounds().getX();
-			double ey = res.getResValSentinel("EndospermY") + res.rrr.roi.getBounds().getY();
-			
+			// double ex = res.getResValSentinel("EndospermX") + res.rrr.roi.getBounds().getX();
+			// double ey = res.getResValSentinel("EndospermY") + res.rrr.roi.getBounds().getY();
+			double vx = res.rrr.roi.getBounds().getCenterX();
+			double vy = res.rrr.roi.getBounds().getCenterY();
+			double cx = res.rrr.roi.getBounds().getCenterX();
+			double cy = res.rrr.roi.getBounds().getCenterY();
+			double gx = res.rrr.roi.getBounds().getCenterX();
+			double gy = res.rrr.roi.getBounds().getCenterY();
+
 			int kbx = res.rrr.roi.getBounds().x;
 			int kby = res.rrr.roi.getBounds().y;
 			int kw = res.rrr.roi.getBounds().width;
 			int kh = res.rrr.roi.getBounds().height;
 
-			double ebx = res.getResValSentinel("EndospermBX") + kbx;
-			double eby = res.getResValSentinel("EndospermBY") + kby;
-			double ew = res.getResValSentinel("EndospermWidth");
-			double eh = res.getResValSentinel("EndospermHeight");
+			// double ebx = res.getResValSentinel("EndospermBX") + kbx;
+			// double eby = res.getResValSentinel("EndospermBY") + kby;
+			// double ew = res.getResValSentinel("EndospermWidth");
+			// double eh = res.getResValSentinel("EndospermHeight");
+			double vbx = res.getResValSentinel("VitreousBX") + kbx;
+			double vby = res.getResValSentinel("VitreousBY") + kby;
+			double vw = res.getResValSentinel("VitreousWidth");
+			double vh = res.getResValSentinel("VitreousHeight");
+			double cbx = res.getResValSentinel("ChalkBX") + kbx;
+			double cby = res.getResValSentinel("ChalkBY") + kby;
+			double cw = res.getResValSentinel("ChalkWidth");
+			double ch = res.getResValSentinel("ChalkHeight");
+			double gbx = res.getResValSentinel("GermBX") + kbx;
+			double gby = res.getResValSentinel("GermBY") + kby;
+			double gw = res.getResValSentinel("GermWidth");
+			double gh = res.getResValSentinel("GermHeight");
 
 			double kperim = res.getResValSentinel("KernPerim.");
 
-			double eperim = res.getResValSentinel("EndospermPerim.");
+			// double eperim = res.getResValSentinel("EndospermPerim.");
+			double vperim = res.getResValSentinel("VitreousPerim.");
+			double cperim = res.getResValSentinel("ChalkPerim.");
+			double gperim = res.getResValSentinel("GermPerim.");
 
 			double kcirc = res.getResValSentinel("KernCirc.");
 			double kround = res.getResValSentinel("KernRound");
 			double kar = res.getResValSentinel("KernAR");
 			double ksolidity = res.getResValSentinel("KernSolidity");
 
-			double ecirc = res.getResValSentinel("EndospermCirc.");
-			double eround = res.getResValSentinel("EndospermRound");
-			double ear = res.getResValSentinel("EndospermAR");
-			double esolidity = res.getResValSentinel("EndospermSolidity");
+			// double ecirc = res.getResValSentinel("EndospermCirc.");
+			// double eround = res.getResValSentinel("EndospermRound");
+			// double ear = res.getResValSentinel("EndospermAR");
+			// double esolidity = res.getResValSentinel("EndospermSolidity");
+			double vcirc = res.getResValSentinel("VitreousCirc.");
+			double vround = res.getResValSentinel("VitreousRound");
+			double var = res.getResValSentinel("VitreousAR");
+			double vsolidity = res.getResValSentinel("VitreousSolidity");
+			double ccirc = res.getResValSentinel("ChalkCirc.");
+			double cround = res.getResValSentinel("ChalkRound");
+			double car = res.getResValSentinel("ChalkAR");
+			double csolidity = res.getResValSentinel("ChalkSolidity");
+			double gcirc = res.getResValSentinel("GermCirc.");
+			double ground = res.getResValSentinel("GermRound");
+			double gar = res.getResValSentinel("GermAR");
+			double gsolidity = res.getResValSentinel("GermSolidity");
 
 			data_output.append(String.format(
-				"%s,%d,%3.1f,%3.1f,%3.1f" +
-				"," +
+				"%s,%d" + 
+				",%3.1f,%3.1f,%3.1f,%3.1f" +
+				",%3.1f,%3.1f,%3.1f" +
+
 				",%f,%f" +
 				",%f,%f" +
+				",%f,%f" +
+				",%f,%f" +
+				
 				",%d,%d,%d,%d" +
 				",%f,%f,%f,%f" +
+				",%f,%f,%f,%f" +
+				",%f,%f,%f,%f" +
+				
 				",%f" +
 				",%f" +
+				",%f" +
+				",%f" +
+				
+				",%f,%f,%f,%f" +
+				",%f,%f,%f,%f" +
 				",%f,%f,%f,%f" +
 				",%f,%f,%f,%f" +
 				"\n",
 
-				filename_no_ext, res.rrr.gridCellIdx + 1, total_area, endosperm_area, endo_percent,
+				filename_no_ext, res.rrr.gridCellIdx + 1,
+				total_area,vit_area,chk_area,grm_area,
+				vit_perc,chk_perc,grm_perc,
 
 				kx,ky,
-				ex,ey,
+				vx,vy,
+				cx,cy,
+				gx,gy,
 				kbx,kby,kw,kh,
-				ebx,eby,ew,eh,
+				vbx,vby,vw,vh,
+				cbx,cby,cw,ch,
+				gbx,gby,gw,gh,
 				kperim,
-				eperim,
+				vperim,
+				cperim,
+				gperim,
 				kcirc,kround,kar,ksolidity,
-				ecirc,eround,ear,esolidity
+				vcirc,vround,var,vsolidity,
+				ccirc,cround,car,csolidity,
+				gcirc,ground,gar,gsolidity
 			));
 		}//end making the output string
 		
@@ -308,7 +386,10 @@ public class IJProcess {
 			kernGrid.updateGridLocs(gridCells);
 
 			// Get procs from endosperm(white) area
-			procEndosperm(kernGrid, this_image);
+			// procEndosperm(kernGrid, this_image);
+
+			// Get three parts of kernel area
+			procThreeParts(kernGrid, this_image);
 
 			// Save Kernel images, if we want to
 			if (shouldOutputKernImages) {
@@ -468,6 +549,112 @@ public class IJProcess {
 			}//end looping over kernels
 		}//end looping over groups of kernels
 	}//end procEndosperm
+
+	/**
+	 * Mutates rg, doesn't mutate image.
+	 * Tries to threshold out and get information on vitreous endopserm,
+	 * chalky endosperm, and the germ.
+	 * @param rg
+	 * @param image
+	 */
+	public void procThreeParts(RoiGrid rg, ImagePlus image) {
+		ImagePlus img = image.duplicate();
+		img.getProcessor().blurGaussian(0.5);
+
+		// try to find the vitreous endosperm (also catches strips of germ)
+		ImagePlus vitImg = img.duplicate();
+		IJProcess.colorThRGB(
+			vitImg,
+			new int[] {0,75,0},
+			new int[] {147,144,115},
+			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+		);
+		ImageConverter vitIc = new ImageConverter(vitImg);
+		vitIc.convertToGray8();
+		HashMap<String,double[]>[][] vitResMap = rg.analyzeParticles(vitImg,
+		"area centroid perimeter bounding shape display redirect=None decimal=2",
+		"size=300-10000 display");
+		procResultsHelper(rg, vitResMap, "Vitreous");
+
+		// try to find the chalky endosperm
+		ImagePlus chkImg = img.duplicate();
+		IJProcess.colorThRGB(
+			chkImg,
+			new int[] {170,170,170},
+			new int[] {255,255,255},
+			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+		);
+		ImageConverter chkIc = new ImageConverter(chkImg);
+		chkIc.convertToGray8();
+		HashMap<String,double[]>[][] chkResMap = rg.analyzeParticles(vitImg,
+		"area centroid perimeter bounding shape display redirect=None decimal=2",
+		"size=300-10000 display");
+		procResultsHelper(rg, chkResMap, "Chalk");
+		
+
+		// try and find the germ
+		ImagePlus grmImg = img.duplicate();
+		IJProcess.colorThRGB(
+			grmImg,
+			new int[] {150,140,0},
+			new int[] {255,255,255},
+			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+		);
+		IJProcess.colorThRGB(
+			grmImg,
+			new int[] {160,1,1},
+			new int[] {195,195,150},
+			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+		);
+		ImageConverter grmIc = new ImageConverter(grmImg);
+		grmIc.convertToGray8();
+		HashMap<String,double[]>[][] grmResMap = rg.analyzeParticles(grmImg,
+		"area centroid perimeter bounding shape display redirect=None decimal=2",
+		"size=100-10000 display");
+		procResultsHelper(rg, grmResMap, "Germ");
+
+	}//end procThreeParts()
+
+	/**
+	 * In proc functions, handles the movement and parsing of result from the
+	 * result map (resMap) to the RoiGrid (rg).
+	 * @param rg
+	 * @param resMap
+	 * @param headerPrefix
+	 */
+	public void procResultsHelper(RoiGrid rg, HashMap<String,double[]>[][] resMap, String headerPrefix) {
+		for(int i = 0; i < rg.rrrs.length; i++) {
+			for(int ii = 0; ii < rg.rrrs[i].length; ii++) {
+				Set<String> these_headers = resMap[i][ii].keySet();
+				for (String header : these_headers) {
+					double[] res = resMap[i][ii].get(header);
+					if (res.length == 0) {System.out.println("Couldn't get results for roi at grid 0-index " + rg.rrrs[i][ii].gridCellIdx);}
+					else if (header == "Area") {
+						rg.rrrs[i][ii].resultsHeaders.add(headerPrefix + "Area");
+						double totalArea = 0; for(int j = 0; j < res.length; j++) {totalArea += res[j];}
+						rg.rrrs[i][ii].resultsValues.add(totalArea);
+					} else if (header == "AR" || header == "Solidity" || header == "Perim." || header == "BX" || header == "BY" ||
+					header == "Circ." || header == "X" || header == "Y" || header == "Round" || header == "Height" || header == "Width") {
+						if (res.length == 1) {
+							rg.rrrs[i][ii].resultsHeaders.add(headerPrefix + header);
+							rg.rrrs[i][ii].resultsValues.add(res[0]);
+						}//end if we have one particle, as expected
+						else if (res.length == 0) {
+							rg.rrrs[i][ii].resultsHeaders.add(headerPrefix + header);
+							rg.rrrs[i][ii].resultsValues.add(-1.0);
+						}//end else if we need to alert someone that nothing was detected
+						else {
+							for (int r = 0; r < res.length; r++) {
+								rg.rrrs[i][ii].resultsHeaders.add(headerPrefix + r + header);
+								rg.rrrs[i][ii].resultsValues.add(res[r]);
+							}//end looping over all results we got for this kernel
+						}//end else we try to output whatever we can find
+					}
+					else {System.out.println("Didn't include header " + header);}
+				}//end looping over each header in headers
+			}//end looping over kernels
+		}//end looping over groups of kernels
+	}//end procResultsHelper()
 
 	/**
 	 * Gets a RoiGrid, holding Rois for all kernels.
