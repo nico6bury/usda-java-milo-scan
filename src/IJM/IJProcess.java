@@ -489,6 +489,7 @@ public class IJProcess {
 	 * Adds endosperm(white) area from each kernel to each kernel.
 	 * @param rg The roigrid holding all the kernel location information.
 	 * @param image The image to process.
+	 * @deprecated
 	 */
 	public void procEndosperm(RoiGrid rg, ImagePlus image) {
 		// prepare image to be processed
