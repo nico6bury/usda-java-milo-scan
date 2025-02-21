@@ -423,6 +423,7 @@ public class IJProcess {
 	 * @param image The image to cut up and save to the filesystem.
 	 * @param baseDirectory The directory holding the image, most likely.
 	 * @param newFolderName The name of the new folder to create to hold images.
+	 * @deprecated
 	 */
 	protected void outputKernImages(
 		RoiGrid rg,
@@ -431,33 +432,71 @@ public class IJProcess {
 		String newFolderName
 	) {
 		// get images in all the right thresholds
-		ImagePlus plain_img = image.duplicate();
-		ImagePlus kern_img = image.duplicate();
-		colorThHSB(
-			kern_img,
-			IJM.Constants.kernel_lower_hsb_thresh,
-			IJM.Constants.kernel_upper_hsb_thresh,
-			IJM.Constants.kernel_hsb_pass_or_not
-			);
-		ImagePlus endo_img = image.duplicate();
+		// ImagePlus endo_img = image.duplicate();
 		// colorThHSB(
 		//     endo_img,
 		//     IJM.Constants.endosperm_lower_hsb_thresh,
 		//     IJM.Constants.endosperm_upper_hsb_thresh,
 		//     IJM.Constants.endosperm_hsb_pass_or_not
 		//     );
-		IJProcess.colorThYUV(
-			endo_img,
-			IJM.Constants.chalk_endosperm_lower_yuv_thresh,
-			IJM.Constants.chalk_endosperm_upper_yuv_thresh,
-			IJM.Constants.chalk_endosperm_yuv_pass_or_not
-		);
+		// IJProcess.colorThYUV(
+		// 	endo_img,
+		// 	IJM.Constants.chalk_endosperm_lower_yuv_thresh,
+		// 	IJM.Constants.chalk_endosperm_upper_yuv_thresh,
+		// 	IJM.Constants.chalk_endosperm_yuv_pass_or_not
+		// );
 		// IJProcess.colorThGrayscale(
 		//     endo_img,
 		//     IJM.Constants.chalk_endosperm_lower_gray_thresh,
 		//     IJM.Constants.chalk_endosperm_upper_gray_thresh,
 		//     IJM.Constants.chalk_endosperm_gray_pass_or_not
 		// );
+		ImagePlus plain_img = image.duplicate();
+		
+		ImagePlus kern_img = image.duplicate();
+		colorThHSB(
+			kern_img,
+			IJM.Constants.kernel_lower_hsb_thresh,
+			IJM.Constants.kernel_upper_hsb_thresh,
+			IJM.Constants.kernel_hsb_pass_or_not
+		);
+		
+		ImagePlus img = kern_img.duplicate();
+		img.getProcessor().blurGaussian(0.5);
+		
+		ImagePlus vitImg = img.duplicate();
+		IJProcess.colorThRGB(
+			vitImg,
+			new int[] {0,75,0},
+			new int[] {147,144,115},
+			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+		);
+		
+		ImagePlus chkImg = img.duplicate();
+		IJProcess.colorThRGB(
+			chkImg,
+			new int[] {170,170,170},
+			new int[] {255,255,255},
+			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+		);
+
+		ImagePlus grmImg = img.duplicate();
+		IJProcess.colorThRGB(
+			grmImg,
+			new int[] {150,140,0},
+			new int[] {255,255,255},
+			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+		);
+		IJProcess.colorThRGB(
+			grmImg,
+			new int[] {160,1,1},
+			new int[] {195,195,150},
+			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+		);
+		
+		// TODO: Simulate the particle analysis to get an overlay over stuff
+		
+		
 		// fileio to figure base location to print stuff
 		File baseDir = new File(baseDirectory, newFolderName);
 		for (int i = 0; baseDir.exists(); i++) {
@@ -473,14 +512,14 @@ public class IJProcess {
 				RRR this_roi = rg.rrrs[i][ii];
 				ImagePlus this_plain = plain_img.crop(new Roi[] {this_roi.roi})[0];
 				ImagePlus this_kern = kern_img.crop(new Roi[] {this_roi.roi})[0];
-				ImagePlus this_endo = endo_img.crop(new Roi[] {this_roi.roi})[0];
+				// ImagePlus this_endo = endo_img.crop(new Roi[] {this_roi.roi})[0];
 				File plain_path = new File(baseDir, i + "-" + ii + "-0p.tif");
 				File kern_path = new File(baseDir, i + "-" + ii + "-1k.tif");
 				File endo_path = new File(baseDir, i + "-" + ii + "-2e.tif");
 				System.out.println("Plain image path for kern output: " + plain_path.getAbsolutePath());
 				IJ.save(this_plain, plain_path.getAbsolutePath());
 				IJ.save(this_kern, kern_path.getAbsolutePath());
-				IJ.save(this_endo, endo_path.getAbsolutePath());
+				// IJ.save(this_endo, endo_path.getAbsolutePath());
 			}//end looping within rows in rrrs
 		}//end looping over rows in rrrs
 	}//end outputKernImages()
@@ -560,7 +599,7 @@ public class IJProcess {
 	 */
 	public void procThreeParts(RoiGrid rg, ImagePlus image) {
 		ImagePlus img = image.duplicate();
-		img.getProcessor().blurGaussian(0.5);
+		// img.getProcessor().blurGaussian(0.5);
 
 		// try to find the vitreous endosperm (also catches strips of germ)
 		ImagePlus vitImg = img.duplicate();
@@ -587,7 +626,7 @@ public class IJProcess {
 		);
 		ImageConverter chkIc = new ImageConverter(chkImg);
 		chkIc.convertToGray8();
-		HashMap<String,double[]>[][] chkResMap = rg.analyzeParticles(vitImg,
+		HashMap<String,double[]>[][] chkResMap = rg.analyzeParticles(chkImg,
 		"area centroid perimeter bounding shape display redirect=None decimal=2",
 		"size=300-10000 display");
 		procResultsHelper(rg, chkResMap, "Chalk");
