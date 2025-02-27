@@ -613,7 +613,7 @@ public class IJProcess {
 		vitIc.convertToGray8();
 		HashMap<String,double[]>[][] vitResMap = rg.analyzeParticles(vitImg,
 		"area centroid perimeter bounding shape display redirect=None decimal=2",
-		"size=300-10000 display");
+		"size=200-10000 display");
 		procResultsHelper(rg, vitResMap, "Vitreous");
 
 		// try to find the chalky endosperm
@@ -628,7 +628,7 @@ public class IJProcess {
 		chkIc.convertToGray8();
 		HashMap<String,double[]>[][] chkResMap = rg.analyzeParticles(chkImg,
 		"area centroid perimeter bounding shape display redirect=None decimal=2",
-		"size=300-10000 display");
+		"size=200-10000 display");
 		procResultsHelper(rg, chkResMap, "Chalk");
 		
 
