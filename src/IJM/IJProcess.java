@@ -467,31 +467,31 @@ public class IJProcess {
 		ImagePlus vitImg = img.duplicate();
 		IJProcess.colorThRGB(
 			vitImg,
-			new int[] {0,75,0},
-			new int[] {147,144,115},
-			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+			IJM.Constants.vitreous_endosperm_lower_rgb_thresh,
+			IJM.Constants.vitreous_endosperm_upper_rgb_thresh,
+			IJM.Constants.vitreous_endosperm_rgb_pass_or_not
 		);
 		
 		ImagePlus chkImg = img.duplicate();
 		IJProcess.colorThRGB(
 			chkImg,
-			new int[] {170,170,170},
-			new int[] {255,255,255},
-			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+			IJM.Constants.chalk_endosperm_lower_rgb_thresh,
+			IJM.Constants.chalk_endosperm_upper_rgb_thresh,
+			IJM.Constants.chalk_endosperm_rgb_pass_or_not
 		);
 
 		ImagePlus grmImg = img.duplicate();
 		IJProcess.colorThRGB(
 			grmImg,
-			new int[] {150,140,0},
-			new int[] {255,255,255},
-			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+			IJM.Constants.germ_endosperm_lower_rgb_pre_thresh,
+			IJM.Constants.germ_endosperm_upper_rgb_pre_thresh,
+			IJM.Constants.germ_endosperm_rgb__pre_pass_or_not
 		);
 		IJProcess.colorThRGB(
 			grmImg,
-			new int[] {160,1,1},
-			new int[] {195,195,150},
-			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+			IJM.Constants.germ_endosperm_lower_rgb_post_thresh,
+			IJM.Constants.germ_endosperm_upper_rgb_post_thresh,
+			IJM.Constants.germ_endosperm_rgb__post_pass_or_not
 		);
 		
 		// TODO: Simulate the particle analysis to get an overlay over stuff
@@ -605,9 +605,9 @@ public class IJProcess {
 		ImagePlus vitImg = img.duplicate();
 		IJProcess.colorThRGB(
 			vitImg,
-			new int[] {0,75,0},
-			new int[] {147,144,115},
-			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+			IJM.Constants.vitreous_endosperm_lower_rgb_thresh,
+			IJM.Constants.vitreous_endosperm_upper_rgb_thresh,
+			IJM.Constants.vitreous_endosperm_rgb_pass_or_not
 		);
 		ImageConverter vitIc = new ImageConverter(vitImg);
 		vitIc.convertToGray8();
@@ -620,9 +620,9 @@ public class IJProcess {
 		ImagePlus chkImg = img.duplicate();
 		IJProcess.colorThRGB(
 			chkImg,
-			new int[] {170,170,170},
-			new int[] {255,255,255},
-			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+			IJM.Constants.chalk_endosperm_lower_rgb_thresh,
+			IJM.Constants.chalk_endosperm_upper_rgb_thresh,
+			IJM.Constants.chalk_endosperm_rgb_pass_or_not
 		);
 		ImageConverter chkIc = new ImageConverter(chkImg);
 		chkIc.convertToGray8();
@@ -636,15 +636,15 @@ public class IJProcess {
 		ImagePlus grmImg = img.duplicate();
 		IJProcess.colorThRGB(
 			grmImg,
-			new int[] {150,140,0},
-			new int[] {255,255,255},
-			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+			IJM.Constants.germ_endosperm_lower_rgb_pre_thresh,
+			IJM.Constants.germ_endosperm_upper_rgb_pre_thresh,
+			IJM.Constants.germ_endosperm_rgb__pre_pass_or_not
 		);
 		IJProcess.colorThRGB(
 			grmImg,
-			new int[] {160,1,1},
-			new int[] {195,195,150},
-			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+			IJM.Constants.germ_endosperm_lower_rgb_post_thresh,
+			IJM.Constants.germ_endosperm_upper_rgb_post_thresh,
+			IJM.Constants.germ_endosperm_rgb__post_pass_or_not
 		);
 		ImageConverter grmIc = new ImageConverter(grmImg);
 		grmIc.convertToGray8();
