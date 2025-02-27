@@ -39,10 +39,30 @@ public class Constants {
 	public static int[] chalk_endosperm_upper_lab_thresh = new int[] {255,255,255};
 	public static PassOrNot[] chalk_endosperm_lab_pass_or_not = new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass};
 
-	public static boolean chalk_endosperm_yuv_thresh_enabled = true;
+	public static boolean chalk_endosperm_yuv_thresh_enabled = false;
 	public static int[] chalk_endosperm_lower_yuv_thresh = new int[] {166,120,0};
 	public static int[] chalk_endosperm_upper_yuv_thresh = new int[] {255,255,255};
 	public static PassOrNot[] chalk_endosperm_yuv_pass_or_not = new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass};
+
+	public static boolean chalk_endosperm_rgb_thresh_enabled = true;
+	public static int[] chalk_endosperm_lower_rgb_thresh = new int[] {170,170,170};
+	public static int[] chalk_endosperm_upper_rgb_thresh = new int[] {255,255,255};
+	public static PassOrNot[] chalk_endosperm_rgb_pass_or_not = new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass};
+
+	public static boolean vitreous_endosperm_rgb_thresh_enabled = true;
+	public static int[] vitreous_endosperm_lower_rgb_thresh = new int[] {0,75,0};
+	public static int[] vitreous_endosperm_upper_rgb_thresh = new int[] {147,144,115};
+	public static PassOrNot[] vitreous_endosperm_rgb_pass_or_not = new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass};
+
+	public static boolean germ_endosperm_rgb_pre_thresh_enabled = true;
+	public static int[] germ_endosperm_lower_rgb_pre_thresh = new int[] {150,140,0};
+	public static int[] germ_endosperm_upper_rgb_pre_thresh = new int[] {255,255,255};
+	public static PassOrNot[] germ_endosperm_rgb__pre_pass_or_not = new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass};
+
+	public static boolean germ_endosperm_rgb_post_thresh_enabled = true;
+	public static int[] germ_endosperm_lower_rgb_post_thresh = new int[] {160,1,1};
+	public static int[] germ_endosperm_upper_rgb_post_thresh = new int[] {195,195,150};
+	public static PassOrNot[] germ_endosperm_rgb__post_pass_or_not = new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass};
 
 	public static boolean chalk_endosperm_gray_thresh_enabled = false;
 	public static int chalk_endosperm_lower_gray_thresh = 180;
