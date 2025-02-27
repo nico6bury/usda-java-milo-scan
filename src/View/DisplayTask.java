@@ -86,18 +86,18 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
 			IJM.Constants.kernel_upper_hsb_thresh,
 			IJM.Constants.kernel_hsb_pass_or_not
 		);
-		ImagePlus endo_img = img.duplicate();
+		ImagePlus chkImg = img.duplicate();
 		// IJProcess.colorThHSB(
 		//     endo_img,
 		//     IJM.Constants.endosperm_lower_hsb_thresh,
 		//     IJM.Constants.endosperm_upper_hsb_thresh,
 		//     IJM.Constants.endosperm_hsb_pass_or_not
 		// );
-		IJProcess.colorThYUV(
-			endo_img,
-			IJM.Constants.chalk_endosperm_lower_yuv_thresh,
-			IJM.Constants.chalk_endosperm_upper_yuv_thresh,
-			IJM.Constants.chalk_endosperm_yuv_pass_or_not
+		IJProcess.colorThRGB(
+			chkImg,
+			IJM.Constants.chalk_endosperm_lower_rgb_thresh,
+			IJM.Constants.chalk_endosperm_upper_rgb_thresh,
+			IJM.Constants.chalk_endosperm_rgb_pass_or_not
 		);
 		// IJProcess.colorThGrayscale(
 		//     endo_img,
@@ -108,7 +108,7 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
 		// Get ImageIcon for each image, scaled down
 		finishedIcons[0] = new ImageIcon(img.getImage());
 		finishedIcons[1] = new ImageIcon(kern_img.getImage());
-		finishedIcons[2] = new ImageIcon(endo_img.getImage());
+		finishedIcons[2] = new ImageIcon(chkImg.getImage());
 		RoiManager rm = RoiManager.getInstance();
 		if (rm != null) {
 			rm.close();
