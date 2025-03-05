@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 import IJM.Constants.PassOrNot;
+import IJM.RoiGrid.RoiImageOutputConfiguration;
 import Utils.Constants;
 import SimpleResult.SimpleResult;
 import ij.IJ;
@@ -372,6 +373,22 @@ public class IJProcess {
 			File file = files_to_process.get(i);
 			// String sliceBase = file.getName().substring(0, file.getName().length() - 4);
 
+			// figure out some directory stuff if we're doing roi image output
+			RoiGrid.RoiImageOutputConfiguration riocBase = null;
+			if (shouldOutputKernImages) {
+				File baseDirectory = file.getParentFile();
+				String newFolderName = file.getName().substring(0,file.getName().lastIndexOf(".")) + "-kern-imgs";
+				File baseDir = new File(baseDirectory, newFolderName);
+				for (int d = 0; baseDir.exists(); d++) {
+					baseDir = new File(baseDirectory, newFolderName + "-" + d);
+				}//end ensuring that we have a new directory
+				boolean createDirRes = baseDir.mkdirs();
+				System.out.println("Base directory provided for roi image ouput: " + baseDirectory.getAbsolutePath());
+				System.out.println("New folder for kern-output: " + baseDir.getAbsolutePath());
+				System.out.println("Successfully created directory?: " + createDirRes);
+				riocBase = new RoiImageOutputConfiguration(baseDir);
+			}//end if we want to output kernel images
+
 			// actually start processing
 			ImagePlus this_image = IJ.openImage(file.getAbsolutePath());
 			this_image.getProcessor().flipHorizontal();
@@ -380,7 +397,7 @@ public class IJProcess {
 			ArrayList<Roi[]> gridCells = getGridCells(this_image);
 
 			// remove grid and background, get whole kernels
-			RoiGrid kernGrid = getRoiGrid(this_image);
+			RoiGrid kernGrid = getRoiGrid(this_image, riocBase);
 
 			// Update kernelGrid with gridCells information
 			kernGrid.updateGridLocs(gridCells);
@@ -389,17 +406,7 @@ public class IJProcess {
 			// procEndosperm(kernGrid, this_image);
 
 			// Get three parts of kernel area
-			procThreeParts(kernGrid, this_image);
-
-			// Save Kernel images, if we want to
-			if (shouldOutputKernImages) {
-				outputKernImages(
-					kernGrid,
-					this_image,
-					file.getParentFile(),
-					file.getName().substring(0, file.getName().lastIndexOf(".")) + "-kern-imgs"
-				);
-			}//end if we should output kernel images
+			procThreeParts(kernGrid, this_image, riocBase);
 
 			this_image.close();
 
@@ -415,189 +422,17 @@ public class IJProcess {
 	}//end Main Macro converted from ijm
 
 	/**
-	 * Saves images of each rrr in the image, in three flavors:
-	 * - Unthresholded
-	 * - Thresholded to show kernels
-	 * - Thresholded to show endosperm
-	 * @param rg The roi grid, shows were individual rois are.
-	 * @param image The image to cut up and save to the filesystem.
-	 * @param baseDirectory The directory holding the image, most likely.
-	 * @param newFolderName The name of the new folder to create to hold images.
-	 * @deprecated
-	 */
-	protected void outputKernImages(
-		RoiGrid rg,
-		ImagePlus image,
-		File baseDirectory,
-		String newFolderName
-	) {
-		// get images in all the right thresholds
-		// ImagePlus endo_img = image.duplicate();
-		// colorThHSB(
-		//     endo_img,
-		//     IJM.Constants.endosperm_lower_hsb_thresh,
-		//     IJM.Constants.endosperm_upper_hsb_thresh,
-		//     IJM.Constants.endosperm_hsb_pass_or_not
-		//     );
-		// IJProcess.colorThYUV(
-		// 	endo_img,
-		// 	IJM.Constants.chalk_endosperm_lower_yuv_thresh,
-		// 	IJM.Constants.chalk_endosperm_upper_yuv_thresh,
-		// 	IJM.Constants.chalk_endosperm_yuv_pass_or_not
-		// );
-		// IJProcess.colorThGrayscale(
-		//     endo_img,
-		//     IJM.Constants.chalk_endosperm_lower_gray_thresh,
-		//     IJM.Constants.chalk_endosperm_upper_gray_thresh,
-		//     IJM.Constants.chalk_endosperm_gray_pass_or_not
-		// );
-		ImagePlus plain_img = image.duplicate();
-		
-		ImagePlus kern_img = image.duplicate();
-		colorThHSB(
-			kern_img,
-			IJM.Constants.kernel_lower_hsb_thresh,
-			IJM.Constants.kernel_upper_hsb_thresh,
-			IJM.Constants.kernel_hsb_pass_or_not
-		);
-		
-		ImagePlus img = kern_img.duplicate();
-		img.getProcessor().blurGaussian(0.5);
-		
-		ImagePlus vitImg = img.duplicate();
-		IJProcess.colorThRGB(
-			vitImg,
-			IJM.Constants.vitreous_endosperm_lower_rgb_thresh,
-			IJM.Constants.vitreous_endosperm_upper_rgb_thresh,
-			IJM.Constants.vitreous_endosperm_rgb_pass_or_not
-		);
-		
-		ImagePlus chkImg = img.duplicate();
-		IJProcess.colorThRGB(
-			chkImg,
-			IJM.Constants.chalk_endosperm_lower_rgb_thresh,
-			IJM.Constants.chalk_endosperm_upper_rgb_thresh,
-			IJM.Constants.chalk_endosperm_rgb_pass_or_not
-		);
-
-		ImagePlus grmImg = img.duplicate();
-		IJProcess.colorThRGB(
-			grmImg,
-			IJM.Constants.germ_endosperm_lower_rgb_pre_thresh,
-			IJM.Constants.germ_endosperm_upper_rgb_pre_thresh,
-			IJM.Constants.germ_endosperm_rgb__pre_pass_or_not
-		);
-		IJProcess.colorThRGB(
-			grmImg,
-			IJM.Constants.germ_endosperm_lower_rgb_post_thresh,
-			IJM.Constants.germ_endosperm_upper_rgb_post_thresh,
-			IJM.Constants.germ_endosperm_rgb__post_pass_or_not
-		);
-		
-		// TODO: Simulate the particle analysis to get an overlay over stuff
-		
-		
-		// fileio to figure base location to print stuff
-		File baseDir = new File(baseDirectory, newFolderName);
-		for (int i = 0; baseDir.exists(); i++) {
-			baseDir = new File(baseDirectory, newFolderName + "" + i);
-		}//end ensuring that we have a new directory
-		boolean createDirRes = baseDir.mkdirs();
-		System.out.println("Base directory provided for kern output: " + baseDirectory.getAbsolutePath());
-		System.out.println("New folder for kern-output: " + baseDir.getAbsolutePath());
-		System.out.println("Successfully created directory?: " + createDirRes);
-		// actually try to start saving all the kernel images we want
-		for(int i = 0; i < rg.rrrs.length; i++) {
-			for(int ii = 0; ii < rg.rrrs[i].length; ii++) {
-				RRR this_roi = rg.rrrs[i][ii];
-				ImagePlus this_plain = plain_img.crop(new Roi[] {this_roi.roi})[0];
-				ImagePlus this_kern = kern_img.crop(new Roi[] {this_roi.roi})[0];
-				// ImagePlus this_endo = endo_img.crop(new Roi[] {this_roi.roi})[0];
-				File plain_path = new File(baseDir, i + "-" + ii + "-0p.tif");
-				File kern_path = new File(baseDir, i + "-" + ii + "-1k.tif");
-				File endo_path = new File(baseDir, i + "-" + ii + "-2e.tif");
-				System.out.println("Plain image path for kern output: " + plain_path.getAbsolutePath());
-				IJ.save(this_plain, plain_path.getAbsolutePath());
-				IJ.save(this_kern, kern_path.getAbsolutePath());
-				// IJ.save(this_endo, endo_path.getAbsolutePath());
-			}//end looping within rows in rrrs
-		}//end looping over rows in rrrs
-	}//end outputKernImages()
-
-	/**
-	 * Adds endosperm(white) area from each kernel to each kernel.
-	 * @param rg The roigrid holding all the kernel location information.
-	 * @param image The image to process.
-	 * @deprecated
-	 */
-	public void procEndosperm(RoiGrid rg, ImagePlus image) {
-		// prepare image to be processed
-		ImagePlus img = image.duplicate();
-		// colorThHSB(
-		//     img,
-		//     IJM.Constants.endosperm_lower_hsb_thresh,
-		//     IJM.Constants.endosperm_upper_hsb_thresh,
-		//     IJM.Constants.endosperm_hsb_pass_or_not
-		// );
-		IJProcess.colorThYUV(
-			img,
-			IJM.Constants.chalk_endosperm_lower_yuv_thresh,
-			IJM.Constants.chalk_endosperm_upper_yuv_thresh,
-			IJM.Constants.chalk_endosperm_yuv_pass_or_not
-		);
-		// IJProcess.colorThGrayscale(
-		//     img,
-		//     IJM.Constants.chalk_endosperm_lower_gray_thresh,
-		//     IJM.Constants.chalk_endosperm_upper_gray_thresh,
-		//     IJM.Constants.chalk_endosperm_gray_pass_or_not
-		// );
-		ImageConverter ic = new ImageConverter(img);
-		ic.convertToGray8();
-		HashMap<String,double[]>[][] resMap = rg.analyzeParticles(img,
-			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=300-10000 display");
-		// update rg.rrrs with appropriate result info from resMap
-		for(int i = 0; i < rg.rrrs.length; i++) {
-			for(int ii = 0; ii < rg.rrrs[i].length; ii++) {
-				Set<String> these_headers = resMap[i][ii].keySet();
-				for (String header : these_headers) {
-					double[] res = resMap[i][ii].get(header);
-					if (res.length == 0) {System.out.println("Couldn't get results for roi at grid 0-index " + rg.rrrs[i][ii].gridCellIdx);}
-					else if (header == "Area") {
-						rg.rrrs[i][ii].resultsHeaders.add("EndospermArea");
-						double totalArea = 0; for(int j = 0; j < res.length; j++) {totalArea += res[j];}
-						rg.rrrs[i][ii].resultsValues.add(totalArea);
-					} else if (header == "AR" || header == "Solidity" || header == "Perim." || header == "BX" || header == "BY" ||
-					header == "Circ." || header == "X" || header == "Y" || header == "Round" || header == "Height" || header == "Width") {
-						if (res.length == 1) {
-							rg.rrrs[i][ii].resultsHeaders.add("Endosperm" + header);
-							rg.rrrs[i][ii].resultsValues.add(res[0]);
-						}//end if we have one particle, as expected
-						else if (res.length == 0) {
-							rg.rrrs[i][ii].resultsHeaders.add("Endosperm" + header);
-							rg.rrrs[i][ii].resultsValues.add(-1.0);
-						}//end else if we need to alert someone that nothing was detected
-						else {
-							for (int r = 0; r < res.length; r++) {
-								rg.rrrs[i][ii].resultsHeaders.add("Endosperm" + r + header);
-								rg.rrrs[i][ii].resultsValues.add(res[r]);
-							}//end looping over all results we got for this kernel
-						}//end else we try to output whatever we can find
-					}
-					else {System.out.println("Didn't include header " + header);}
-				}//end looping over each header in headers
-			}//end looping over kernels
-		}//end looping over groups of kernels
-	}//end procEndosperm
-
-	/**
 	 * Mutates rg, doesn't mutate image.
 	 * Tries to threshold out and get information on vitreous endopserm,
 	 * chalky endosperm, and the germ.
 	 * @param rg
 	 * @param image
 	 */
-	public void procThreeParts(RoiGrid rg, ImagePlus image) {
+	public void procThreeParts(
+		RoiGrid rg,
+		ImagePlus image,
+		RoiGrid.RoiImageOutputConfiguration roiImageOutputBaseConfig
+	) {
 		ImagePlus img = image.duplicate();
 		// img.getProcessor().blurGaussian(0.5);
 
@@ -609,11 +444,18 @@ public class IJProcess {
 			IJM.Constants.vitreous_endosperm_upper_rgb_thresh,
 			IJM.Constants.vitreous_endosperm_rgb_pass_or_not
 		);
-		ImageConverter vitIc = new ImageConverter(vitImg);
-		vitIc.convertToGray8();
-		HashMap<String,double[]>[][] vitResMap = rg.analyzeParticles(vitImg,
-		"area centroid perimeter bounding shape display redirect=None decimal=2",
-		"size=200-10000 display");
+		// ImageConverter vitIc = new ImageConverter(vitImg);
+		// vitIc.convertToGray8();
+		RoiGrid.RoiImageOutputConfiguration riocVit = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
+		if (riocVit != null) {
+			riocVit.imagePrefix = "vit-";
+		}
+		HashMap<String,double[]>[][] vitResMap = rg.analyzeParticles(
+			vitImg,
+			"area centroid perimeter bounding shape display redirect=None decimal=2",
+			"size=200-10000 circularity=0.03-1.00 show=[Overlay Masks] display",
+			riocVit
+		);
 		procResultsHelper(rg, vitResMap, "Vitreous");
 
 		// try to find the chalky endosperm
@@ -624,11 +466,18 @@ public class IJProcess {
 			IJM.Constants.chalk_endosperm_upper_rgb_thresh,
 			IJM.Constants.chalk_endosperm_rgb_pass_or_not
 		);
-		ImageConverter chkIc = new ImageConverter(chkImg);
-		chkIc.convertToGray8();
-		HashMap<String,double[]>[][] chkResMap = rg.analyzeParticles(chkImg,
-		"area centroid perimeter bounding shape display redirect=None decimal=2",
-		"size=200-10000 display");
+		// ImageConverter chkIc = new ImageConverter(chkImg);
+		// chkIc.convertToGray8();
+		RoiGrid.RoiImageOutputConfiguration riocChk = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
+		if (riocChk != null) {
+			riocChk.imagePrefix = "chk-";
+		}
+		HashMap<String,double[]>[][] chkResMap = rg.analyzeParticles(
+			chkImg,
+			"area centroid perimeter bounding shape display redirect=None decimal=2",
+			"size=200-10000 circularity=0.03-1.00 show=[Overlay Masks] display",
+			riocChk
+		);
 		procResultsHelper(rg, chkResMap, "Chalk");
 		
 
@@ -646,11 +495,18 @@ public class IJProcess {
 			IJM.Constants.germ_endosperm_upper_rgb_post_thresh,
 			IJM.Constants.germ_endosperm_rgb__post_pass_or_not
 		);
-		ImageConverter grmIc = new ImageConverter(grmImg);
-		grmIc.convertToGray8();
-		HashMap<String,double[]>[][] grmResMap = rg.analyzeParticles(grmImg,
-		"area centroid perimeter bounding shape display redirect=None decimal=2",
-		"size=100-10000 display");
+		// ImageConverter grmIc = new ImageConverter(grmImg);
+		// grmIc.convertToGray8();
+		RoiGrid.RoiImageOutputConfiguration riocGrm = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
+		if (riocGrm != null) {
+			riocGrm.imagePrefix = "grm-";
+		}
+		HashMap<String,double[]>[][] grmResMap = rg.analyzeParticles(
+			grmImg,
+			"area centroid perimeter bounding shape display redirect=None decimal=2",
+			"size=100-10000 circularity=0.03-1.00 show=[Overlay Masks] display",
+			riocGrm
+		);
 		procResultsHelper(rg, grmResMap, "Germ");
 
 	}//end procThreeParts()
@@ -702,7 +558,10 @@ public class IJProcess {
 	 * @param image Image to pull kernels from.
 	 * @return Returns RoiGrid with sorted, grouped Rois for all kernels.
 	 */
-	public RoiGrid getRoiGrid(ImagePlus image) {
+	public RoiGrid getRoiGrid(
+		ImagePlus image,
+		RoiGrid.RoiImageOutputConfiguration roiImageOutputBaseConfig
+	) {
 		ImagePlus img = image.duplicate();
 
 		// set up results, roi, particle analysis
@@ -725,10 +584,14 @@ public class IJProcess {
 		System.out.println("Detected " + rm.getCount() + " kernels.");
 		RRR[][] rrrs = RoiGrid.createRRRs(rm);
 		RoiGrid nrg = new RoiGrid(rrrs);
+		RoiGrid.RoiImageOutputConfiguration roiImageOutputConfig = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
+		if (roiImageOutputConfig != null) {
+			roiImageOutputConfig.imagePrefix = "kern-";
+		}
 		// get measurements for the kernels
 		HashMap<String,double[]>[][] resMap = nrg.analyzeParticles(img,
 			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=2000-50000 display");
+			"size=2000-50000 circularity=0.03-1.00 show=[Overlay Masks] display", roiImageOutputConfig);
 		for (int i = 0; i < nrg.rrrs.length; i++) {
 			for (int ii = 0; ii < nrg.rrrs[i].length; ii++) {
 				Set<String> these_headers = resMap[i][ii].keySet();

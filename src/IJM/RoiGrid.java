@@ -100,6 +100,49 @@ public class RoiGrid {
 	}//end addResultColumn(header, vals)
 
 	/**
+	 * This class is used to store configuration settings for outputting images from
+	 * the analyze particles function.
+	 */
+	public static class RoiImageOutputConfiguration {
+		public File baseDirectory;
+		// public String newFolderName;
+		public String imagePrefix;
+		public String imageSuffix;
+
+		public RoiImageOutputConfiguration(
+			File baseDirectory
+			// ,String newFolderName
+		) {
+			this.baseDirectory = baseDirectory;
+			// this.newFolderName = newFolderName;
+			this.imagePrefix = "";
+			this.imageSuffix = "";
+		}//end 1-arg constructor
+
+		public RoiImageOutputConfiguration(
+			File baseDirectory,
+			// String newFolderName,
+			String imagePrefix,
+			String imageSuffix
+		) {
+			this.baseDirectory = baseDirectory;
+			// this.newFolderName = newFolderName;
+			this.imagePrefix = imagePrefix;
+			this.imageSuffix = imageSuffix;
+		}//end 3-arg constructor
+
+		public static RoiImageOutputConfiguration clone(RoiImageOutputConfiguration other) {
+			if (other != null) {
+				return new RoiImageOutputConfiguration(
+					other.baseDirectory,
+					other.imagePrefix,
+					other.imageSuffix
+				);
+			} else return null;
+		}//end copy constructor
+	}//end public inner class RoiImageOutputConfiguration
+
+	/**
 	 * Uses Particle Analyzer to analyze every kernel roi in provided image.
 	 * The image provided should already be edited such that 8-bit threshold 1-255
 	 * retrieves all required information.  
@@ -111,7 +154,12 @@ public class RoiGrid {
 	 * @return Parallel 2d array to rrrs. Each element is results-table information, column-header->column vals.
 	 */
 	@SuppressWarnings("unchecked")
-	public HashMap<String,double[]>[][] analyzeParticles(ImagePlus image, String measurmentsParam, String particlesParam) {
+	public HashMap<String,double[]>[][] analyzeParticles(
+		ImagePlus image,
+		String measurmentsParam,
+		String particlesParam,
+		RoiImageOutputConfiguration roiImageOutputConfig
+	) {
 		HashMap<String,double[]>[][] resMap = new HashMap[rrrs.length][];
 		// go through and do image analysis on each roi
 		URL jarurl = getClass().getProtectionDomain().getCodeSource().getLocation();
@@ -132,6 +180,17 @@ public class RoiGrid {
 				ImagePlus[] kerns = image.crop(new Roi[] {rrrs[i][ii].roi},"");
 				ImagePlus kern; if (kerns.length > 0) {kern = kerns[0];} else {break;}
 				// IJ.save(kern, "errorwhy-" + i + "-" + ii + "-g" + rrrs[i][ii].gridCellIdx);
+				if (roiImageOutputConfig != null) {
+					// Save this version of image, showing thresholded region
+					IJ.save(
+						kern,
+						new File(
+							roiImageOutputConfig.baseDirectory.getAbsolutePath(),
+							roiImageOutputConfig.imagePrefix + "thresh_region-g" + rrrs[i][ii].gridCellIdx + roiImageOutputConfig.imageSuffix + ".tiff"
+						)
+						.getAbsolutePath()
+					);
+				}//end if we want to save an image of this thresholded image
 				ImageConverter ic = new ImageConverter(kern);
 				ic.convertToGray8();
 				IJ.setThreshold(kern, 1, 255);
@@ -149,6 +208,16 @@ public class RoiGrid {
 						"run(\"Set Measurements...\", \"" + measurmentsParam + "\");\n" +
 						"setThreshold(1,255);\n" + 
 						"run(\"Analyze Particles...\", \"" + particlesParam + "\");\n";
+					if (roiImageOutputConfig != null) {
+						// Add more lines to macro text in order to flatten and save image after particle analysis
+						macro += "run(\"Flatten\");\n";
+						File outputFile = new File(
+							roiImageOutputConfig.baseDirectory.getAbsolutePath(),
+							roiImageOutputConfig.imagePrefix + "particle_region-g" + rrrs[i][ii].gridCellIdx + roiImageOutputConfig.imageSuffix + ".tiff"
+						);
+						System.out.println("Outputting roi image to \"" + outputFile.getAbsolutePath() + "\"");
+						macro += "saveAs(\"Tiff\", \"" + outputFile.getAbsolutePath().replace('\\', '/') + "\");\n";
+					}//end if we want to save an image of the particle detection
 					// System.out.println("macro: \n" + macro);
 					IJ.open(tmpFile.getAbsolutePath());
 					IJ.runMacro(macro);
