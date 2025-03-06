@@ -148,8 +148,8 @@ public class IJProcess {
 		// print headers for the columns we're about to print
 		pw.print(
 			"FileID,GridIdx" + 
-			",KPixels,VPixels,CPixels,GPixels" + 
-			",V%Area,C%Area,G%Area" + 
+			",KPixels,VPixels,CPixels,GPixels,X-Sec_Pixels,CGPixels" + 
+			",V%Area,C%Area,G%Area,CG%Area" + 
 
 			",KX,KY" + 
 			",VX,VY" + 
@@ -189,12 +189,17 @@ public class IJProcess {
 			double total_area = res.getResValSentinel("Area");
 			// double endosperm_area = res.getResValSentinel("EndospermArea");
 			// double endo_percent = (endosperm_area * 100) / total_area;
-			double vit_area = res.getResValSentinel("VitreousArea");
+			// double vit_area = res.getResValSentinel("VitreousArea");
 			double chk_area = res.getResValSentinel("ChalkArea");
-			double grm_area = res.getResValSentinel("GermArea");
-			double vit_perc = (vit_area * 100) / total_area;
-			double chk_perc = (chk_area * 100) / total_area;
-			double grm_perc = (grm_area * 100) / total_area;
+			// double grm_area = res.getResValSentinel("GermArea");
+			double cross_section_area = res.getResValSentinel("CrossSectionArea");
+			double chkgrm_area = res.getResValSentinel("ChalkGermArea");
+			double chk_perc = (chk_area * 100) / cross_section_area;
+			double chkgrm_perc = (chkgrm_area * 100) / cross_section_area;
+			double grm_area = chkgrm_area - chk_area;
+			double vit_area = cross_section_area - chkgrm_area;
+			double vit_perc = (vit_area * 100) / cross_section_area;
+			double grm_perc = (grm_area * 100) / cross_section_area;
 
 			double kx = res.rrr.roi.getBounds().getCenterX();
 			double ky = res.rrr.roi.getBounds().getCenterY();
@@ -261,8 +266,8 @@ public class IJProcess {
 
 			data_output.append(String.format(
 				"%s,%d" + 
+				",%3.1f,%3.1f,%3.1f,%3.1f,%3.1f,%3.1f" +
 				",%3.1f,%3.1f,%3.1f,%3.1f" +
-				",%3.1f,%3.1f,%3.1f" +
 
 				",%f,%f" +
 				",%f,%f" +
@@ -286,8 +291,8 @@ public class IJProcess {
 				"\n",
 
 				filename_no_ext, res.rrr.gridCellIdx + 1,
-				total_area,vit_area,chk_area,grm_area,
-				vit_perc,chk_perc,grm_perc,
+				total_area,vit_area,chk_area,grm_area,cross_section_area,chkgrm_area,
+				vit_perc,chk_perc,grm_perc,chkgrm_perc,
 
 				kx,ky,
 				vx,vy,
@@ -406,7 +411,10 @@ public class IJProcess {
 			// procEndosperm(kernGrid, this_image);
 
 			// Get three parts of kernel area
-			procThreeParts(kernGrid, this_image, riocBase);
+			// procThreeParts(kernGrid, this_image, riocBase);
+
+			// Use new processing
+			danProcMar2025(kernGrid, this_image, riocBase);
 
 			this_image.close();
 
@@ -511,6 +519,75 @@ public class IJProcess {
 
 	}//end procThreeParts()
 
+	public void danProcMar2025(
+		RoiGrid rg,
+		ImagePlus image,
+		RoiGrid.RoiImageOutputConfiguration roiImageOutputBaseConfig
+	) {
+		ImagePlus img = image.duplicate();
+
+		// try to find cross section
+		ImagePlus xscImg = img.duplicate();
+		IJProcess.colorThRGB(xscImg,
+			new int[] {0,90,0},
+			new int[] {254,255,255},
+			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+		);
+		RoiImageOutputConfiguration riocXsc = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
+		if (riocXsc != null) {
+			riocXsc.imagePrefix = "cross_section-";
+		}
+		HashMap<String,double[]>[][] xscResMap = rg.analyzeParticles(
+			xscImg,
+			"area centroid perimeter bounding shape display redirect=None decimal=2",
+			"size=200-10000 circularity=0.03-1.00 show=[Overlay Masks] display include",
+			riocXsc
+		);
+		procResultsHelper(rg, xscResMap, "CrossSection");
+
+		// try to find chalk
+		ImagePlus chkImg = img.duplicate();
+		IJProcess.colorThRGB(chkImg,
+			new int[] {150,160,160},
+			new int[] {240,240,240},
+			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+		);
+		RoiImageOutputConfiguration riocChk = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
+		if (riocChk != null) {
+			riocChk.imagePrefix = "db-chalk-";
+		}
+		HashMap<String,double[]>[][] chkResMap = rg.analyzeParticles(
+			chkImg,
+			"area centroid perimeter bounding shape display redirect=None decimal=2",
+			"size=200-10000 circularity=0.03-1.00 show=[Overlay Masks] display include",
+			riocChk
+		);
+		procResultsHelper(rg, chkResMap, "Chalk");
+
+		// try and find the chalk germ
+		ImagePlus chkgrmImg = img.duplicate();
+		IJProcess.colorThRGB(
+			chkgrmImg,
+			new int[] {0,100,0},
+			new int[] {150,240,240},
+			new PassOrNot[] {PassOrNot.Stop,PassOrNot.Pass,PassOrNot.Pass}
+		);
+		// ImageConverter grmIc = new ImageConverter(grmImg);
+		// grmIc.convertToGray8();
+		RoiGrid.RoiImageOutputConfiguration riocChkGrm = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
+		if (riocChkGrm != null) {
+			riocChkGrm.imagePrefix = "chkgrm-";
+		}
+		HashMap<String,double[]>[][] grmResMap = rg.analyzeParticles(
+			chkgrmImg,
+			"area centroid perimeter bounding shape display redirect=None decimal=2",
+			"size=100-10000 circularity=0.03-1.00 show=[Overlay Masks] display",
+			riocChkGrm
+		);
+		procResultsHelper(rg, grmResMap, "ChalkGerm");
+
+	}//end danProcMar2025()
+
 	/**
 	 * In proc functions, handles the movement and parsing of result from the
 	 * result map (resMap) to the RoiGrid (rg).
@@ -591,7 +668,7 @@ public class IJProcess {
 		// get measurements for the kernels
 		HashMap<String,double[]>[][] resMap = nrg.analyzeParticles(img,
 			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=2000-50000 circularity=0.03-1.00 show=[Overlay Masks] display", roiImageOutputConfig);
+			"size=2000-50000 circularity=0.03-1.00 show=[Overlay Masks] display include", roiImageOutputConfig);
 		for (int i = 0; i < nrg.rrrs.length; i++) {
 			for (int ii = 0; ii < nrg.rrrs[i].length; ii++) {
 				Set<String> these_headers = resMap[i][ii].keySet();
