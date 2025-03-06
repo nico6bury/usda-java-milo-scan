@@ -186,7 +186,7 @@ public class RoiGrid {
 						kern,
 						new File(
 							roiImageOutputConfig.baseDirectory.getAbsolutePath(),
-							roiImageOutputConfig.imagePrefix + "thresh_region-g" + rrrs[i][ii].gridCellIdx + roiImageOutputConfig.imageSuffix + ".tiff"
+							roiImageOutputConfig.imagePrefix + "thresh_region-g" + (rrrs[i][ii].gridCellIdx + 1) + roiImageOutputConfig.imageSuffix + ".tiff"
 						)
 						.getAbsolutePath()
 					);
@@ -213,7 +213,7 @@ public class RoiGrid {
 						macro += "run(\"Flatten\");\n";
 						File outputFile = new File(
 							roiImageOutputConfig.baseDirectory.getAbsolutePath(),
-							roiImageOutputConfig.imagePrefix + "particle_region-g" + rrrs[i][ii].gridCellIdx + roiImageOutputConfig.imageSuffix + ".tiff"
+							roiImageOutputConfig.imagePrefix + "particle_region-g" + (rrrs[i][ii].gridCellIdx + 1) + roiImageOutputConfig.imageSuffix + ".tiff"
 						);
 						System.out.println("Outputting roi image to \"" + outputFile.getAbsolutePath() + "\"");
 						macro += "saveAs(\"Tiff\", \"" + outputFile.getAbsolutePath().replace('\\', '/') + "\");\n";
