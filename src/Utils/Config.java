@@ -127,7 +127,7 @@ public class Config implements ConfigStore {
 	 * The dpi to use for scanned images.
 	 */
 	public int scanDpi = 600;
-    public String scanDpiCOMMENT = "";
+    public String scanDpiCOMMENT = "The dpi to use for scanned images.";
 
     /**
 	 * Whether or not to add a number suffix at all.
@@ -229,7 +229,7 @@ public class Config implements ConfigStore {
 	 * will still work.
 	 */
 	public boolean thirdScanEnabled = false;
-    public String thridScanEnabledCOMMENT = "If this is true, then after each scan, the program will do a third scan,\n# with properties matching the thirdScan options.\n# If third scan is enabled, but second scan is not, then the third scan will still work.";
+    public String thirdScanEnabledCOMMENT = "If this is true, then after each scan, the program will do a third scan,\n# with properties matching the thirdScan options.\n# If third scan is enabled, but second scan is not, then the third scan will still work.";
 	/**
 	 * The dpi to use for the third scan option.
 	 */
