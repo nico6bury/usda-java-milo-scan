@@ -41,9 +41,6 @@ import View.Dialog.ScanAreaDialog;
 import View.Dialog.ScanDpiDialog;
 import View.Dialog.ThresholdDialog;
 import View.Dialog.UnsharpDialog;
-import ij.IJ;
-import ij.ImagePlus;
-import ij.process.ImageProcessor;
 import View.DisplayTask.DisplayTaskCaller;
 import View.IJTask.IJTaskCaller;
 
