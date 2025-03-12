@@ -26,6 +26,7 @@ import java.util.List;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 
+import ConfigScribe.ConfigScribe;
 import IJM.IJProcess;
 import IJM.SumResult;
 import Main.Controller;
@@ -34,9 +35,15 @@ import Utils.Config;
 import Utils.Constants;
 import SimpleResult.SimpleResult;
 import View.Dialog.AreaFlagDialog;
+import View.Dialog.ImageFormatDialog;
+import View.Dialog.NumSuffixDialog;
 import View.Dialog.ScanAreaDialog;
+import View.Dialog.ScanDpiDialog;
 import View.Dialog.ThresholdDialog;
 import View.Dialog.UnsharpDialog;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.process.ImageProcessor;
 import View.DisplayTask.DisplayTaskCaller;
 import View.IJTask.IJTaskCaller;
 
@@ -55,6 +62,9 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	public ThresholdDialog thresholdDialog = new ThresholdDialog(this, true);
 	public UnsharpDialog unsharpDialog = new UnsharpDialog(this, true);
 	public ScanAreaDialog scanAreaDialog = new ScanAreaDialog(this, true);
+    public ScanDpiDialog scanDpiDialog = new ScanDpiDialog(this, true);
+    public NumSuffixDialog numSuffixDialog = new NumSuffixDialog(this, true);
+    public ImageFormatDialog imageFormatDialog = new ImageFormatDialog(this, true);
 	// progress bar for imagej processing
 	ProgressMonitor progressMonitor;
 
@@ -202,16 +212,22 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
         uxInitMenu = new javax.swing.JMenu();
         uxConnectScannerBtn = new javax.swing.JMenuItem();
         uxResetScanner = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        uxFindConfigFileMenuBtn = new javax.swing.JMenuItem();
+        uxReloadConfigFileMenuBtn = new javax.swing.JMenuItem();
         uxRunMenu = new javax.swing.JMenu();
         uxScanBtn = new javax.swing.JMenuItem();
         uxIjBtn = new javax.swing.JMenuItem();
-        jMenu1 = new javax.swing.JMenu();
+        jMenu5 = new javax.swing.JMenu();
         uxSetThresholdMenuBtn = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
         uxSetAreaFlagMenuBtn = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         uxSetUnsharpMenuBtn = new javax.swing.JMenuItem();
         uxScanAreaMenuBtn = new javax.swing.JMenuItem();
+        uxImageDpiMenuBtn = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        uxSetNumberSuffixMenuBtn = new javax.swing.JMenuItem();
+        uxSetImageFormatMenuBtn = new javax.swing.JMenuItem();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -644,6 +660,29 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 
         jMenuBar1.add(uxInitMenu);
 
+        jMenu4.setText("Utils");
+        jMenu4.setFont(jMenu4.getFont().deriveFont(jMenu4.getFont().getSize()+2f));
+
+        uxFindConfigFileMenuBtn.setFont(uxFindConfigFileMenuBtn.getFont().deriveFont(uxFindConfigFileMenuBtn.getFont().getSize()+2f));
+        uxFindConfigFileMenuBtn.setText("Find Config File");
+        uxFindConfigFileMenuBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uxFindConfigFileMenuBtnActionPerformed(evt);
+            }
+        });
+        jMenu4.add(uxFindConfigFileMenuBtn);
+
+        uxReloadConfigFileMenuBtn.setFont(uxReloadConfigFileMenuBtn.getFont().deriveFont(uxReloadConfigFileMenuBtn.getFont().getSize()+2f));
+        uxReloadConfigFileMenuBtn.setText("Reload Config File");
+        uxReloadConfigFileMenuBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uxReloadConfigFileMenuBtnActionPerformed(evt);
+            }
+        });
+        jMenu4.add(uxReloadConfigFileMenuBtn);
+
+        jMenuBar1.add(jMenu4);
+
         uxRunMenu.setText("Run");
         uxRunMenu.setFont(uxRunMenu.getFont().deriveFont(uxRunMenu.getFont().getSize()+2f));
 
@@ -669,8 +708,9 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 
         jMenuBar1.add(uxRunMenu);
 
-        jMenu1.setText("Threshold");
-        jMenu1.setFont(jMenu1.getFont().deriveFont(jMenu1.getFont().getSize()+2f));
+        jMenu5.setText("Processing");
+        jMenu5.setFocusable(false);
+        jMenu5.setFont(jMenu5.getFont().deriveFont(jMenu5.getFont().getSize()+2f));
 
         uxSetThresholdMenuBtn.setFont(uxSetThresholdMenuBtn.getFont().deriveFont(uxSetThresholdMenuBtn.getFont().getSize()+2f));
         uxSetThresholdMenuBtn.setText("Set Threshold");
@@ -680,12 +720,7 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
                 uxSetThresholdMenuBtnActionPerformed(evt);
             }
         });
-        jMenu1.add(uxSetThresholdMenuBtn);
-
-        jMenuBar1.add(jMenu1);
-
-        jMenu2.setText("Area Flag");
-        jMenu2.setFont(jMenu2.getFont().deriveFont(jMenu2.getFont().getSize()+2f));
+        jMenu5.add(uxSetThresholdMenuBtn);
 
         uxSetAreaFlagMenuBtn.setFont(uxSetAreaFlagMenuBtn.getFont().deriveFont(uxSetAreaFlagMenuBtn.getFont().getSize()+2f));
         uxSetAreaFlagMenuBtn.setText("Set %Area Flags");
@@ -695,11 +730,11 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
                 uxSetAreaFlagMenuBtnActionPerformed(evt);
             }
         });
-        jMenu2.add(uxSetAreaFlagMenuBtn);
+        jMenu5.add(uxSetAreaFlagMenuBtn);
 
-        jMenuBar1.add(jMenu2);
+        jMenuBar1.add(jMenu5);
 
-        jMenu3.setText("Scanner Correction");
+        jMenu3.setText("Scanning");
         jMenu3.setFont(jMenu3.getFont().deriveFont(jMenu3.getFont().getSize()+2f));
 
         uxSetUnsharpMenuBtn.setFont(uxSetUnsharpMenuBtn.getFont().deriveFont(uxSetUnsharpMenuBtn.getFont().getSize()+2f));
@@ -720,7 +755,39 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
         });
         jMenu3.add(uxScanAreaMenuBtn);
 
+        uxImageDpiMenuBtn.setFont(uxImageDpiMenuBtn.getFont().deriveFont(uxImageDpiMenuBtn.getFont().getSize()+2f));
+        uxImageDpiMenuBtn.setText("Image Dpi Settings");
+        uxImageDpiMenuBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uxImageDpiMenuBtnActionPerformed(evt);
+            }
+        });
+        jMenu3.add(uxImageDpiMenuBtn);
+
         jMenuBar1.add(jMenu3);
+
+        jMenu1.setText("File Settings");
+        jMenu1.setFont(jMenu1.getFont().deriveFont(jMenu1.getFont().getSize()+2f));
+
+        uxSetNumberSuffixMenuBtn.setFont(uxSetNumberSuffixMenuBtn.getFont().deriveFont(uxSetNumberSuffixMenuBtn.getFont().getSize()+2f));
+        uxSetNumberSuffixMenuBtn.setText("Number Suffix Settings");
+        uxSetNumberSuffixMenuBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uxSetNumberSuffixMenuBtnActionPerformed(evt);
+            }
+        });
+        jMenu1.add(uxSetNumberSuffixMenuBtn);
+
+        uxSetImageFormatMenuBtn.setFont(uxSetImageFormatMenuBtn.getFont().deriveFont(uxSetImageFormatMenuBtn.getFont().getSize()+2f));
+        uxSetImageFormatMenuBtn.setText("Image Format Settings");
+        uxSetImageFormatMenuBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uxSetImageFormatMenuBtnActionPerformed(evt);
+            }
+        });
+        jMenu1.add(uxSetImageFormatMenuBtn);
+
+        jMenuBar1.add(jMenu1);
 
         setJMenuBar(jMenuBar1);
 
@@ -1157,9 +1224,7 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 			}//end if overwrite name is empty
 		}//end if we aren't overwriting the name
 
-		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		@SuppressWarnings("unchecked")
-		SimpleResult<File> scanResult = (SimpleResult<File>) root.handleMessage(InterfaceMessage.Scan,null);
+		SimpleResult<File> scanResult = startScanPreCheck();
 		if (scanResult.isErr()) {showGenericExceptionMessage(scanResult.getError());}
 		else if (scanResult.isOk()) {
 			root.getImageQueue().add(scanResult.getValue());
@@ -1170,19 +1235,14 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 		}//end else if we can add something to the queue
 
 		// ensure scan name is reset if we used it
-		if (!uxShouldOverwriteName.isSelected()) {
+		if (!uxShouldOverwriteName.isSelected() && scanResult.isOk()) {
 			uxOverwriteName.setText("");
 		}//end if we used the overwrite name
 
-		setCursor(Cursor.getDefaultCursor());
 	}//GEN-LAST:event_uxScanQueueBtnActionPerformed
 
 	private void uxScanBigBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxScanBigBtnActionPerformed
-		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		@SuppressWarnings("unchecked")
-		SimpleResult<File> scanResult = (SimpleResult<File>) root.handleMessage(InterfaceMessage.Scan,null);
-		if (scanResult.isErr()) {showGenericExceptionMessage(scanResult.getError());}
-		setCursor(Cursor.getDefaultCursor());
+		startScanPreCheck();
 	}//GEN-LAST:event_uxScanBigBtnActionPerformed
 
 	private void uxConnectToScannerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxConnectToScannerBtnActionPerformed
@@ -1190,11 +1250,186 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 		uxConnectScannerBtnActionPerformed(evt);
 	}//GEN-LAST:event_uxConnectToScannerBtnActionPerformed
 
+    private void uxFindConfigFileMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxFindConfigFileMenuBtnActionPerformed
+        try {
+            // get path of output folder
+            Config conf = root.getConfig();
+            String confName = conf.getConfigFilename();
+            File confDir = conf.getDirectoryLocation();
+            if (confDir == null) {
+                File jar_location = new File(ConfigScribe.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
+                confDir = jar_location;
+            }//end if config directory is null (it should be next to the ConfigScribe jar)
+            String config_path = confDir.toPath().resolve(confName).toFile().getAbsolutePath();
+            System.out.println(config_path);
+            Runtime.getRuntime().exec(new String[] {"explorer.exe", "/select,",config_path});
+        } catch (Exception e) {
+            showGenericExceptionMessage(e);
+        }//end catching any file-related exceptions
+    }//GEN-LAST:event_uxFindConfigFileMenuBtnActionPerformed
+
+    private void uxReloadConfigFileMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxReloadConfigFileMenuBtnActionPerformed
+        SimpleResult<String> configRes = root.getConfig().read_config();
+        if (configRes.isOk()) {
+            // the config should have already been read in
+        }//end if we can read from config
+        else {
+            JOptionPane.showMessageDialog(this, "Could not read config file. Error message is\n" + configRes.getError().getMessage());
+        }//end else something went wrong reading the config
+    }//GEN-LAST:event_uxReloadConfigFileMenuBtnActionPerformed
+
+    private void uxImageDpiMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxImageDpiMenuBtnActionPerformed
+        Config conf = root.getConfig();
+        scanDpiDialog.dpi = conf.scanDpi;
+		SimpleResult<double[]> supportedDpiResult = root.getSupportedXDpi();
+		if (supportedDpiResult.isOk()) {
+			scanDpiDialog.supported_dpis = supportedDpiResult.getValue();
+		}
+		scanDpiDialog.setVisible(true);
+		scanDpiDialog.supported_dpis = new double[0];
+		conf.scanDpi = scanDpiDialog.dpi;
+		root.setConfig(conf);
+        root.getConfig().write_config();
+    }//GEN-LAST:event_uxImageDpiMenuBtnActionPerformed
+
+    private void uxSetNumberSuffixMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxSetNumberSuffixMenuBtnActionPerformed
+        Config conf = root.getConfig();
+		numSuffixDialog.num_suffix_enabled = conf.numSuffixEnabled;
+		numSuffixDialog.num_suffix_min_digits = conf.numSuffixMinDigits;
+		numSuffixDialog.num_suffix_start_num = conf.numSuffixStartNum;
+		numSuffixDialog.num_suffix_cur_num = conf.numSuffixCurNum;
+		numSuffixDialog.num_suffix_increment = conf.numSuffixIncrement;
+        numSuffixDialog.setVisible(true);
+		conf.numSuffixEnabled = numSuffixDialog.num_suffix_enabled;
+		conf.numSuffixMinDigits = numSuffixDialog.num_suffix_min_digits;
+		conf.numSuffixStartNum = numSuffixDialog.num_suffix_start_num;
+		conf.numSuffixCurNum = numSuffixDialog.num_suffix_cur_num;
+		conf.numSuffixIncrement = numSuffixDialog.num_suffix_increment;
+		root.setConfig(conf);
+        conf.write_config();
+    }//GEN-LAST:event_uxSetNumberSuffixMenuBtnActionPerformed
+
+    private void uxSetImageFormatMenuBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uxSetImageFormatMenuBtnActionPerformed
+        Config conf = root.getConfig();
+		imageFormatDialog.image_format_code = conf.imageFormatCode;
+		SimpleResult<List<String>> supportedImageFormatsResult = root.getSupportedImageFormats();
+		if (supportedImageFormatsResult.isOk()) {
+			List<String> supportedImageFormats = supportedImageFormatsResult.getValue();
+			imageFormatDialog.supported_image_formats = supportedImageFormats;
+		}
+		imageFormatDialog.setVisible(true);
+		conf.imageFormatCode = imageFormatDialog.image_format_code;
+		root.setConfig(conf);
+        conf.write_config();
+    }//GEN-LAST:event_uxSetImageFormatMenuBtnActionPerformed
+
+    /**
+	 * Does a scan with the current settings.
+	 * Please consider calling startScanPreCheck() instead for most things.
+	 */
+    private SimpleResult<File> startScan() {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		uxImageLabel.setIcon(null);
+		@SuppressWarnings("unchecked")
+		SimpleResult<File> scanResult = (SimpleResult<File>) root.handleMessage(InterfaceMessage.Scan, new Object[] {uxShouldOverwriteName.isSelected(), uxOverwriteName.getText()});
+		if (scanResult.isErr()) {showGenericExceptionMessage(scanResult.getError());}
+		else {
+			// File scannedFile = scanResult.getValue();
+			// uxStatusTxt.append("Successfully scanned file \"" + scannedFile.getName() + "\" to path\n\"" + scannedFile.getAbsolutePath() + "\"\n");
+			// if (uxImageLabel.getWidth() > 0 && uxImageLabel.getHeight() > 0) {
+			// 	ImagePlus img = IJ.openImage(scannedFile.getAbsolutePath());
+			// 	ImageProcessor ip = img.getProcessor();
+			// 	ip.flipHorizontal();
+			// 	ip.setInterpolationMethod(ImageProcessor.BICUBIC);
+			// 	ip = ip.resize(uxImageLabel.getWidth(), uxImageLabel.getHeight());
+			// 	img.setProcessor(ip);
+			// 	ImageIcon icon = new ImageIcon(img.getImage());
+			// 	uxImageLabel.setIcon(icon);
+			// }//end if we are good to be resizing things.
+		}
+		// ensure scan name is reset if we used it
+        if (!uxShouldOverwriteName.isSelected() && !root.getConfig().numSuffixEnabled) {
+            uxOverwriteName.setText("");
+        }//end if we used the overwrite name
+		setCursor(Cursor.getDefaultCursor());
+        return scanResult;
+    }//end startScan()
+
+    /**
+	 * Does some checks and handling before each scan. Please consider calling
+	 * this instead of startScan().
+	 */
+    private SimpleResult<File> startScanPreCheck() {
+        // ensure there is a valid filename to use
+        if (!uxShouldOverwriteName.isSelected()) {
+            if (uxOverwriteName.getText().equals("")) {
+                JOptionPane.showMessageDialog(this, "Please select a name for the scanned image.", "Image name left blank", JOptionPane.ERROR_MESSAGE);
+                return new SimpleResult<File>(new Exception("Image name left blank. Please select a name for the scanned image."));
+            }//end if overwrite name is empty
+        }//end if we aren't overwriting the name
+
+		Config conf = root.getConfig();
+		SimpleResult<File> scanResult = startScan();
+
+		if (conf.secondScanEnabled) {
+			// use the second scan configuration
+			int orig_dpi = conf.scanDpi;
+			conf.scanDpi = conf.secondScanDpi;
+			boolean orig_subdir_enabled = conf.scanSubdirEnabled;
+			conf.scanSubdirEnabled = conf.secondScanSubdirEnabled;
+			String orig_subdir_name = conf.scanSubdirName.toString();
+			conf.scanSubdirName = conf.secondScanSubdirName.toString();
+			String orig_scan_suffix = conf.scanSuffix.toString();
+			conf.scanSuffix = conf.secondScanSuffix.toString();
+			if (conf.secondScanNumSuffixOverride) {
+				conf.numSuffixCurNum -= conf.numSuffixIncrement;
+				conf.numSuffixCurNum += conf.secondScanNumSuffixIncrement;
+			}//end if we're overriding num suffix functionallity.
+			root.setConfig(conf);
+			// scan
+			startScan();
+			// clean up
+			conf.scanDpi = orig_dpi;
+			conf.scanSubdirEnabled = orig_subdir_enabled;
+			conf.scanSubdirName = orig_subdir_name;
+			conf.scanSuffix = orig_scan_suffix;
+			root.setConfig(conf);
+		}//end if we're doing a second scan
+		
+		if (conf.thirdScanEnabled) {
+			// use the third scan configuration
+			int orig_dpi = conf.scanDpi;
+			conf.scanDpi = conf.thirdScanDpi;
+			boolean orig_subdir_enabled = conf.scanSubdirEnabled;
+			conf.scanSubdirEnabled = conf.thirdScanSubdirEnabled;
+			String orig_subdir_name = conf.scanSubdirName.toString();
+			conf.scanSubdirName = conf.thirdScanSubdirName.toString();
+			String orig_scan_suffix = conf.scanSuffix.toString();
+			conf.scanSuffix = conf.thirdScanSuffix.toString();
+			if (conf.thirdScanNumSuffixOverride) {
+				conf.numSuffixCurNum -= conf.numSuffixIncrement;
+				conf.numSuffixCurNum += conf.thirdScanNumSuffixIncrement;
+			}//end if we're overriding num suffix functionallity.
+			root.setConfig(conf);
+			// scan
+			startScan();
+			// clean up
+			conf.scanDpi = orig_dpi;
+			conf.scanSubdirEnabled = orig_subdir_enabled;
+			conf.scanSubdirName = orig_subdir_name;
+			conf.scanSuffix = orig_scan_suffix;
+			root.setConfig(conf);
+		}//end if we're doing a third scan
+
+        return scanResult;
+    }//end startScanPreCheck()
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenu jMenu5;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
@@ -1218,7 +1453,9 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
     private javax.swing.JMenuItem uxConnectScannerBtn;
     private javax.swing.JButton uxConnectToScannerBtn;
     private javax.swing.JButton uxEmptyQueueBtn;
+    private javax.swing.JMenuItem uxFindConfigFileMenuBtn;
     private javax.swing.JMenuItem uxIjBtn;
+    private javax.swing.JMenuItem uxImageDpiMenuBtn;
     private javax.swing.JLabel uxImageLabel;
     private javax.swing.JLabel uxImageLabelE;
     private javax.swing.JLabel uxImageLabelK;
@@ -1232,6 +1469,7 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
     private javax.swing.JButton uxPrevImageBtn;
     private javax.swing.JButton uxProcessAllBtn;
     private javax.swing.JList<String> uxQueueList;
+    private javax.swing.JMenuItem uxReloadConfigFileMenuBtn;
     private javax.swing.JMenuItem uxResetScanner;
     private javax.swing.JMenu uxRunMenu;
     private javax.swing.JMenuItem uxScanAreaMenuBtn;
@@ -1239,6 +1477,8 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
     private javax.swing.JMenuItem uxScanBtn;
     private javax.swing.JButton uxScanQueueBtn;
     private javax.swing.JMenuItem uxSetAreaFlagMenuBtn;
+    private javax.swing.JMenuItem uxSetImageFormatMenuBtn;
+    private javax.swing.JMenuItem uxSetNumberSuffixMenuBtn;
     private javax.swing.JMenuItem uxSetThresholdMenuBtn;
     private javax.swing.JMenuItem uxSetUnsharpMenuBtn;
     public javax.swing.JCheckBox uxShouldOutputKernImages;

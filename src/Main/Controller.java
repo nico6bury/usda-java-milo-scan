@@ -27,4 +27,6 @@ public interface Controller {
 	public List<File> getImageQueue();
 	public List<File> getProcessedImages();
 	public IJProcess getIJProcess();
+	public SimpleResult<double[]> getSupportedXDpi();
+	public SimpleResult<List<String>> getSupportedImageFormats();
 }//end interface Controller
