@@ -157,7 +157,7 @@ public class Config implements ConfigStore {
     public int numSuffixIncrement = 1;
     public String numSuffixIncrementCOMMENT = "This number is added to \"numSuffixCurNum\" after each scan. You can set this to zero or a negative as well if you want.";
 
-    public int imageFormatCode = 1;
+    public int imageFormatCode = 0;
     public String imageFormatCodeCOMMENT = "This number is a code for the image format the scanner will use for scanned images.\n# It can be a huge pain to decipher what each code does, so I'll leave a reference below, according to what references I can find.\n# Please be warned that if you select a less common format, I might not know what the proper extension\n# for that is, so I'll just leave a blank extension, which you can then fill in yourself by renaming the file.\n# I know the right extensions for TWFF_TIFF, TWFF_TIFFMULTI, TWFF_BMP, and TWFF_PNG, but other than that, I'm not sure as of writing this.";
 
 
