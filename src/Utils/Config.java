@@ -123,6 +123,150 @@ public class Config implements ConfigStore {
     public String scanY2NAME = "Scan Area Lower Right Y";
     public String scanY2COMMENT = "y coordinate in inches of lower right corner of scan area";
 
+    /**
+	 * The dpi to use for scanned images.
+	 */
+	public int scanDpi = 600;
+    public String scanDpiCOMMENT = "";
+
+    /**
+	 * Whether or not to add a number suffix at all.
+	 */
+    public boolean numSuffixEnabled = true;
+    public String numSuffixEnabledCOMMENT = "Whether or not to use number suffix settings. If this is false, then number suffix settings won't do anything.";
+	/**
+	 * The minimum number of digits to include in
+	 * the number suffix.
+	 */
+    public int numSuffixMinDigits = 2;
+    public String numSuffixMinDigitsCOMMENT = "The minimum number of digits to display for the number suffix.\n# For example, if you display 2 digits, but the number is 9, then the suffix will be 09.";
+	/**
+	 * The number for the number suffix to start at when the program begins.
+	 */
+    public int numSuffixStartNum = 1;
+    public String numSuffixStartNumCOMMENT = "The number suffix value to start at when you start the program.";
+	/**
+	 * The current number for the number suffix.
+	 */
+    public int numSuffixCurNum = 1;
+    public String numSuffixCurNumCOMMENT = "The current number suffix value, which will be used in the next scan.";
+	/**
+	 * The value to increase num_suffix_cur_num by.
+	 * You can use 0 or negative numbers here as well.
+	 */
+    public int numSuffixIncrement = 1;
+    public String numSuffixIncrementCOMMENT = "This number is added to \"numSuffixCurNum\" after each scan. You can set this to zero or a negative as well if you want.";
+
+    public int imageFormatCode = 1;
+    public String imageFormatCodeCOMMENT = "This number is a code for the image format the scanner will use for scanned images.\n# It can be a huge pain to decipher what each code does, so I'll leave a reference below, according to what references I can find.\n# Please be warned that if you select a less common format, I might not know what the proper extension\n# for that is, so I'll just leave a blank extension, which you can then fill in yourself by renaming the file.\n# I know the right extensions for TWFF_TIFF, TWFF_TIFFMULTI, TWFF_BMP, and TWFF_PNG, but other than that, I'm not sure as of writing this.";
+
+
+    /**
+	 * If this is true, then the scanned image will be placed in
+	 * a subdirectory.
+	 */
+	public boolean scanSubdirEnabled = false;
+    public String scanSubdirEnabledCOMMENT = "If this is true, then the scanned image will be placed in a subdirectory with a name set by scan_subdir_name.";
+	/**
+	 * If scan_subdir_enabled is true, then this will be the
+	 * name of the subdirectory.
+	 */
+	public String scanSubdirName = "first";
+    public String scanSubdirNameCOMMENT = "If scanSubdirEnabled is true, then this will be the name of the subdirectory for the scanned image.";
+	/**
+	 * This string will be added as a suffix to the name of the
+	 * scanned image. If the value is empty, nothing will be added.
+	 * This suffix will go before the number suffix, if one exists.
+	 */
+	public String scanSuffix = "";
+    public String scanSuffixCOMMENT = "This string will be added to the end of the name of the scanned image.\n# If the value is empty, then this feature is effectively disabled.\n# The suffix from this option will go before the number suffix.";
+	/**
+	 * If this is true, then after each scan, the program will
+	 * do a second scan with properties matching the second_scan options.
+	 */
+	public boolean secondScanEnabled = false;
+    public String secondScanEnabledCOMMENT = "If this is true, then after each scan, the program will do another scan,\n# with slightly different settings, matching the secondScan options.";
+	/**
+	 * The dpi to use for the second scan option.
+	 */
+	public int secondScanDpi = 300;
+    public String secondScanDpiCOMMENT = "The dpi setting to use for the second scan option.";
+	/**
+	 * If this is true, then on the second scan, the scanned image
+	 * will be placed into a subdirectory.
+	 */
+	public boolean secondScanSubdirEnabled = false;
+    public String secondScanSubdirEnabledCOMMENT = "If this is true, then the second scanned image will be placed in a subdirectory with a name set by secondScanSubdirName.";
+	/**
+	 * If second_scan_subdir_enabled is true, then this will
+	 * be the name of the subdirectory.
+	 */
+	public String secondScanSubdirName = "second";
+    public String secondScanSubdirNameCOMMENT = "If secondScanSubdirEnabled is set to true, then this will be the name of the subdirectory for the second scanned image.";
+	/**
+	 * This string will be appended as a suffix to the name of the scanned
+	 * image of the second scan. If it is an empty string, then nothing will be added.
+	 */
+	public String secondScanSuffix = "";
+    public String secondScanSuffixCOMMENT = "This string will be added to the end of the second scanned image.\n# If this value is empty, then this feature is effectively disabled.\n# The suffix from this option will go before the number suffix.";
+	/**
+	 * If this is true, then the second scan will use corresponding
+	 * second_scan_num_suffix settings. If false, then it uses
+	 * the normal num suffix settings.
+	 */
+	public boolean secondScanNumSuffixOverride = false;
+    public String secondScanNumSuffixOverrideCOMMENT = "If this is true, then the second scan will use corresponding secondScanNumSuffix settings.";
+	/**
+	 * If second_scan_num_suffix_override is true, then for the
+	 * second scan, the num_suffix_increment is set to this value.
+	 */
+	public int secondScanNumSuffixIncrement = 0;
+    public String secondScanNumSuffixIncrementCOMMENT = "If secondScanNumSuffixOverride is true, then the second scan will use this value for numSuffixIncrement.";
+	/**
+	 * If this is true, then after each scan, the program
+	 * will do a third scan with properties matching the third_scan options.
+	 * If third scan is enabled, but second scan is not, then the third scan
+	 * will still work.
+	 */
+	public boolean thirdScanEnabled = false;
+    public String thridScanEnabledCOMMENT = "If this is true, then after each scan, the program will do a third scan,\n# with properties matching the thirdScan options.\n# If third scan is enabled, but second scan is not, then the third scan will still work.";
+	/**
+	 * The dpi to use for the third scan option.
+	 */
+	public int thirdScanDpi = 150;
+    public String thirdScanDpiCOMMENT = "The dpi setting to use for the third scan option.";
+	/**
+	 * If this is true, then on the third scan, the scanned image will be placed
+	 * into a subdirectory.
+	 */
+	public boolean thirdScanSubdirEnabled = false;
+    public String thirdScanSubdirEnabledCOMMENT = "If this is true, then the third scanned image will be placed in a subdirectory with a name set by thirdScanSubdirName.";
+	/**
+	 * If third_scan_subdir_enabled is true, then this is the name of the subdirectory
+	 * that the third scanned image will be placed into.
+	 */
+	public String thirdScanSubdirName = "third";
+    public String thirdScanSubdirNameCOMMENT = "If thirdScanSubdirEnabled is true, then this will be the name of the subdirectory for the third scanned image.";
+	/**
+	 * This string will be appended as a suffix to the name of the scanned image
+	 * of the third scan. If it is an empty string, then nothing will be added.
+	 */
+	public String thirdScanSuffix = "";
+    public String thirdScanSuffixCOMMENT = "This string will be added to the end of the name of the third scanned image.\n# The suffix from this option will go before the number suffix. If the value is empty, then this feature is effectively disabled.";
+	/**
+	 * If this is true, then the third scan will use corresponding
+	 * third_scan_num_suffix settings. If false, then it uses the
+	 * normal num_suffix settings.
+	 */
+	public boolean thirdScanNumSuffixOverride = false;
+    public String thirdScanNumSuffixOverrideCOMMENT = "If this is true, then the third scan will use corresponding thirdScanNumSuffix settings.";
+	/**
+	 * If third_scan_num_suffix_override is true, then for the third scan,
+	 * the num_suffix_increment is set to this value.
+	 */
+	public int thirdScanNumSuffixIncrement = 0;
+    public String thirdScanNumSuffixIncrementCOMMENT = "If thirdScanNumSuffixOverride is true, then the third scan will use this value for numSuffixIncrement.";
+
     public SimpleResult<String> write_config() {
         return ConfigScribe.writeConfig(this);
     }//end write_config()
