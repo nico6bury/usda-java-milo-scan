@@ -1,19 +1,14 @@
 package Scan;
 
-import SK.gnome.twain.TwainConstants;
+import java.io.File;
+import java.nio.file.FileSystemException;
+
+// import SK.gnome.twain.TwainConstants;
 import SK.gnome.twain.TwainException;
 import SK.gnome.twain.TwainManager;
 import SK.gnome.twain.TwainSource;
-import Utils.Config;
-import Utils.Constants;
 import SimpleResult.SimpleResult;
-import SimpleResult.SimpleResult.ResultType;
-
-import java.io.File;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-import IJM.IJProcess;
+import Utils.Config;
 
 /**
  * This class is meant to be used for scanning images with an EPSON scanner for image processing.
@@ -24,6 +19,11 @@ public class Scan {
 	 * Assumedly an object pointing to the scanner we want to access.
 	 */
 	TwainSource scanSource;
+	/**
+	 * Returns the scan source, assuming one is available.
+	 * Allows for manual manipulation.
+	 */
+	public TwainSource getSource() {return scanSource;}
 
 	/**
 	 * Tries to find a valid TwainSource and save it for later.
@@ -86,7 +86,7 @@ public class Scan {
 			// for (int i = 0; i < supported_res.length; i++) {
 			//     if (max_supported < supported_res[i]) {max_supported = supported_res[i];}
 			// }
-			scanSource.setResolution(600);
+			scanSource.setResolution(config.scanDpi);
 			// try and print resolution
 			double x_res = scanSource.getXResolution();
 			double y_res = scanSource.getYResolution();
@@ -121,31 +121,28 @@ public class Scan {
 
 	/**
 	 * Tries to run the scanner of the saved twain source with proper settings.
-	 * @param filename An optional filename to use instead of a timestamp
-	 * @param use_filename Whether to use filename parameter (true) or ignore it and use timestamp (false)
+	 * @param filepath The file path to save scanned image to.
+	 * @param imageFormat the TwainConstants.TWFF_ code for the format you want. One
+	 * example would be TwainConstants.TWFF_BMP, which is equal to 2.
 	 * @return Returns an error if one was thrown, otherwise is Ok.
 	 */
-	public SimpleResult<String> runScanner(String filename, boolean use_filename) {
+	public SimpleResult<String> runScanner(String filepath, int imageFormat) {
 		// make an attempt to run the scanner
 		try {
-			// determine file path where image will be outputted
-			SimpleResult<File> outF_result = getBaseScanDir(filename, use_filename);
-			SimpleResult<File> tmpF_result = getBaseScanDir(filename,false);
-			if (outF_result.isOk() && tmpF_result.isOk()) {
-				File outF = outF_result.getValue();
-				File tmpF = tmpF_result.getValue();
-				System.out.println(outF.getAbsolutePath());
-				// scan and save image to filepath
-				scanSource.acquireImage(false, tmpF.getAbsolutePath(), TwainConstants.TWFF_TIFF);
-				if (use_filename) {
-					tmpF.renameTo(outF);
-				}//end if we want to have the image file be named what the user wanted
-				// ImageIO.write(bimg, "bmp", outF);
-				return new SimpleResult<>(outF.getAbsolutePath());
-			}//end if we successfully got a filename
-			else {
-				return new SimpleResult<>(outF_result.getError());
-			}//end else we got an error
+			// figure out a temp path
+			File file = new File(filepath);
+			File tmp = file.toPath().getParent().resolve("tmp").toFile();
+
+			// actually run scanner
+			scanSource.acquireImage(false, tmp.getAbsolutePath(), imageFormat);
+			// make sure the image is named correctly
+			boolean renameSuccess = tmp.renameTo(file);
+			if (!renameSuccess) {
+				return new SimpleResult<>(new FileSystemException("We were unable to rename " + 
+				"the scanned image. It might still exist, but it will be called tmp " + 
+				"and overwritten in the next scan."));
+			}//end if we couldn't rename the scanned file
+			return new SimpleResult<>(filepath);
 		}//end trying to run the scanner
 		catch (Exception e) {
 			return new SimpleResult<>(e);
@@ -153,52 +150,10 @@ public class Scan {
 	}//end runScanner()
 
 	/**
-	 * Gets the file location at which we should save the next scanned file.  
-	 * The filename and directory is based on timestamping, and things are placed into
-	 * the directory at Constants.SCANNED_IMAGES_FOLDER_NAME.
-	 * @param filename An optional filename to use instead of a timestamp
-	 * @param use_filename Whether to use filename parameter (true) or ignore it and use timestamp (false)
-	 * @return Returns a File at which to save a file, or an error if an exception happened.
-	 */
-	public static SimpleResult<File> getBaseScanDir(String filename, boolean use_filename) {
-		String jar_location;
-		try {
-			jar_location = new File(IJProcess.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().toString();
-			String output_folder_storage = jar_location + File.separator + Constants.SCANNED_IMAGES_FOLDER_NAME;
-			File output_folder_storage_file = new File(output_folder_storage);
-			if (!output_folder_storage_file.exists()) {
-				output_folder_storage_file.mkdir();
-			}//end if we need to make our output folder
-			
-			LocalDateTime currentDateTime = LocalDateTime.now();
-			DateTimeFormatter year = DateTimeFormatter.ofPattern("yyyy");
-			DateTimeFormatter month = DateTimeFormatter.ofPattern("MM");
-			DateTimeFormatter day = DateTimeFormatter.ofPattern("d");
-			DateTimeFormatter hour = DateTimeFormatter.ofPattern("H");
-			DateTimeFormatter min = DateTimeFormatter.ofPattern("m");
-			// DateTimeFormatter dir_formatter = DateTimeFormatter.ofPattern("yyyy-MM");
-			// DateTimeFormatter file_formatter = DateTimeFormatter.ofPattern("MM-d_H:m");
-			File newDirectory = new File(output_folder_storage_file.getAbsolutePath() + File.separator + "milo-scan-" + currentDateTime.format(year) + "-" + currentDateTime.format(month));
-			// create the directory if it doesn't exist
-			if (!newDirectory.exists()) {
-				newDirectory.mkdir();
-			}//end if new directory needs to be created
-			String newExtension = ".tif";
-			String current_time_stamp = currentDateTime.format(month) + "-" + currentDateTime.format(day) + "_" + currentDateTime.format(hour) + ";" + currentDateTime.format(min);
-			String newFileName;
-			if (use_filename) {newFileName = filename + newExtension;}
-			else {newFileName = current_time_stamp + newExtension;}
-			File outputFile = new File(newDirectory.getAbsolutePath() + File.separator + newFileName);
-
-			return new SimpleResult<File>(outputFile);
-		} catch (Exception e) {return new SimpleResult<File>(e);}
-	}//end getBaseScanDir()
-
-	/**
 	 * Closes the twain manager. This operation might fail, for some reason. If it does, an error will be returned with the result type.
 	 * @return Returns an exception result if an exception returns. Otherwise, nothing useful is returned.
 	 */
-	public SimpleResult<ResultType> closeScanner() {
+	public SimpleResult<SimpleResult.ResultType> closeScanner() {
 		try {
 			TwainManager.close();
 		} catch (TwainException e) {
