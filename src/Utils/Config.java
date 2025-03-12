@@ -157,9 +157,12 @@ public class Config implements ConfigStore {
     public int numSuffixIncrement = 1;
     public String numSuffixIncrementCOMMENT = "This number is added to \"numSuffixCurNum\" after each scan. You can set this to zero or a negative as well if you want.";
 
+	/**
+	 * The image format code, as in TwainConstants.TWFF.
+	 * The code for Tif is 0, as an example.
+	 */
     public int imageFormatCode = 0;
-    public String imageFormatCodeCOMMENT = "This number is a code for the image format the scanner will use for scanned images.\n# It can be a huge pain to decipher what each code does, so I'll leave a reference below, according to what references I can find.\n# Please be warned that if you select a less common format, I might not know what the proper extension\n# for that is, so I'll just leave a blank extension, which you can then fill in yourself by renaming the file.\n# I know the right extensions for TWFF_TIFF, TWFF_TIFFMULTI, TWFF_BMP, and TWFF_PNG, but other than that, I'm not sure as of writing this.";
-
+    public String imageFormatCodeCOMMENT = "# This number is a code for the image format the scanner will use for scanned images.\n# It can be a huge pain to decipher what each code does, so I'll leave a reference below, accoring to what references I can find.\n# Please be warned that if you select a less common format, I might not know what the proper extension\n# for that is, so I'll just leave a blank extension, which you can then fill in yourself by renaming the file.\n# I know the right extensions for TWFF_TIFF, TWFF_TIFFMULTI, TWFF_BMP, and TWFF_PNG, but other than that, I'm not sure as of writing this.\n# Also, since some of these aren't fully supported, you can only set some of them in the gui menu.\n# 0 = TWFF_TIFF\n# 1 = TWFF_PICT\n# 2 = TWFF_BMP\n# 3 = TWFF_XBM\n# 4 = TWFF_JFIF\n# 5 = TWFF_FPX\n# 6 = TWFF_TIFFMULTI\n# 7 = TWFF_PNG\n# 8 = TWFF_SPIFF\n# 9 = TWFF_EXIF";
 
     /**
 	 * If this is true, then the scanned image will be placed in
