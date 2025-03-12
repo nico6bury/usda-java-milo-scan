@@ -151,9 +151,10 @@ public class Root implements Controller {
 		// try to set scanner settings
 		SimpleResult<SimpleResult.ResultType> setScanSettingResult = scan.setScanSettings(config);
 		if (setScanSettingResult.isErr()) {
-			MainWindow.showGenericExceptionMessage(setScanSettingResult.getError());
-			// reset scan to null
+			// MainWindow.showGenericExceptionMessage(setScanSettingResult.getError());
+			// reset scan to null, return
 			scan = null;
+			return new SimpleResult<File>(setScanSettingResult.getError());
 		}//end if we encountered an error while setting scan settings
 		// try to scan something with the scanner
 		SimpleResult<String> scanFilename_result = validateScanImageName(filename, shouldOverwriteName, config);
@@ -311,7 +312,7 @@ public class Root implements Controller {
 			String directory_string = 
 				output_folder_storage_file.getAbsolutePath() +
 				File.separator +
-				"petri-scan-" +
+				"milo-scan-" +
 				currentDateTime.format(year) +
 				"-" + currentDateTime.format(month);
 			File newDirectory = new File(directory_string);
