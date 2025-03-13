@@ -1002,9 +1002,9 @@
                               <Table columnCount="5" rowCount="0">
                                 <Column editable="false" title="FileID" type="java.lang.String"/>
                                 <Column editable="false" title="GridIdx" type="java.lang.Integer"/>
-                                <Column editable="false" title="Pixels1" type="java.lang.Integer"/>
-                                <Column editable="false" title="Pixels2" type="java.lang.Integer"/>
-                                <Column editable="false" title="%Area" type="java.lang.Double"/>
+                                <Column editable="false" title="Vit %" type="java.lang.Double"/>
+                                <Column editable="false" title="Chalk %" type="java.lang.Double"/>
+                                <Column editable="false" title="Germ %" type="java.lang.Double"/>
                               </Table>
                             </Property>
                             <Property name="autoResizeMode" type="int" value="4"/>

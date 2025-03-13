@@ -569,11 +569,11 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 
             },
             new String [] {
-                "FileID", "GridIdx", "Pixels1", "Pixels2", "%Area"
+                "FileID", "GridIdx", "Vit %", "Chalk %", "Germ %"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Double.class
+                java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false
@@ -1001,15 +1001,24 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 		DefaultTableModel this_table_model = (DefaultTableModel)uxOutputTable.getModel();
 		for (List<SumResult> resultGroup : groupedResults) {
 			for (SumResult res : resultGroup) {
-				int total_area = (int)Math.floor(res.getResValSentinel("Area"));
-				int endosperm_area = (int)Math.floor(res.getResValSentinel("EndospermArea"));
-				double endo_percent = (endosperm_area * 100) / total_area;
+				// int total_area = (int)Math.floor(res.getResValSentinel("Area"));
+				// int endosperm_area = (int)Math.floor(res.getResValSentinel("EndospermArea"));
+				// double endo_percent = (endosperm_area * 100) / total_area;
+                double cross_section_area = res.getResValSentinel("CrossSectionArea");
+                double chk_area = res.getResValSentinel("ChalkArea");
+                double chkgrm_area = res.getResValSentinel("ChalkGermArea");
+                double chk_perc = (chk_area * 100) / cross_section_area;
+                double grm_area = chkgrm_area - chk_area;
+                double vit_area = cross_section_area - chkgrm_area;
+                double vit_perc = (vit_area * 100) / cross_section_area;
+                double grm_perc = (grm_area * 100) / cross_section_area;
+                
 				Object[] this_row = new Object[5];
 				this_row[0] = res.file.getName();
 				this_row[1] = res.rrr.gridCellIdx + 1;
-				this_row[2] = total_area;
-				this_row[3] = endosperm_area;
-				this_row[4] = endo_percent;
+				this_row[2] = vit_perc;//vit area
+				this_row[3] = chk_perc;//chalk area
+				this_row[4] = grm_perc;//germ area
 				this_table_model.addRow(this_row);
 			}//end looping over each results
 		}//end looping over each result group
