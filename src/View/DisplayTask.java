@@ -111,6 +111,9 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
 		//     IJM.Constants.chalk_endosperm_upper_gray_thresh,
 		//     IJM.Constants.chalk_endosperm_gray_pass_or_not
 		// );
+		blackToWhite(img);
+		blackToWhite(kern_img);
+		blackToWhite(chkImg);
 		// Get ImageIcon for each image, scaled down
 		finishedIcons[0] = new ImageIcon(img.getImage());
 		finishedIcons[1] = new ImageIcon(kern_img.getImage());
@@ -121,6 +124,25 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
 		}
 		return finishedIcons;
 	}//end doInBackground()
+
+	/**
+	 * Replaces pixels that are (0,0,0) with (255,255,255)
+	 * @param img
+	 */
+	protected void blackToWhite(ImagePlus img) {
+		ImageProcessor prc = img.getProcessor();
+		for (int x = 0; x < prc.getWidth(); x++) {
+			for (int y = 0; y < prc.getHeight(); y++) {
+				int[] rgb = prc.getPixel(x,y,null);
+				int r = rgb[0];
+				int g = rgb[1];
+				int b = rgb[2];
+				if (r == 0 && g == 0 && b == 0) {
+					prc.putPixel(x, y, new int[] {255,255,255});
+				}//end if we found a completely black pixel
+			}//end looping through y values
+		}//end looping through x values
+	}//end blackToWhite(img)
 
 	@Override
 	protected void done() {
