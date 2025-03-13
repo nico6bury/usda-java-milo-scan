@@ -1012,7 +1012,7 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
                 double vit_area = cross_section_area - chkgrm_area;
                 double vit_perc = (vit_area * 100) / cross_section_area;
                 double grm_perc = (grm_area * 100) / cross_section_area;
-                
+
 				Object[] this_row = new Object[5];
 				this_row[0] = res.file.getName();
 				this_row[1] = res.rrr.gridCellIdx + 1;
@@ -1230,18 +1230,20 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 			}//end if overwrite name is empty
 		}//end if we aren't overwriting the name
 
-		SimpleResult<File> scanResult = startScanPreCheck();
-		if (scanResult.isErr()) {showGenericExceptionMessage(scanResult.getError());}
-		else if (scanResult.isOk()) {
-			root.getImageQueue().add(scanResult.getValue());
+		SimpleResult<List<File>> scanResults = startScanPreCheck();
+		if (scanResults.isErr()) {showGenericExceptionMessage(scanResults.getError());}
+		else if (scanResults.isOk()) {
+            for (File scanResult : scanResults.getValue()) {
+                root.getImageQueue().add(scanResult);
+            }//end adding each scan result to the image queue
 			// allImages.add(scanResult.getValue());
 			updateQueueList();
 			// hopefully ensure that scanned image shows up immediately for user
-			uxQueueList.setSelectedValue(scanResult.getValue(), true);
+			uxQueueList.setSelectedValue(scanResults.getValue(), true);
 		}//end else if we can add something to the queue
 
 		// ensure scan name is reset if we used it
-		if (!uxShouldOverwriteName.isSelected() && scanResult.isOk()) {
+		if (!uxShouldOverwriteName.isSelected() && scanResults.isOk()) {
 			uxOverwriteName.setText("");
 		}//end if we used the overwrite name
 
@@ -1365,17 +1367,24 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 	 * Does some checks and handling before each scan. Please consider calling
 	 * this instead of startScan().
 	 */
-    private SimpleResult<File> startScanPreCheck() {
+    private SimpleResult<List<File>> startScanPreCheck() {
         // ensure there is a valid filename to use
         if (!uxShouldOverwriteName.isSelected()) {
             if (uxOverwriteName.getText().equals("")) {
                 JOptionPane.showMessageDialog(this, "Please select a name for the scanned image.", "Image name left blank", JOptionPane.ERROR_MESSAGE);
-                return new SimpleResult<File>(new Exception("Image name left blank. Please select a name for the scanned image."));
+                return new SimpleResult<List<File>>(new Exception("Image name left blank. Please select a name for the scanned image."));
             }//end if overwrite name is empty
         }//end if we aren't overwriting the name
 
 		Config conf = root.getConfig();
-		SimpleResult<File> scanResult = startScan();
+        List<File> scanResults = new ArrayList<>();
+		SimpleResult<File> scanResult1 = startScan();
+        if (scanResult1.isOk()) {
+            scanResults.add(scanResult1.getValue());
+        }//end if we got an ok scan result
+        else {
+            JOptionPane.showMessageDialog(this,"The first scan failed due to this error:\n" + scanResult1.getError() + "\t" + scanResult1.getError().getMessage());
+        }//end else we need to stop because we had a problem
 
 		if (conf.secondScanEnabled) {
 			// use the second scan configuration
@@ -1393,13 +1402,20 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 			}//end if we're overriding num suffix functionallity.
 			root.setConfig(conf);
 			// scan
-			startScan();
+			SimpleResult<File> scanResult2 = startScan();
 			// clean up
 			conf.scanDpi = orig_dpi;
 			conf.scanSubdirEnabled = orig_subdir_enabled;
 			conf.scanSubdirName = orig_subdir_name;
 			conf.scanSuffix = orig_scan_suffix;
 			root.setConfig(conf);
+            // actually use the result from our scan
+            if (scanResult2.isOk()) {
+                scanResults.add(scanResult2.getValue());
+            }//end if we got an ok scan result
+            else {
+                JOptionPane.showMessageDialog(this,"The second scan failed due to this error:\n" + scanResult2.getError() + "\t" + scanResult2.getError().getMessage());
+            }//end else we need to stop because we had a problem
 		}//end if we're doing a second scan
 		
 		if (conf.thirdScanEnabled) {
@@ -1418,16 +1434,23 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 			}//end if we're overriding num suffix functionallity.
 			root.setConfig(conf);
 			// scan
-			startScan();
+			SimpleResult<File> scanResult3 = startScan();
 			// clean up
 			conf.scanDpi = orig_dpi;
 			conf.scanSubdirEnabled = orig_subdir_enabled;
 			conf.scanSubdirName = orig_subdir_name;
 			conf.scanSuffix = orig_scan_suffix;
 			root.setConfig(conf);
+            // actually use the result from our scan
+            if (scanResult3.isOk()) {
+                scanResults.add(scanResult3.getValue());
+            }//end if we got an ok scan result
+            else {
+                JOptionPane.showMessageDialog(this,"The second scan failed due to this error:\n" + scanResult3.getError() + "\t" + scanResult3.getError().getMessage());
+            }//end else we need to stop because we had a problem
 		}//end if we're doing a third scan
 
-        return scanResult;
+        return new SimpleResult<List<File>>(scanResults);
     }//end startScanPreCheck()
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
