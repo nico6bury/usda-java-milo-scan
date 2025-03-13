@@ -28,7 +28,8 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
 		ImagePlus img = IJ.openImage(imageMatch.getAbsolutePath());
 		img.getProcessor().flipHorizontal();
 		RoiGrid kernGrid = (new IJProcess()).getRoiGrid(img, null);
-		
+		ImagePlus bak = img.duplicate();
+
 		// figure out some bounds to zoom in on kernels
 		if (kernGrid.rrrs.length > 0) {
 			int lowest_x = Integer.MAX_VALUE;
@@ -51,6 +52,11 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
 			Roi shrunk_dims = new Roi(lowest_x, lowest_y, highest_x, highest_y);
 			img = img.crop(new Roi[] {shrunk_dims})[0];
 		}//end if we ought to try and zoom into the kernels
+
+		if (img.getWidth() == 0 && img.getHeight() == 0) {
+			System.out.println("Image width and height 0 after attempting to zoom. Resorting to backup.");
+			img = bak;
+		}//end if we need to return to our backup because we screwed up the original while trying to crop it.
 
 		System.out.println("Before scaling image:");
 		System.out.println("Image to scale: width,height: " + img.getWidth() + ", " + img.getHeight());
