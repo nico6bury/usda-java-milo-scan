@@ -40,9 +40,19 @@ public class Config implements ConfigStore {
         return head;
     }//end getConfigHeader()
 
+	/**
+     * Use the AppData location for the config file. If we can't find or create
+     * the appropriate directory, then we default to returning null, which tells
+     * the Config Scribe to use the default location.
+     */
     @Override
     public File getDirectoryLocation() {
-        return new File(System.getProperty("user.home"), "AppData\\Local\\ARS-SPIERU");
+        File dirLoc = new File(System.getProperty("user.home"), "AppData\\Local\\ARS-SPIERU");
+        if (!dirLoc.exists()) {
+            if (dirLoc.mkdir()) {
+                return dirLoc;
+            } else {return null;}
+        } else {return dirLoc;}
     }//end getDirectoryLocation()
     
     public String file_chooser_dir = "";
