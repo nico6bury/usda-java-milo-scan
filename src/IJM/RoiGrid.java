@@ -1,7 +1,11 @@
 package IJM;
 
 import java.awt.Rectangle;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -218,6 +222,9 @@ public class RoiGrid {
 						System.out.println("Outputting roi image to \"" + outputFile.getAbsolutePath() + "\"");
 						macro += "saveAs(\"Tiff\", \"" + outputFile.getAbsolutePath().replace('\\', '/') + "\");\n";
 					}//end if we want to save an image of the particle detection
+					// redirect console spam from imagej
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					System.setOut(new PrintStream(baos));
 					// System.out.println("macro: \n" + macro);
 					IJ.open(tmpFile.getAbsolutePath());
 					IJ.runMacro(macro);
@@ -228,6 +235,8 @@ public class RoiGrid {
 						resMap[i][ii].put(headings[headIdx],rt.getColumn(headings[headIdx]));
 					}//end adding each column and heading to resMap
 					rt.reset();
+					// reset output stream
+					System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out)));
 				}//end trying to catch dumb ParticleAnalyzer bugs
 				catch (ArrayIndexOutOfBoundsException e) {System.out.println("Out of bounds?\t" + rrrs[i][ii].roi.getBounds().toString() + " grididx " + rrrs[i][ii].gridCellIdx);}
 			}//end looping over kernels
