@@ -738,7 +738,7 @@ public class IJProcess {
 		String macro = 
 			"run(\"Set Measurements...\",\"bounding\");\n" +
 			"setThreshold(1,255);\n" +
-			"run(\"Analyze Particles...\", \"size=6500-12500\")";
+			"run(\"Analyze Particles...\", \"size=6500-12500 exclude include\")";
 		IJ.open(tmpFile.getAbsolutePath());
 		IJ.runMacro(macro);
 
@@ -757,7 +757,7 @@ public class IJProcess {
 		RoiManager rm = new RoiManager(false);
 
 		for(int i = 0; i < rects.length; i++) {
-			rects[i].grow(-25,-30);
+			rects[i].grow(-6,-7);
 			Roi newRoi = new Roi(rects[i]);
 			rm.addRoi(newRoi);
 		}//end shrinking every rectangle roi
