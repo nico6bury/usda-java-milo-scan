@@ -26,7 +26,7 @@ public class Constants {
 
 	public static boolean cells_hsb_thresh_enabled = true;
 	public static int[] cells_lower_hsb_thresh = new int[] {149,0,0};
-	public static int[] cells_upper_hsb_thresh = new int[] {158,255,255};
+	public static int[] cells_upper_hsb_thresh = new int[] {155,255,255};
 	public static PassOrNot[] cells_hsb_pass_or_not = new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass};
 	
 	public static boolean chalk_endosperm_hsb_thresh_enabled = false;
