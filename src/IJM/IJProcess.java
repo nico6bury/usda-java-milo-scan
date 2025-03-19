@@ -378,6 +378,8 @@ public class IJProcess {
 			File file = files_to_process.get(i);
 			// String sliceBase = file.getName().substring(0, file.getName().length() - 4);
 
+			System.out.println("\n\nGetting ready to process image file \"" + file.getAbsolutePath() + "\"\n");
+
 			// figure out some directory stuff if we're doing roi image output
 			RoiGrid.RoiImageOutputConfiguration riocBase = null;
 			if (shouldOutputKernImages) {
