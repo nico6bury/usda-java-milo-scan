@@ -740,7 +740,7 @@ public class IJProcess {
 		String macro = 
 			"run(\"Set Measurements...\",\"bounding\");\n" +
 			"setThreshold(1,255);\n" +
-			"run(\"Analyze Particles...\", \"size=26000-50000\")";
+			"run(\"Analyze Particles...\", \"size=26000-50000 exclude include\")";
 		IJ.open(tmpFile.getAbsolutePath());
 		IJ.runMacro(macro);
 
