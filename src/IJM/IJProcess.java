@@ -463,7 +463,7 @@ public class IJProcess {
 		HashMap<String,double[]>[][] vitResMap = rg.analyzeParticles(
 			vitImg,
 			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=200-10000 circularity=0.03-1.00 show=[Overlay Masks] display",
+			"size=50-2500 circularity=0.03-1.00 show=[Overlay Masks] display",
 			riocVit
 		);
 		procResultsHelper(rg, vitResMap, "Vitreous");
@@ -485,7 +485,7 @@ public class IJProcess {
 		HashMap<String,double[]>[][] chkResMap = rg.analyzeParticles(
 			chkImg,
 			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=200-10000 circularity=0.03-1.00 show=[Overlay Masks] display",
+			"size=50-2500 circularity=0.03-1.00 show=[Overlay Masks] display",
 			riocChk
 		);
 		procResultsHelper(rg, chkResMap, "Chalk");
@@ -514,7 +514,7 @@ public class IJProcess {
 		HashMap<String,double[]>[][] grmResMap = rg.analyzeParticles(
 			grmImg,
 			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=100-10000 circularity=0.03-1.00 show=[Overlay Masks] display",
+			"size=25-2500 circularity=0.03-1.00 show=[Overlay Masks] display",
 			riocGrm
 		);
 		procResultsHelper(rg, grmResMap, "Germ");
@@ -542,7 +542,7 @@ public class IJProcess {
 		HashMap<String,double[]>[][] xscResMap = rg.analyzeParticles(
 			xscImg,
 			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=200-10000 circularity=0.03-1.00 show=[Overlay Masks] display include",
+			"size=50-2500 circularity=0.03-1.00 show=[Overlay Masks] display include",
 			riocXsc
 		);
 		procResultsHelper(rg, xscResMap, "CrossSection");
@@ -561,7 +561,7 @@ public class IJProcess {
 		HashMap<String,double[]>[][] chkResMap = rg.analyzeParticles(
 			chkImg,
 			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=200-10000 circularity=0.03-1.00 show=[Overlay Masks] display include",
+			"size=50-2500 circularity=0.03-1.00 show=[Overlay Masks] display include",
 			riocChk
 		);
 		procResultsHelper(rg, chkResMap, "Chalk");
@@ -583,7 +583,7 @@ public class IJProcess {
 		HashMap<String,double[]>[][] grmResMap = rg.analyzeParticles(
 			chkgrmImg,
 			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=100-10000 circularity=0.03-1.00 show=[Overlay Masks] display",
+			"size=25-2500 circularity=0.03-1.00 show=[Overlay Masks] display",
 			riocChkGrm
 		);
 		procResultsHelper(rg, grmResMap, "ChalkGerm");
@@ -649,7 +649,7 @@ public class IJProcess {
 		int options = ParticleAnalyzer.SHOW_NONE + ParticleAnalyzer.ADD_TO_MANAGER;
 		int measurements = Measurements.AREA;
 		ParticleAnalyzer.setRoiManager(rm);
-		ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, 2000, 50000,0.0,1.0);
+		ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, 500, 12500,0.0,1.0);
 		// actually get on processing
 		colorThHSB(
 			img,
@@ -670,7 +670,7 @@ public class IJProcess {
 		// get measurements for the kernels
 		HashMap<String,double[]>[][] resMap = nrg.analyzeParticles(img,
 			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=2000-50000 circularity=0.03-1.00 show=[Overlay Masks] display include", roiImageOutputConfig);
+			"size=500-12500 circularity=0.03-1.00 show=[Overlay Masks] display include", roiImageOutputConfig);
 		for (int i = 0; i < nrg.rrrs.length; i++) {
 			for (int ii = 0; ii < nrg.rrrs[i].length; ii++) {
 				Set<String> these_headers = resMap[i][ii].keySet();
@@ -740,7 +740,7 @@ public class IJProcess {
 		String macro = 
 			"run(\"Set Measurements...\",\"bounding\");\n" +
 			"setThreshold(1,255);\n" +
-			"run(\"Analyze Particles...\", \"size=26000-50000 exclude include\")";
+			"run(\"Analyze Particles...\", \"size=6500-12500 exclude include\")";
 		IJ.open(tmpFile.getAbsolutePath());
 		IJ.runMacro(macro);
 
@@ -759,7 +759,7 @@ public class IJProcess {
 		RoiManager rm = new RoiManager(false);
 
 		for(int i = 0; i < rects.length; i++) {
-			rects[i].grow(-25,-30);
+			rects[i].grow(-6,-7);
 			Roi newRoi = new Roi(rects[i]);
 			rm.addRoi(newRoi);
 		}//end shrinking every rectangle roi

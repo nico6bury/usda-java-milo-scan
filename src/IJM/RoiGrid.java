@@ -251,7 +251,7 @@ public class RoiGrid {
 	 */
 	public static void groupRoiRows(RoiManager rm) {
 		Roi[] rois = rm.getRoisAsArray();
-		int distTolerance = 15;
+		int distTolerance = 4;
 		int curGroupNum = 0;
 		if (rois.length == 1) {rois[0].setGroup(curGroupNum); return;}
 		else if (rois.length > 1) {rois[0].setGroup(curGroupNum);}
