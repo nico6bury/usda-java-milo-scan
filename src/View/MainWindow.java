@@ -115,7 +115,7 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 		tb.append("\n");
 		tb.append("To interface with EPSON V600 Scanner\n");
 		tb.append("To collect reflective image of milo sample in a plastic grid\n");
-		tb.append("Process image to do something eventually");
+		tb.append("Evaluate sorghum seed cross sections for vitreousness and chalkiness.");
 		uxTitleBlockTxt.setText(tb.toString());
 
 		// configure the listbox model
