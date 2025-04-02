@@ -1293,7 +1293,8 @@ public class MainWindow extends javax.swing.JFrame implements DisplayTaskCaller,
 		if (supportedDpiResult.isOk()) {
 			scanDpiDialog.supported_dpis = supportedDpiResult.getValue();
 		}
-		scanDpiDialog.setVisible(true);
+		JOptionPane.showMessageDialog(this, "Please be aware that the image processing is currently only configured to be used with 300 dpi images. As such, please be very careful when changing this setting.");
+        scanDpiDialog.setVisible(true);
 		scanDpiDialog.supported_dpis = new double[0];
 		conf.scanDpi = scanDpiDialog.dpi;
 		root.setConfig(conf);
