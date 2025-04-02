@@ -136,8 +136,8 @@ public class Config implements ConfigStore {
     /**
 	 * The dpi to use for scanned images.
 	 */
-	public int scanDpi = 600;
-    public String scanDpiCOMMENT = "The dpi to use for scanned images.";
+	public int scanDpi = 300;
+    public String scanDpiCOMMENT = "The dpi to use for scanned images. Please keep in mind that the current image processing is only meant to handle 300 dpi, so you take great care with changing this setting.";
 
     /**
 	 * Whether or not to add a number suffix at all.
@@ -203,7 +203,7 @@ public class Config implements ConfigStore {
 	 * The dpi to use for the second scan option.
 	 */
 	public int secondScanDpi = 300;
-    public String secondScanDpiCOMMENT = "The dpi setting to use for the second scan option.";
+    public String secondScanDpiCOMMENT = "The dpi setting to use for the second scan option. Please keep in mind that the current image processing is only meant to handle 300 dpi, so you take great care with changing this setting.";
 	/**
 	 * If this is true, then on the second scan, the scanned image
 	 * will be placed into a subdirectory.
@@ -246,8 +246,8 @@ public class Config implements ConfigStore {
 	/**
 	 * The dpi to use for the third scan option.
 	 */
-	public int thirdScanDpi = 150;
-    public String thirdScanDpiCOMMENT = "The dpi setting to use for the third scan option.";
+	public int thirdScanDpi = 300;
+    public String thirdScanDpiCOMMENT = "The dpi setting to use for the third scan option. Please keep in mind that the current image processing is only meant to handle 300 dpi, so you take great care with changing this setting.";
 	/**
 	 * If this is true, then on the third scan, the scanned image will be placed
 	 * into a subdirectory.
