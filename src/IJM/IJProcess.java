@@ -649,7 +649,7 @@ public class IJProcess {
 		int options = ParticleAnalyzer.SHOW_NONE + ParticleAnalyzer.ADD_TO_MANAGER;
 		int measurements = Measurements.AREA;
 		ParticleAnalyzer.setRoiManager(rm);
-		ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, 500, 12500,0.0,1.0);
+		ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, 400, 12500,0.0,1.0);
 		// actually get on processing
 		colorThHSB(
 			img,
@@ -670,7 +670,7 @@ public class IJProcess {
 		// get measurements for the kernels
 		HashMap<String,double[]>[][] resMap = nrg.analyzeParticles(img,
 			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=500-12500 circularity=0.03-1.00 show=[Overlay Masks] display include", roiImageOutputConfig);
+			"size=400-12500 circularity=0.03-1.00 show=[Overlay Masks] display include", roiImageOutputConfig);
 		for (int i = 0; i < nrg.rrrs.length; i++) {
 			for (int ii = 0; ii < nrg.rrrs[i].length; ii++) {
 				Set<String> these_headers = resMap[i][ii].keySet();
