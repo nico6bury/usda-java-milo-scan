@@ -655,7 +655,8 @@ public class IJProcess {
 			img,
 			IJM.Constants.kernel_lower_hsb_thresh,
 			IJM.Constants.kernel_upper_hsb_thresh,
-			IJM.Constants.kernel_hsb_pass_or_not);
+			IJM.Constants.kernel_hsb_pass_or_not,
+			true);
 		ImageConverter ic = new ImageConverter(img);
 		ic.convertToGray8();
 		IJ.setThreshold(img, 1, 255);
@@ -718,7 +719,8 @@ public class IJProcess {
 			img,
 			IJM.Constants.cells_lower_hsb_thresh,
 			IJM.Constants.cells_upper_hsb_thresh,
-			IJM.Constants.cells_hsb_pass_or_not
+			IJM.Constants.cells_hsb_pass_or_not,
+			false
 		);
 		ImageConverter ic = new ImageConverter(img);
 		// IJ.save(img, img.getTitle() + "-grid");
@@ -800,8 +802,9 @@ public class IJProcess {
 	 * @param min int[3], minimum value (0-255) for H,S,B
 	 * @param max int[3], maximum value (0-255) for H,S,B
 	 * @param filter PassOrNot[3], for H,S,B, either "pass", or inverts
+	 * @param flipThreshold If this is true, then the thresholded region is flipped to be whatever area is not covered by the thresholds given.
 	 */
-	public static void colorThHSB(ImagePlus img, int[] min, int[] max, IJM.Constants.PassOrNot[] filter) {
+	public static void colorThHSB(ImagePlus img, int[] min, int[] max, IJM.Constants.PassOrNot[] filter, boolean flipThreshold) {
 		ColorProcessor prc = img.getProcessor().convertToColorProcessor();
 		ImageStack hsb = prc.getHSBStack();
 		ImageProcessor h = hsb.getProcessor(1);
@@ -819,8 +822,15 @@ public class IJProcess {
 				if (filter[1] != PassOrNot.Pass) {sin = !sin;}
 				if (filter[2] != PassOrNot.Pass) {bin = !bin;}
 				if (!hin || !sin || !bin) {
-					prc.set(x,y,0);
+					if (!flipThreshold) {
+						prc.set(x,y,0);
+					}
 				}//end if pixel is outside constraints
+				else {
+					if (flipThreshold) {
+						prc.set(x,y,0);
+					}
+				}
 			}//end looping over y coords for pixels
 		}//end looping over x coords for pixels
 		img.setProcessor(prc);

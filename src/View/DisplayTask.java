@@ -90,7 +90,8 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
 			kern_img,
 			IJM.Constants.kernel_lower_hsb_thresh,
 			IJM.Constants.kernel_upper_hsb_thresh,
-			IJM.Constants.kernel_hsb_pass_or_not
+			IJM.Constants.kernel_hsb_pass_or_not,
+			true
 		);
 		ImagePlus chkImg = img.duplicate();
 		// IJProcess.colorThHSB(
