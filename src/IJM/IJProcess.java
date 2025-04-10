@@ -454,7 +454,7 @@ public class IJProcess {
 			vitImg,
 			IJM.Constants.vitreous_endosperm_lower_rgb_thresh,
 			IJM.Constants.vitreous_endosperm_upper_rgb_thresh,
-			IJM.Constants.vitreous_endosperm_rgb_pass_or_not
+			IJM.Constants.vitreous_endosperm_rgb_pass_or_not, false
 		);
 		// ImageConverter vitIc = new ImageConverter(vitImg);
 		// vitIc.convertToGray8();
@@ -476,7 +476,7 @@ public class IJProcess {
 			chkImg,
 			IJM.Constants.chalk_endosperm_lower_rgb_thresh,
 			IJM.Constants.chalk_endosperm_upper_rgb_thresh,
-			IJM.Constants.chalk_endosperm_rgb_pass_or_not
+			IJM.Constants.chalk_endosperm_rgb_pass_or_not, false
 		);
 		// ImageConverter chkIc = new ImageConverter(chkImg);
 		// chkIc.convertToGray8();
@@ -499,13 +499,13 @@ public class IJProcess {
 			grmImg,
 			IJM.Constants.germ_endosperm_lower_rgb_pre_thresh,
 			IJM.Constants.germ_endosperm_upper_rgb_pre_thresh,
-			IJM.Constants.germ_endosperm_rgb__pre_pass_or_not
+			IJM.Constants.germ_endosperm_rgb__pre_pass_or_not, false
 		);
 		IJProcess.colorThRGB(
 			grmImg,
 			IJM.Constants.germ_endosperm_lower_rgb_post_thresh,
 			IJM.Constants.germ_endosperm_upper_rgb_post_thresh,
-			IJM.Constants.germ_endosperm_rgb__post_pass_or_not
+			IJM.Constants.germ_endosperm_rgb__post_pass_or_not, false
 		);
 		// ImageConverter grmIc = new ImageConverter(grmImg);
 		// grmIc.convertToGray8();
@@ -535,7 +535,7 @@ public class IJProcess {
 		IJProcess.colorThRGB(xscImg,
 			new int[] {0,90,0},
 			new int[] {254,255,255},
-			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}, false
 		);
 		RoiImageOutputConfiguration riocXsc = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
 		if (riocXsc != null) {
@@ -554,7 +554,7 @@ public class IJProcess {
 		IJProcess.colorThRGB(chkImg,
 			new int[] {150,160,160},
 			new int[] {240,240,240},
-			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}
+			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}, false
 		);
 		RoiImageOutputConfiguration riocChk = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
 		if (riocChk != null) {
@@ -574,7 +574,7 @@ public class IJProcess {
 			chkgrmImg,
 			new int[] {0,100,0},
 			new int[] {150,240,240},
-			new PassOrNot[] {PassOrNot.Stop,PassOrNot.Pass,PassOrNot.Pass}
+			new PassOrNot[] {PassOrNot.Stop,PassOrNot.Pass,PassOrNot.Pass}, false
 		);
 		// ImageConverter grmIc = new ImageConverter(grmImg);
 		// grmIc.convertToGray8();
@@ -848,8 +848,9 @@ public class IJProcess {
 	 * @param min int[3], minimum value (0-255) for R,G,B
 	 * @param max int[3], maximum value (0-255) for R,G,B
 	 * @param filter PassOrNot[3], for R,G,B, either "pass", or inverts
+	 * @param flipThreshold If this is true, then the thresholded region is flipped to be whatever area is not covered by the thresholds given.
 	 */
-	public static void colorThRGB(ImagePlus img, int[] min, int[] max, PassOrNot[] filter) {
+	public static void colorThRGB(ImagePlus img, int[] min, int[] max, PassOrNot[] filter, boolean flipThreshold) {
 		ImageProcessor prc = img.getProcessor();
 		for (int x = 0; x < prc.getWidth(); x++) {
 			for (int y = 0; y < prc.getHeight(); y++) {
@@ -864,8 +865,15 @@ public class IJProcess {
 				if (filter[1] != PassOrNot.Pass) {gin = !gin;}
 				if (filter[2] != PassOrNot.Pass) {bin = !bin;}
 				if (!rin || !gin || !bin) {
-					prc.set(x,y,0);
+					if (!flipThreshold) {
+						prc.set(x,y,0);
+					}
 				}//end if pixel is outside constraints
+				else {
+					if (flipThreshold) {
+						prc.set(x,y,0);
+					}
+				}
 			}//end looping over y coords for pixels
 		}//end looping over x coords for pixels
 		img.setProcessor(prc);

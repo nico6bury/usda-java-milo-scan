@@ -104,7 +104,7 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
 			chkImg,
 			IJM.Constants.chalk_endosperm_lower_rgb_thresh,
 			IJM.Constants.chalk_endosperm_upper_rgb_thresh,
-			IJM.Constants.chalk_endosperm_rgb_pass_or_not
+			IJM.Constants.chalk_endosperm_rgb_pass_or_not, false
 		);
 		// IJProcess.colorThGrayscale(
 		//     endo_img,
