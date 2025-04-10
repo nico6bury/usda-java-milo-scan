@@ -432,12 +432,14 @@ public class IJProcess {
 	}//end Main Macro converted from ijm
 
 	/**
+	 * @deprecated
 	 * Mutates rg, doesn't mutate image.
 	 * Tries to threshold out and get information on vitreous endopserm,
 	 * chalky endosperm, and the germ.
 	 * @param rg
 	 * @param image
 	 */
+	@Deprecated
 	public void procThreeParts(
 		RoiGrid rg,
 		ImagePlus image,
@@ -774,10 +776,12 @@ public class IJProcess {
 	}//end getGridCells()
 
 	/**
+	 * @deprecated
 	 * Removes overly blue pixels by setting color value
 	 * to 0,0,0. Mutates img parameter.
 	 * @param img The input img, from which to remove blue
 	 */
+	@Deprecated
 	public static void removeBlue(ImagePlus img) {
 		ImageProcessor proc = img.getProcessor();
 		for (int x = 0; x < img.getWidth(); x++) {
@@ -869,6 +873,7 @@ public class IJProcess {
 
 	
 	/**
+	 * @deprecated
 	 * Removes pixels outside a range by setting them to 0.  
 	 * Uses YUV color space for constraints.
 	 * Mutates the img parameter.
@@ -877,6 +882,7 @@ public class IJProcess {
 	 * @param max int[3], maximum value (0-255) for Y,U,V
 	 * @param filter PassOrNot[3], for Y,U,V, either "pass", or inverts
 	 */
+	@Deprecated
 	public static void colorThYUV(ImagePlus img, int[] min, int[] max, PassOrNot[] filter) {
 		ImageProcessor prc = img.getProcessor();
 		for (int x = 0; x < prc.getWidth(); x++) {
@@ -913,6 +919,7 @@ public class IJProcess {
 	 * @param max maximum grayscale value (0,255)
 	 * @param filter Either "pass", or inverts
 	 */
+	@Deprecated
 	public static void colorThGrayscale(ImagePlus img, int min, int max, PassOrNot filter) {
 		ImageProcessor prc = img.getProcessor();
 		for (int x = 0; x < prc.getWidth(); x++) {
