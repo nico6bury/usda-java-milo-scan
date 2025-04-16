@@ -38,8 +38,8 @@ public class RoiGrid {
 	 * @param rm The RoiManager with rois for kernels
 	 * @return Returns 2d array of RRRs, to use in RoiGrid.
 	 */
-	public static RRR[][] createRRRs(RoiManager rm) {
-		groupRoiRows(rm);
+	public static RRR[][] createRRRs(RoiManager rm, ProcConfig config) {
+		groupRoiRows(rm, config);
 		ArrayList<Roi[]> ragged_rois = createSortedClones(rm);
 		RRR[][] rrrs = new RRR[ragged_rois.size()][];
 		// int idx_so_far = 0;
@@ -249,9 +249,9 @@ public class RoiGrid {
 	 * group represents one row
 	 * @param rm The RoiManager to pull from.
 	 */
-	public static void groupRoiRows(RoiManager rm) {
+	public static void groupRoiRows(RoiManager rm, ProcConfig config) {
 		Roi[] rois = rm.getRoisAsArray();
-		int distTolerance = 4;
+		int distTolerance = config.distTolerance;
 		int curGroupNum = 0;
 		if (rois.length == 1) {rois[0].setGroup(curGroupNum); return;}
 		else if (rois.length > 1) {rois[0].setGroup(curGroupNum);}

@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import IJM.Constants.PassOrNot;
 import IJM.RoiGrid.RoiImageOutputConfiguration;
 import Utils.Constants;
 import SimpleResult.SimpleResult;
@@ -361,7 +360,11 @@ public class IJProcess {
 	 */
 	public SimpleResult<String> runMacro(List<File> files_to_process) {
 		try {
-			return MainMacro(files_to_process);
+			ProcConfig config = new ProcConfig();
+			SimpleResult<String> config_result = config.read_config();
+			if (config_result.isErr()) {System.err.println("Couldn't read processing config file. Using default settings.");}
+			config.write_config();
+			return MainMacro(files_to_process, config);
 		} catch (Exception e) {
 			return new SimpleResult<>(e);
 		}//end if we catch any exceptions
@@ -372,7 +375,7 @@ public class IJProcess {
 	 * @param files_to_process The list of image Files to process
 	 * @return Returns a result that will contain the full string written to an output file, or an error if something prevented completion.
 	 */
-	public SimpleResult<String> MainMacro(List<File> files_to_process) {
+	public SimpleResult<String> MainMacro(List<File> files_to_process, ProcConfig config) {
 		List<SumResult> runningSum = new ArrayList<SumResult>();
 		for (int i = 0; i < files_to_process.size(); i++) {
 			File file = files_to_process.get(i);
@@ -401,10 +404,10 @@ public class IJProcess {
 			this_image.getProcessor().flipHorizontal();
 
 			// get location of grid cells
-			ArrayList<Roi[]> gridCells = getGridCells(this_image);
+			ArrayList<Roi[]> gridCells = getGridCells(this_image, config);
 
 			// remove grid and background, get whole kernels
-			RoiGrid kernGrid = getRoiGrid(this_image, riocBase);
+			RoiGrid kernGrid = getRoiGrid(this_image, riocBase, config);
 
 			// Update kernelGrid with gridCells information
 			kernGrid.updateGridLocs(gridCells);
@@ -416,7 +419,7 @@ public class IJProcess {
 			// procThreeParts(kernGrid, this_image, riocBase);
 
 			// Use new processing
-			danProcMar2025(kernGrid, this_image, riocBase);
+			danProcMar2025(kernGrid, this_image, riocBase, config);
 
 			this_image.close();
 
@@ -431,111 +434,21 @@ public class IJProcess {
 		return outputFileResult;
 	}//end Main Macro converted from ijm
 
-	/**
-	 * @deprecated
-	 * Mutates rg, doesn't mutate image.
-	 * Tries to threshold out and get information on vitreous endopserm,
-	 * chalky endosperm, and the germ.
-	 * @param rg
-	 * @param image
-	 */
-	@Deprecated
-	public void procThreeParts(
-		RoiGrid rg,
-		ImagePlus image,
-		RoiGrid.RoiImageOutputConfiguration roiImageOutputBaseConfig
-	) {
-		ImagePlus img = image.duplicate();
-		// img.getProcessor().blurGaussian(0.5);
-
-		// try to find the vitreous endosperm (also catches strips of germ)
-		ImagePlus vitImg = img.duplicate();
-		IJProcess.colorThRGB(
-			vitImg,
-			IJM.Constants.vitreous_endosperm_lower_rgb_thresh,
-			IJM.Constants.vitreous_endosperm_upper_rgb_thresh,
-			IJM.Constants.vitreous_endosperm_rgb_pass_or_not, false
-		);
-		// ImageConverter vitIc = new ImageConverter(vitImg);
-		// vitIc.convertToGray8();
-		RoiGrid.RoiImageOutputConfiguration riocVit = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
-		if (riocVit != null) {
-			riocVit.imagePrefix = "vit-";
-		}
-		HashMap<String,double[]>[][] vitResMap = rg.analyzeParticles(
-			vitImg,
-			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=50-2500 circularity=0.03-1.00 show=[Overlay Masks] display",
-			riocVit
-		);
-		procResultsHelper(rg, vitResMap, "Vitreous");
-
-		// try to find the chalky endosperm
-		ImagePlus chkImg = img.duplicate();
-		IJProcess.colorThRGB(
-			chkImg,
-			IJM.Constants.chalk_endosperm_lower_rgb_thresh,
-			IJM.Constants.chalk_endosperm_upper_rgb_thresh,
-			IJM.Constants.chalk_endosperm_rgb_pass_or_not, false
-		);
-		// ImageConverter chkIc = new ImageConverter(chkImg);
-		// chkIc.convertToGray8();
-		RoiGrid.RoiImageOutputConfiguration riocChk = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
-		if (riocChk != null) {
-			riocChk.imagePrefix = "chk-";
-		}
-		HashMap<String,double[]>[][] chkResMap = rg.analyzeParticles(
-			chkImg,
-			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=50-2500 circularity=0.03-1.00 show=[Overlay Masks] display",
-			riocChk
-		);
-		procResultsHelper(rg, chkResMap, "Chalk");
-		
-
-		// try and find the germ
-		ImagePlus grmImg = img.duplicate();
-		IJProcess.colorThRGB(
-			grmImg,
-			IJM.Constants.germ_endosperm_lower_rgb_pre_thresh,
-			IJM.Constants.germ_endosperm_upper_rgb_pre_thresh,
-			IJM.Constants.germ_endosperm_rgb__pre_pass_or_not, false
-		);
-		IJProcess.colorThRGB(
-			grmImg,
-			IJM.Constants.germ_endosperm_lower_rgb_post_thresh,
-			IJM.Constants.germ_endosperm_upper_rgb_post_thresh,
-			IJM.Constants.germ_endosperm_rgb__post_pass_or_not, false
-		);
-		// ImageConverter grmIc = new ImageConverter(grmImg);
-		// grmIc.convertToGray8();
-		RoiGrid.RoiImageOutputConfiguration riocGrm = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
-		if (riocGrm != null) {
-			riocGrm.imagePrefix = "grm-";
-		}
-		HashMap<String,double[]>[][] grmResMap = rg.analyzeParticles(
-			grmImg,
-			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=25-2500 circularity=0.03-1.00 show=[Overlay Masks] display",
-			riocGrm
-		);
-		procResultsHelper(rg, grmResMap, "Germ");
-
-	}//end procThreeParts()
-
 	public void danProcMar2025(
 		RoiGrid rg,
 		ImagePlus image,
-		RoiGrid.RoiImageOutputConfiguration roiImageOutputBaseConfig
+		RoiGrid.RoiImageOutputConfiguration roiImageOutputBaseConfig,
+		ProcConfig pc
 	) {
 		ImagePlus img = image.duplicate();
 
 		// try to find cross section
 		ImagePlus xscImg = img.duplicate();
 		IJProcess.colorThRGB(xscImg,
-			new int[] {0,90,0},
-			new int[] {254,255,255},
-			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}, false
+			new int[] {pc.xsec_thresh_s1_min,pc.xsec_thresh_s2_min,pc.xsec_thresh_s3_min},
+			new int[] {pc.xsec_thresh_s1_max,pc.xsec_thresh_s2_max,pc.xsec_thresh_s3_max},
+			new boolean[] {pc.xsec_thresh_s1_pass, pc.xsec_thresh_s2_pass, pc.xsec_thresh_s3_pass},
+			pc.xsec_thresh_flip
 		);
 		RoiImageOutputConfiguration riocXsc = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
 		if (riocXsc != null) {
@@ -552,9 +465,10 @@ public class IJProcess {
 		// try to find chalk
 		ImagePlus chkImg = img.duplicate();
 		IJProcess.colorThRGB(chkImg,
-			new int[] {150,160,160},
-			new int[] {240,240,240},
-			new PassOrNot[] {PassOrNot.Pass,PassOrNot.Pass,PassOrNot.Pass}, false
+			new int[] {pc.chalk_thresh_s1_min,pc.chalk_thresh_s2_min,pc.chalk_thresh_s3_min},
+			new int[] {pc.chalk_thresh_s1_max,pc.chalk_thresh_s2_max,pc.chalk_thresh_s3_max},
+			new boolean[] {pc.chalk_thresh_s1_pass, pc.chalk_thresh_s2_pass, pc.chalk_thresh_s3_pass},
+			pc.chalk_thresh_flip
 		);
 		RoiImageOutputConfiguration riocChk = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
 		if (riocChk != null) {
@@ -572,9 +486,10 @@ public class IJProcess {
 		ImagePlus chkgrmImg = img.duplicate();
 		IJProcess.colorThRGB(
 			chkgrmImg,
-			new int[] {0,100,0},
-			new int[] {150,240,240},
-			new PassOrNot[] {PassOrNot.Stop,PassOrNot.Pass,PassOrNot.Pass}, false
+			new int[] {pc.chkgrm_thresh_s1_min,pc.chkgrm_thresh_s2_min,pc.chkgrm_thresh_s3_min},
+			new int[] {pc.chkgrm_thresh_s1_max,pc.chkgrm_thresh_s2_max,pc.chkgrm_thresh_s3_max},
+			new boolean[] {pc.chkgrm_thresh_s1_pass, pc.chkgrm_thresh_s2_pass, pc.chkgrm_thresh_s3_pass},
+			pc.chkgrm_thresh_flip
 		);
 		// ImageConverter grmIc = new ImageConverter(grmImg);
 		// grmIc.convertToGray8();
@@ -641,7 +556,8 @@ public class IJProcess {
 	 */
 	public RoiGrid getRoiGrid(
 		ImagePlus image,
-		RoiGrid.RoiImageOutputConfiguration roiImageOutputBaseConfig
+		RoiGrid.RoiImageOutputConfiguration roiImageOutputBaseConfig,
+		ProcConfig pc
 	) {
 		ImagePlus img = image.duplicate();
 
@@ -655,16 +571,17 @@ public class IJProcess {
 		// actually get on processing
 		colorThHSB(
 			img,
-			IJM.Constants.kernel_lower_hsb_thresh,
-			IJM.Constants.kernel_upper_hsb_thresh,
-			IJM.Constants.kernel_hsb_pass_or_not,
-			true);
+			new int[] {pc.kernel_thresh_s1_min, pc.kernel_thresh_s2_min, pc.kernel_thresh_s3_min},
+			new int[] {pc.kernel_thresh_s1_max, pc.kernel_thresh_s2_max, pc.kernel_thresh_s3_max},
+			new boolean[] {pc.kernel_thresh_s1_pass, pc.kernel_thresh_s2_pass, pc.kernel_thresh_s3_pass},
+			pc.kernel_thresh_flip
+		);
 		ImageConverter ic = new ImageConverter(img);
 		ic.convertToGray8();
 		IJ.setThreshold(img, 1, 255);
 		pa.analyze(img);
 		System.out.println("Detected " + rm.getCount() + " kernels.");
-		RRR[][] rrrs = RoiGrid.createRRRs(rm);
+		RRR[][] rrrs = RoiGrid.createRRRs(rm, pc);
 		RoiGrid nrg = new RoiGrid(rrrs);
 		RoiGrid.RoiImageOutputConfiguration roiImageOutputConfig = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
 		if (roiImageOutputConfig != null) {
@@ -713,16 +630,16 @@ public class IJProcess {
 	 * @param image The image to pull grid cell locations from
 	 * @return Returns sorted array list of Rois, representing all grid cells in img
 	 */
-	public ArrayList<Roi[]> getGridCells(ImagePlus image) {
+	public ArrayList<Roi[]> getGridCells(ImagePlus image, ProcConfig pc) {
 		ImagePlus img = image.duplicate();
 
 		// actually get processing
 		colorThHSB(
 			img,
-			IJM.Constants.cells_lower_hsb_thresh,
-			IJM.Constants.cells_upper_hsb_thresh,
-			IJM.Constants.cells_hsb_pass_or_not,
-			false
+			new int[] {pc.cells_thresh_s1_min, pc.cells_thresh_s2_min, pc.cells_thresh_s3_min},
+			new int[] {pc.cells_thresh_s1_max, pc.cells_thresh_s2_max, pc.cells_thresh_s3_max},
+			new boolean[] {pc.cells_thresh_s1_pass, pc.cells_thresh_s2_pass, pc.cells_thresh_s3_pass},
+			pc.cells_thresh_flip
 		);
 		ImageConverter ic = new ImageConverter(img);
 		// IJ.save(img, img.getTitle() + "-grid");
@@ -768,35 +685,13 @@ public class IJProcess {
 			rm.addRoi(newRoi);
 		}//end shrinking every rectangle roi
 
-		RoiGrid.groupRoiRows(rm);
+		RoiGrid.groupRoiRows(rm, pc);
 		ArrayList<Roi[]> sortedRois = RoiGrid.createSortedClones(rm);
 		// rm.save(img.getShortTitle() + "-roi.zip");
 		rm.reset();
 		return sortedRois;
 	}//end getGridCells()
 
-	/**
-	 * @deprecated
-	 * Removes overly blue pixels by setting color value
-	 * to 0,0,0. Mutates img parameter.
-	 * @param img The input img, from which to remove blue
-	 */
-	@Deprecated
-	public static void removeBlue(ImagePlus img) {
-		ImageProcessor proc = img.getProcessor();
-		for (int x = 0; x < img.getWidth(); x++) {
-			for (int y = 0; y < img.getHeight(); y++){
-				int[] pixel = img.getPixel(x,y);
-				int R = pixel[0];
-				int G = pixel[1];
-				int B = pixel[2];
-				if (B > (R + G) * 3 / 5) {
-					proc.set(x,y,0);
-				}//end if pixel appears blue
-			}//end looping over y values
-		}//end looping over x values
-		img.setProcessor(proc);
-	}//end removeBlue
 
 	/**
 	 * Removes pixels outside a range by setting them to 0.  
@@ -805,10 +700,10 @@ public class IJProcess {
 	 * @param img The image to process. This parameter is mutated.
 	 * @param min int[3], minimum value (0-255) for H,S,B
 	 * @param max int[3], maximum value (0-255) for H,S,B
-	 * @param filter PassOrNot[3], for H,S,B, either "pass", or inverts
+	 * @param filter boolean[3], for H,S,B, true indicates to cut out pixels outside threshold, false is reverse for that channel.
 	 * @param flipThreshold If this is true, then the thresholded region is flipped to be whatever area is not covered by the thresholds given.
 	 */
-	public static void colorThHSB(ImagePlus img, int[] min, int[] max, IJM.Constants.PassOrNot[] filter, boolean flipThreshold) {
+	public static void colorThHSB(ImagePlus img, int[] min, int[] max, boolean[] filter, boolean flipThreshold) {
 		ColorProcessor prc = img.getProcessor().convertToColorProcessor();
 		ImageStack hsb = prc.getHSBStack();
 		ImageProcessor h = hsb.getProcessor(1);
@@ -822,9 +717,9 @@ public class IJProcess {
 				boolean hin = H >= min[0] && H <= max[0];
 				boolean sin = S >= min[1] && S <= max[1];
 				boolean bin = B >= min[2] && B <= max[2];
-				if (filter[0] != PassOrNot.Pass) {hin = !hin;}
-				if (filter[1] != PassOrNot.Pass) {sin = !sin;}
-				if (filter[2] != PassOrNot.Pass) {bin = !bin;}
+				if (!filter[0]) {hin = !hin;}
+				if (!filter[1]) {sin = !sin;}
+				if (!filter[2]) {bin = !bin;}
 				if (!hin || !sin || !bin) {
 					if (!flipThreshold) {
 						prc.set(x,y,0);
@@ -847,10 +742,10 @@ public class IJProcess {
 	 * @param img The image to process. This parameter is mutated.
 	 * @param min int[3], minimum value (0-255) for R,G,B
 	 * @param max int[3], maximum value (0-255) for R,G,B
-	 * @param filter PassOrNot[3], for R,G,B, either "pass", or inverts
+	 * @param filter boolean[3], for R,G,B, true indicates to cut out pixels outside the threshold, false does the reverse for that channel
 	 * @param flipThreshold If this is true, then the thresholded region is flipped to be whatever area is not covered by the thresholds given.
 	 */
-	public static void colorThRGB(ImagePlus img, int[] min, int[] max, PassOrNot[] filter, boolean flipThreshold) {
+	public static void colorThRGB(ImagePlus img, int[] min, int[] max, boolean[] filter, boolean flipThreshold) {
 		ImageProcessor prc = img.getProcessor();
 		for (int x = 0; x < prc.getWidth(); x++) {
 			for (int y = 0; y < prc.getHeight(); y++) {
@@ -861,9 +756,9 @@ public class IJProcess {
 				boolean rin = r >= min[0] && r <= max[0];
 				boolean gin = g >= min[1] && g <= max[1];
 				boolean bin = b >= min[2] && b <= max[2];
-				if (filter[0] != PassOrNot.Pass) {rin = !rin;}
-				if (filter[1] != PassOrNot.Pass) {gin = !gin;}
-				if (filter[2] != PassOrNot.Pass) {bin = !bin;}
+				if (!filter[0]) {rin = !rin;}
+				if (!filter[1]) {gin = !gin;}
+				if (!filter[2]) {bin = !bin;}
 				if (!rin || !gin || !bin) {
 					if (!flipThreshold) {
 						prc.set(x,y,0);
@@ -879,65 +774,4 @@ public class IJProcess {
 		img.setProcessor(prc);
 	}//end colorThRGB
 
-	
-	/**
-	 * @deprecated
-	 * Removes pixels outside a range by setting them to 0.  
-	 * Uses YUV color space for constraints.
-	 * Mutates the img parameter.
-	 * @param img The image to process. This parameter is mutated.
-	 * @param min int[3], minimum value (0-255) for Y,U,V
-	 * @param max int[3], maximum value (0-255) for Y,U,V
-	 * @param filter PassOrNot[3], for Y,U,V, either "pass", or inverts
-	 */
-	@Deprecated
-	public static void colorThYUV(ImagePlus img, int[] min, int[] max, PassOrNot[] filter) {
-		ImageProcessor prc = img.getProcessor();
-		for (int x = 0; x < prc.getWidth(); x++) {
-			for (int y = 0; y < prc.getHeight(); y++) {
-				int[] rgb = prc.getPixel(x, y, null);
-				double r = rgb[0];
-				double g = rgb[1];
-				double b = rgb[2];
-				// conversion formula taken from:
-				// https://softpixel.com/~cwright/programming/colorspace/yuv/
-				double Y = r * 0.299000 + g * 0.587000 + b * 0.114000;
-				double u = r * -0.168736 + g * -0.331264 + b * 0.5 + 128;
-				double v = r * 0.500000 + g * -0.418688 + b * -0.081312 + 128;
-				boolean yin = Y >= min[0] && Y <= max[0];
-				boolean uin = u >= min[1] && u <= max[1];
-				boolean vin = v >= min[2] && v <= max[2];
-				if (filter[0] != PassOrNot.Pass) {yin = !yin;}
-				if (filter[1] != PassOrNot.Pass) {uin = !uin;}
-				if (filter[2] != PassOrNot.Pass) {vin = !vin;}
-				if (!yin || !uin || !vin) {
-					prc.set(x,y,0);
-				}//end if pixel is outside constraints
-			}//end looping over y coords for pixels
-		}//end looping over x coords for pixels
-		img.setProcessor(prc);
-	}//end colorThYUV
-
-	/**
-	 * Removes pixels outside a range by setting them to 0
-	 * Uses grayscale color spaces for constraints.
-	 * Mutates the img parameter.
-	 * @param img The image to process. This parameter is mutated.
-	 * @param min minimum grayscale value (0,255)
-	 * @param max maximum grayscale value (0,255)
-	 * @param filter Either "pass", or inverts
-	 */
-	@Deprecated
-	public static void colorThGrayscale(ImagePlus img, int min, int max, PassOrNot filter) {
-		ImageProcessor prc = img.getProcessor();
-		for (int x = 0; x < prc.getWidth(); x++) {
-			for (int y = 0; y < prc.getHeight(); y++) {
-				double val = prc.getPixelValue(x,y);
-				boolean in = val >= min && val <= max;
-				if (filter != PassOrNot.Pass) {in = !in;}
-				if (!in) { prc.set(x,y,0); }
-			}//end looping over y coords for pixels
-		}//end looping over x coords for pixels
-		img.setProcessor(prc);
-	}//end colorThGrayscale
 }//end class IJProcess

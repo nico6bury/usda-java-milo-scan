@@ -7,6 +7,7 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 
 import IJM.IJProcess;
+import IJM.ProcConfig;
 import IJM.RoiGrid;
 import ij.IJ;
 import ij.ImagePlus;
@@ -23,11 +24,12 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
 	@Override
 	protected ImageIcon[] doInBackground() throws Exception {
 		ImageIcon[] finishedIcons = new ImageIcon[3];
-
+		ProcConfig pc = new ProcConfig();
+		pc.read_config();
 		// get the base image
 		ImagePlus img = IJ.openImage(imageMatch.getAbsolutePath());
 		img.getProcessor().flipHorizontal();
-		RoiGrid kernGrid = (new IJProcess()).getRoiGrid(img, null);
+		RoiGrid kernGrid = (new IJProcess()).getRoiGrid(img, null, pc);
 		ImagePlus bak = img.duplicate();
 
 		// figure out some bounds to zoom in on kernels
@@ -88,10 +90,10 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
 		ImagePlus kern_img = img.duplicate();
 		IJProcess.colorThHSB(
 			kern_img,
-			IJM.Constants.kernel_lower_hsb_thresh,
-			IJM.Constants.kernel_upper_hsb_thresh,
-			IJM.Constants.kernel_hsb_pass_or_not,
-			true
+			new int[] {pc.kernel_thresh_s1_min, pc.kernel_thresh_s2_min, pc.kernel_thresh_s3_min},
+			new int[] {pc.kernel_thresh_s1_max, pc.kernel_thresh_s2_max, pc.kernel_thresh_s3_max},
+			new boolean[] {pc.kernel_thresh_s1_pass, pc.kernel_thresh_s2_pass, pc.kernel_thresh_s3_pass},
+			pc.kernel_thresh_flip
 		);
 		ImagePlus chkImg = img.duplicate();
 		// IJProcess.colorThHSB(
@@ -102,9 +104,10 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
 		// );
 		IJProcess.colorThRGB(
 			chkImg,
-			IJM.Constants.chalk_endosperm_lower_rgb_thresh,
-			IJM.Constants.chalk_endosperm_upper_rgb_thresh,
-			IJM.Constants.chalk_endosperm_rgb_pass_or_not, false
+			new int[] {pc.chalk_thresh_s1_min, pc.chalk_thresh_s2_min, pc.chalk_thresh_s3_min},
+			new int[] {pc.chalk_thresh_s1_max, pc.chalk_thresh_s2_max, pc.chalk_thresh_s3_max},
+			new boolean[] {pc.chalk_thresh_s1_pass, pc.chalk_thresh_s2_pass, pc.chalk_thresh_s3_pass},
+			pc.chalk_thresh_flip
 		);
 		// IJProcess.colorThGrayscale(
 		//     endo_img,
