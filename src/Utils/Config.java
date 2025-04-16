@@ -137,7 +137,9 @@ public class Config implements ConfigStore {
 	 * The dpi to use for scanned images.
 	 */
 	public int scanDpi = 300;
-    public String scanDpiCOMMENT = "The dpi to use for scanned images. Please keep in mind that the current image processing is only meant to handle 300 dpi, so you take great care with changing this setting.";
+    public String scanDpiCOMMENT = "The dpi to use for scanned images. Please keep in mind that changing dpi is likely to cause image processing to break.\n" + 
+		"This is because there are a number of image processing settings that are dpi-dependent. You can find these settings in the milo-proc.conf file.\n" + 
+		"In particular, you'll want to adjust the distToTolerance and all the particles size settings when adjusting dpi, as the unit for those settings is pixels.";
 
     /**
 	 * Whether or not to add a number suffix at all.
