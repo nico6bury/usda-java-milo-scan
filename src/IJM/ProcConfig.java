@@ -81,7 +81,7 @@ public class ProcConfig implements ConfigStore {
      * Controls distTolerance value in RoiGrid.groupRoiRows
      */
     public int distTolerance = 4;
-    public int distToleranceCOMMENT = 4;
+    public String distToleranceCOMMENT = "Default: 4";
 
     public boolean kernel_thresh_use_hsb = true;
     public String kernel_thresh_use_hsbCOMMENT = "Default: true";
