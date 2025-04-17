@@ -457,7 +457,9 @@ public class IJProcess {
 		HashMap<String,double[]>[][] xscResMap = rg.analyzeParticles(
 			xscImg,
 			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=50-2500 circularity=0.03-1.00 show=[Overlay Masks] display include",
+			"size=" + pc.xsec_particles_size_min + "-" + pc.xsec_particles_size_max +
+			" circularity=" + pc.xsec_particles_circ_min + "-" + pc.xsec_particles_circ_max +
+			" show=[Overlay Masks] display " + pc.xsec_particles_options,
 			riocXsc
 		);
 		procResultsHelper(rg, xscResMap, "CrossSection");
@@ -477,7 +479,9 @@ public class IJProcess {
 		HashMap<String,double[]>[][] chkResMap = rg.analyzeParticles(
 			chkImg,
 			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=50-2500 circularity=0.03-1.00 show=[Overlay Masks] display include",
+			"size=" + pc.chalk_particles_size_min + "-" + pc.chalk_particles_size_max +
+			" circularity=" + pc.chalk_particles_circ_min + "-" + pc.chalk_particles_circ_max +
+			" show=[Overlay Masks] display " + pc.chalk_particles_options,
 			riocChk
 		);
 		procResultsHelper(rg, chkResMap, "Chalk");
@@ -500,7 +504,9 @@ public class IJProcess {
 		HashMap<String,double[]>[][] grmResMap = rg.analyzeParticles(
 			chkgrmImg,
 			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=25-2500 circularity=0.03-1.00 show=[Overlay Masks] display",
+			"size=" + pc.chkgrm_particles_size_min + "-" + pc.chkgrm_particles_size_max +
+			" circularity=" + pc.chkgrm_particles_circ_min + "-" + pc.chkgrm_particles_circ_max + 
+			" show=[Overlay Masks] display" + pc.chkgrm_particles_options,
 			riocChkGrm
 		);
 		procResultsHelper(rg, grmResMap, "ChalkGerm");
@@ -567,7 +573,13 @@ public class IJProcess {
 		int options = ParticleAnalyzer.SHOW_NONE + ParticleAnalyzer.ADD_TO_MANAGER;
 		int measurements = Measurements.AREA;
 		ParticleAnalyzer.setRoiManager(rm);
-		ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, 400, 12500,0.0,1.0);
+		ParticleAnalyzer pa = new ParticleAnalyzer(
+			options, measurements, rt,
+			pc.kernel_particles_size_min,
+			pc.kernel_particles_size_max,
+			pc.kernel_particles_circ_min,
+			pc.kernel_particles_circ_max
+		);
 		// actually get on processing
 		colorThHSB(
 			img,
@@ -590,7 +602,7 @@ public class IJProcess {
 		// get measurements for the kernels
 		HashMap<String,double[]>[][] resMap = nrg.analyzeParticles(img,
 			"area centroid perimeter bounding shape display redirect=None decimal=2",
-			"size=400-12500 circularity=0.03-1.00 show=[Overlay Masks] display include", roiImageOutputConfig);
+			"size=" + pc.kernel_particles_size_min + "-" + pc.kernel_particles_size_max + " circularity=" + pc.kernel_particles_circ_min + "-" + pc.kernel_particles_circ_max + " show=[Overlay Masks] display " + pc.kernel_particles_options, roiImageOutputConfig);
 		for (int i = 0; i < nrg.rrrs.length; i++) {
 			for (int ii = 0; ii < nrg.rrrs[i].length; ii++) {
 				Set<String> these_headers = resMap[i][ii].keySet();
@@ -661,7 +673,7 @@ public class IJProcess {
 		String macro = 
 			"run(\"Set Measurements...\",\"bounding\");\n" +
 			"setThreshold(1,255);\n" +
-			"run(\"Analyze Particles...\", \"size=6500-12500 exclude include\")";
+			"run(\"Analyze Particles...\", \"size=" + pc.cells_particles_size_min + "-" + pc.cells_particles_size_max + " " + pc.cells_particles_options + "\")";
 		IJ.open(tmpFile.getAbsolutePath());
 		IJ.runMacro(macro);
 
