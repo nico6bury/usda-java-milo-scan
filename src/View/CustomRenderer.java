@@ -25,10 +25,20 @@ public class CustomRenderer extends JLabel implements TableCellRenderer
 			table, value, isSelected, hasFocus, row, column );
 		String s = value.toString();
 		if (value != null && value instanceof Double) {
-			s = String.format("%3.1f", value);
+			if ((double)value == -3) {
+				// hardcoded value to have a blank line
+				s = "";
+			} else {
+				s = String.format("%3.1f", value);
+			}
 		}//end if we need to restrict decimal places
 		if (value != null && value instanceof Integer) {
-			s = String.format("%d", value);
+			if ((int)value == -3) {
+				// hardcoded value to have a blank line
+				s = "";
+			} else {
+				s = String.format("%d", value);
+			}
 		}//end if we want a plain integer
 		c = renderer.getTableCellRendererComponent(
 			table, s, isSelected, hasFocus, row, column );
