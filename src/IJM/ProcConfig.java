@@ -83,6 +83,11 @@ public class ProcConfig implements ConfigStore {
     public int distTolerance = 4;
     public String distToleranceCOMMENT = "Default: 4";
 
+    public int cellRectGrowX = -6;
+    public String cellRectGrowXCOMMENT = "Default: -6";
+    public int cellRectGrowY = -7;
+    public String cellRectGrowYCOMMENT = "Default: -7";
+
     public boolean kernel_thresh_use_hsb = true;
     public String kernel_thresh_use_hsbCOMMENT = "Default: true";
     public int kernel_thresh_s1_min = 120;

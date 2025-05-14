@@ -692,7 +692,7 @@ public class IJProcess {
 		RoiManager rm = new RoiManager(false);
 
 		for(int i = 0; i < rects.length; i++) {
-			rects[i].grow(-6,-7);
+			rects[i].grow(pc.cellRectGrowX,pc.cellRectGrowY);
 			Roi newRoi = new Roi(rects[i]);
 			rm.addRoi(newRoi);
 		}//end shrinking every rectangle roi
