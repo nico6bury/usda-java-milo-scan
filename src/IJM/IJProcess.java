@@ -444,11 +444,12 @@ public class IJProcess {
 
 		// try to find cross section
 		ImagePlus xscImg = img.duplicate();
-		IJProcess.colorThRGB(xscImg,
+		IJProcess.colorTh(xscImg,
 			new int[] {pc.xsec_thresh_s1_min,pc.xsec_thresh_s2_min,pc.xsec_thresh_s3_min},
 			new int[] {pc.xsec_thresh_s1_max,pc.xsec_thresh_s2_max,pc.xsec_thresh_s3_max},
 			new boolean[] {pc.xsec_thresh_s1_pass, pc.xsec_thresh_s2_pass, pc.xsec_thresh_s3_pass},
-			pc.xsec_thresh_flip
+			pc.xsec_thresh_flip,
+			pc.xsec_thresh_use_hsb
 		);
 		RoiImageOutputConfiguration riocXsc = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
 		if (riocXsc != null) {
@@ -466,11 +467,12 @@ public class IJProcess {
 
 		// try to find chalk
 		ImagePlus chkImg = img.duplicate();
-		IJProcess.colorThRGB(chkImg,
+		IJProcess.colorTh(chkImg,
 			new int[] {pc.chalk_thresh_s1_min,pc.chalk_thresh_s2_min,pc.chalk_thresh_s3_min},
 			new int[] {pc.chalk_thresh_s1_max,pc.chalk_thresh_s2_max,pc.chalk_thresh_s3_max},
 			new boolean[] {pc.chalk_thresh_s1_pass, pc.chalk_thresh_s2_pass, pc.chalk_thresh_s3_pass},
-			pc.chalk_thresh_flip
+			pc.chalk_thresh_flip,
+			pc.chalk_thresh_use_hsb
 		);
 		RoiImageOutputConfiguration riocChk = RoiImageOutputConfiguration.clone(roiImageOutputBaseConfig);
 		if (riocChk != null) {
@@ -488,12 +490,13 @@ public class IJProcess {
 
 		// try and find the chalk germ
 		ImagePlus chkgrmImg = img.duplicate();
-		IJProcess.colorThRGB(
+		IJProcess.colorTh(
 			chkgrmImg,
 			new int[] {pc.chkgrm_thresh_s1_min,pc.chkgrm_thresh_s2_min,pc.chkgrm_thresh_s3_min},
 			new int[] {pc.chkgrm_thresh_s1_max,pc.chkgrm_thresh_s2_max,pc.chkgrm_thresh_s3_max},
 			new boolean[] {pc.chkgrm_thresh_s1_pass, pc.chkgrm_thresh_s2_pass, pc.chkgrm_thresh_s3_pass},
-			pc.chkgrm_thresh_flip
+			pc.chkgrm_thresh_flip,
+			pc.chkgrm_thresh_use_hsb
 		);
 		// ImageConverter grmIc = new ImageConverter(grmImg);
 		// grmIc.convertToGray8();
@@ -581,12 +584,13 @@ public class IJProcess {
 			pc.kernel_particles_circ_max
 		);
 		// actually get on processing
-		colorThHSB(
+		colorTh(
 			img,
 			new int[] {pc.kernel_thresh_s1_min, pc.kernel_thresh_s2_min, pc.kernel_thresh_s3_min},
 			new int[] {pc.kernel_thresh_s1_max, pc.kernel_thresh_s2_max, pc.kernel_thresh_s3_max},
 			new boolean[] {pc.kernel_thresh_s1_pass, pc.kernel_thresh_s2_pass, pc.kernel_thresh_s3_pass},
-			pc.kernel_thresh_flip
+			pc.kernel_thresh_flip,
+			pc.kernel_thresh_use_hsb
 		);
 		ImageConverter ic = new ImageConverter(img);
 		ic.convertToGray8();
@@ -646,12 +650,13 @@ public class IJProcess {
 		ImagePlus img = image.duplicate();
 
 		// actually get processing
-		colorThHSB(
+		colorTh(
 			img,
 			new int[] {pc.cells_thresh_s1_min, pc.cells_thresh_s2_min, pc.cells_thresh_s3_min},
 			new int[] {pc.cells_thresh_s1_max, pc.cells_thresh_s2_max, pc.cells_thresh_s3_max},
 			new boolean[] {pc.cells_thresh_s1_pass, pc.cells_thresh_s2_pass, pc.cells_thresh_s3_pass},
-			pc.cells_thresh_flip
+			pc.cells_thresh_flip,
+			pc.cells_thresh_use_hsb
 		);
 		ImageConverter ic = new ImageConverter(img);
 		// IJ.save(img, img.getTitle() + "-grid");
@@ -704,6 +709,11 @@ public class IJProcess {
 		return sortedRois;
 	}//end getGridCells()
 
+	public static void colorTh(ImagePlus img, int[] min, int[] max, boolean[] filter, boolean flipThreshold, boolean useHSB) {
+		if (useHSB) {
+			colorThHSB(img, min, max, filter, flipThreshold);
+		} else {colorThRGB(img, min, max, filter, flipThreshold);}
+	}//end colorTh
 
 	/**
 	 * Removes pixels outside a range by setting them to 0.  

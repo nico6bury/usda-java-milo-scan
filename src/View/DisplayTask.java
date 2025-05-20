@@ -88,12 +88,13 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
 
 		// get the other image variants
 		ImagePlus kern_img = img.duplicate();
-		IJProcess.colorThHSB(
+		IJProcess.colorTh(
 			kern_img,
 			new int[] {pc.kernel_thresh_s1_min, pc.kernel_thresh_s2_min, pc.kernel_thresh_s3_min},
 			new int[] {pc.kernel_thresh_s1_max, pc.kernel_thresh_s2_max, pc.kernel_thresh_s3_max},
 			new boolean[] {pc.kernel_thresh_s1_pass, pc.kernel_thresh_s2_pass, pc.kernel_thresh_s3_pass},
-			pc.kernel_thresh_flip
+			pc.kernel_thresh_flip,
+			pc.kernel_thresh_use_hsb
 		);
 		ImagePlus chkImg = img.duplicate();
 		// IJProcess.colorThHSB(
@@ -102,12 +103,13 @@ public class DisplayTask extends SwingWorker<ImageIcon[], Void> {
 		//     IJM.Constants.endosperm_upper_hsb_thresh,
 		//     IJM.Constants.endosperm_hsb_pass_or_not
 		// );
-		IJProcess.colorThRGB(
+		IJProcess.colorTh(
 			chkImg,
 			new int[] {pc.chalk_thresh_s1_min, pc.chalk_thresh_s2_min, pc.chalk_thresh_s3_min},
 			new int[] {pc.chalk_thresh_s1_max, pc.chalk_thresh_s2_max, pc.chalk_thresh_s3_max},
 			new boolean[] {pc.chalk_thresh_s1_pass, pc.chalk_thresh_s2_pass, pc.chalk_thresh_s3_pass},
-			pc.chalk_thresh_flip
+			pc.chalk_thresh_flip,
+			pc.chalk_thresh_use_hsb
 		);
 		// IJProcess.colorThGrayscale(
 		//     endo_img,
